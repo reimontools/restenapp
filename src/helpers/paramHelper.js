@@ -5,7 +5,7 @@ export const MEDIUM_SCREEN_SIZE_PX = MEDIUM_SCREEN_SIZE + "px";
 
 export const NAV_ELEMENTS = [
     {
-        title: 'Welcome',
+        title: 'Home',
         path: '/'
     },
     {
