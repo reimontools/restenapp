@@ -1,10 +1,10 @@
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import { Welcome, User, Group, NavBar } from "../component";
+import { Welcome, User, Group, Header } from "../component";
 
 const Routes = () => {
     return (
         <Router>
-            <NavBar />
+            <Header />
             <Switch>                    
                 <Route component={Welcome} path='/' exact />
                 <Route component={User} path='/user' />

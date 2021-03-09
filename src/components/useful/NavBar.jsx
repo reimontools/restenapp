@@ -1,29 +1,48 @@
-// import { NAV_ELEMENTS } from "../../helpers/ParamHelper.js";
+import { NAV_ELEMENTS } from "../../helpers/paramHelper.js";
 import styled from "styled-components";
+import { useContext } from 'react'
+import { AppContext } from "../../store/AppProvider";
+import { NavLink } from "react-router-dom";
 
 export const NavStyled = styled.nav `
-    position: fixed;
-    width: 100%;
-    height: 20%;
-    top: 0;
-    border: 1px #a0138e solid
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* align-items: flex-start; */
-    /* justify-content: center; */
-    /* z-index:600; */
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center; 
+    justify-content: flex-end;
+    .navlink {
+        font-size: 15px;
+        font-family: sundayBest;
+        color: rgb(55, 55, 55);
+        text-decoration: none;
+        padding-left: 10px;
+        &:hover {
+            color: rgb(186, 218, 85);
+        };
+        &.active {
+            color: rgb(186, 218, 85);
+        };
+    };
 `;
 
-
 const NavBar = () => {
-
+    const { barState } = useContext(AppContext);
     return (
         <>
-            <NavStyled >
-
-                {/* {NAV_ELEMENTS.map((item, index) => {
-                    return <Element item={item} key={index}/>;
-                })} */}
+            <NavStyled open={ barState }>
+                {NAV_ELEMENTS.map((item, index) => {
+                    return (
+                        <NavLink
+                            className="navlink" 
+                            key={index}
+                            onClick={() => console.log('OptionClick')} 
+                            to={item.path} 
+                            activeClassName="active" 
+                            exact>
+                                {item.title}
+                        </NavLink>
+                    );
+                })} 
             </NavStyled>
         </>
     );

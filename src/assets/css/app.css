@@ -14,3 +14,8 @@ body {
     overflow-x: auto;
     overflow-y: scroll;
 }
+
+@font-face {
+    font-family: sundayBest;
+    src: url("../fonts/sundayBest.ttf");
+}

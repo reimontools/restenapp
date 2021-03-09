@@ -1,9 +1,12 @@
-import '../styles/app.css';
+import '../assets/css/app.css';
 import { Routes } from "../component";
+import AppState from '../store/AppProvider';
 
 const App = () => {
     return (
-        <Routes />
+        <AppState>
+            <Routes />
+        </AppState>
     );
 };
 

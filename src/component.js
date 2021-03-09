@@ -6,3 +6,5 @@ export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
 
 export {default as NavBar} from "./components/useful/NavBar";
+export {default as Header} from "./components/useful/Header";
+export {default as Logo} from "./components/useful/Logo";
