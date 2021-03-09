@@ -1,10 +1,9 @@
 import '../styles/app.css';
+import { Routes } from "../component";
 
 const App = () => {
     return (
-        <>
-            <h1>I's working</h1>
-        </>
+        <Routes />
     );
 };
 
