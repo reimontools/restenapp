@@ -17,10 +17,10 @@ export const NavStyled = styled.nav `
         text-decoration: none;
         padding-left: 10px;
         &:hover {
-            color: rgb(186, 218, 85);
+            color: #ced922;
         };
         &.active {
-            color: rgb(186, 218, 85);
+            color: #ced922;
         };
     };
 `;

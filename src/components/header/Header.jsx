@@ -6,7 +6,7 @@ export const HeaderStyled = styled.div `
     width: 100%;
     height: 10%;
     top: 0;
-    background-color: #a0138e;
+    background-color: #0e70b8;
     display: flex;
     align-items: center; 
     justify-content: space-around;
