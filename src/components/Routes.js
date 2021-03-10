@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const ContentStyled = styled.div `
     position: fixed;
     width: 100%;
-    top: 10%;
+    top: 12%;
     display: flex;
     align-items: center; 
     justify-content: center;

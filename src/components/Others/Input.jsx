@@ -1,41 +1,64 @@
 import styled from "styled-components";
 
 const DivInputStyled = styled.div `
+    margin: 10px 0 10px 0;
+    width: 100%;
+    label {
+        display: block;
+        font-weight: 600;
+        padding: 3px;
+        cursor: pointer; 
+    }
     input {
-        font-family: sundayBest;
-        font-size: 10px;
         width: 100%;
-        height: 65px;
-        outline: none;
-        border:0;
-        border-bottom: solid 2px #ccc;
-        &:hover {
-            border-bottom: solid 2px rgb(186, 218, 85);
-        };
+        background: #fff;
+        border: 3px solid transparent;
+        border-radius: 3px;
+        height: 45px;
+        line-height: 45px;
+        padding: 0 40px 0 10px;
+        transition: .3s ease all;
         &:focus {
-            border-bottom: solid 2px #333c87;
-        };
+            border: 3px solid #ced922;;
+            outline: none;
+            box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
+        }
     };
-    div.alert-message {
-        font-family: sundayBest;
-        font-size: 8px;
-        height: 22px;
+    p {
+        font-size: 10px;
+        font-weight: 600;
         color: #bb3345;
         text-align: right;
+        padding-top: 3px;
+        padding-right: 10px;
     }
 `;
 
 const Input = {
-    Text: ({register, error, ...inputTextProps}) => {
+    TextValidation: ({register, label, error, ...inputTextProps}) => {
         return (
             <DivInputStyled>
+                {label && <label>{label}</label>}
                 <input 
                     type="text"
                     autoComplete="off"
                     {...inputTextProps}
                     ref={register}
                 />
-                {error ? <div className="alert-message">{error.message}</div> : <div></div>}
+                {error && <p>{error.message}</p>}
+            </DivInputStyled>
+        );
+    },
+
+    TextAction: ({action, ...inputTextProps}) => {
+        return (
+            <DivInputStyled>
+                <input 
+                    type="text"
+                    autoComplete="off"
+                    {...inputTextProps}
+                    onChange={e => action(e.target.value)}
+                />
             </DivInputStyled>
         );
     }

@@ -1,12 +1,11 @@
 import styled from "styled-components";
 
 const FormStyled = styled.div `
-    width: auto;
+    width: 300px;
     div.head-container {
-        font-family: sundayBest;
-        font-size: 30px;
+        font-size: 25px;
+        font-weight: 700;
         text-align: center;
-        color: #999999;
     };
 `;
 
