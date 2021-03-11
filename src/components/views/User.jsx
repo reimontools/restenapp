@@ -1,12 +1,13 @@
 
-import { useState, useEffect } from "react";
-import { Form, Input, Button, ButtonIcon } from "../../component";
+import { useState, useEffect} from "react";
+import { Form, Input, Button, ButtonIcon, Modal } from "../../component";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import {db} from "../../config/firebase";
 
 import styled from "styled-components";
+import useModal from "../../Hooks/useModal";
 
 const Container = styled.div `
     display: flex;
@@ -17,23 +18,19 @@ const Container = styled.div `
     .table-container {
         width: 90%;
     };
-
     .td-container {
         display: flex;
         align-items: center; 
         justify-content: space-evenly;
     };
-
     table {
         width: 100%;
         border-collapse: collapse;
         border-radius: 10px;
     };
-
     thead {
         background: #0e70b8;
     };
-
     thead tr th {
         font-size: 15px;
         font-weight: 600;
@@ -42,17 +39,13 @@ const Container = styled.div `
         padding: 12px;
         vertical-align: top;
     };
-
     tbody tr td {
         font-size: 14px;
         font-weight: normal;
         letter-spacing: 0.35px;
-        /* color: #FFFFFF; */
         padding: 8px;
-        /* vertical-align: top; */
         text-align: center;        
     };
-
     .especial {
         position: relative;
         display: flex;
@@ -63,9 +56,11 @@ const Container = styled.div `
 `;
 
 const User = () => {
+    
     const [searchTerm, setSearchTerm] = useState("");
     const [users, setUsers] = useState([]);
     useEffect(() => getUser(), []);
+    const [isOpenModal, openModal, closeModal] = useModal();
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
@@ -105,21 +100,20 @@ const User = () => {
     /*JSX ############################################################################################*/ 
     return (
         <>
-            <Container className="container">
-
-                {/* <Form.StyleOne title="User">
+            <Modal isOpen={isOpenModal} closeModal={closeModal}>
+                <Form.StyleOne title="User">
                     <Input.TextValidation name="name" label="Name" placeholder="Jennifer" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" label="Surname" placeholder="Connor" register={register} error={errors.surname} />
                     <Input.TextValidation name="email" label="Email" type="email" placeholder="jennifer.connor@gmail.com" register={register} error={errors.email}/>
                     <Button.StyledOne action={handleSubmit(onSubmit)}>Save</Button.StyledOne>   
-                </Form.StyleOne> */}
+                </Form.StyleOne>
+            </Modal>
 
+            <Container className="container">
                 <div className="especial">
                     <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                    <ButtonIcon.Add />
+                    <ButtonIcon.Add action={() => openModal()}/>
                 </div>
-                
-                
                 <div className="table-container">
                     <table className="table">
                         <thead>
@@ -132,7 +126,7 @@ const User = () => {
                         </thead>
                         <tbody>
                             {users.filter(val => {
-                                if(searchTerm == "") {
+                                if(searchTerm === "") {
                                     return val;
                                 } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase())) {
                                     return val;
@@ -146,12 +140,8 @@ const User = () => {
                                         <div className="td-container">
                                             <ButtonIcon.Update />
                                             <ButtonIcon.Delete action={() => delUser(e.id)}/>
-                                            {/* <ButtonIcon.Add /> */}
                                         </div>
                                     </td>
-                                    
-                                    {/* <td><Button color="primary" onClick={() => showModalAppointmentToCreate(e_person)}>Nuevo</Button></td>
-                                    <td><Button onClick={() => showModalAppointments(e_person)}>Listado</Button></td> */}
                                 </tr>
                             ))}
                         </tbody>

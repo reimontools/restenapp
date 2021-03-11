@@ -1,11 +1,18 @@
 import styled from "styled-components";
 
 const FormStyled = styled.div `
-    width: 300px;
+    width: 350px;
+    padding: 10px;
     div.head-container {
+        width: 100%;
         font-size: 25px;
         font-weight: 700;
-        text-align: center;
+        /* text-align: center; */
+        /* padding: 0; */
+    };
+    div.body-container {
+        width: 100%;
+        /* padding: 0; */
     };
 `;
 
