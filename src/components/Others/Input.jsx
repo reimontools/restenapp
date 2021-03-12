@@ -27,10 +27,11 @@ const DivInputStyled = styled.div `
     p {
         font-size: 10px;
         font-weight: 600;
+        font-style: oblique;
         color: #bb3345;
         text-align: right;
-        padding-top: 3px;
-        padding-right: 10px;
+        padding-top: 1px;
+        padding-right: 5px;
     }
 `;
 

@@ -20,7 +20,7 @@ const ButtonStyled = styled.button `
 `;
 
 const Button = {
-    StyledOne: ({action, ...buttonProps}) => {
+    Primary: ({action, ...buttonProps}) => {
         return (
             <ButtonStyled 
                 type="button"

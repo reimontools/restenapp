@@ -3,12 +3,13 @@ import { Home, User, Group, Header } from "../component";
 import styled from "styled-components";
 
 export const ContentStyled = styled.div `
-    position: fixed;
+    position: absolute;
     width: 100%;
     top: 12%;
     display: flex;
     align-items: center; 
     justify-content: center;
+    z-index: 100;
 `;
 
 const Routes = () => {

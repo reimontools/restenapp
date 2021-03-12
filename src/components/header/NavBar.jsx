@@ -3,9 +3,11 @@ import styled from "styled-components";
 import { useContext } from 'react'
 import { AppContext } from "../../store/AppProvider";
 import { NavLink } from "react-router-dom";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 export const NavStyled = styled.nav `
-    width: auto;
+    position: relative;
+    bottom: 0;
     height: 100%;
     display: flex;
     align-items: center; 
@@ -23,10 +25,23 @@ export const NavStyled = styled.nav `
             color: #ced922;
         };
     };
+
+    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        width: 100vw;
+        height: 100vh;
+        background-color: #0e70b8;
+        flex-direction: column;
+        align-items: center; 
+        justify-content: space-evenly;
+        position: fixed;
+        bottom: ${({ open }) => open ? '0' : '100%'};
+        left: 0;
+        transition: all .5s ease-in-out;
+    };
 `;
 
 const NavBar = () => {
-    const { barState } = useContext(AppContext);
+    const { barState, setBarState } = useContext(AppContext);
     return (
         <>
             <NavStyled open={ barState }>
@@ -35,7 +50,7 @@ const NavBar = () => {
                         <NavLink
                             className="navlink" 
                             key={index}
-                            onClick={() => console.log('OptionClick')} 
+                            onClick={() => setBarState(false)} 
                             to={item.path} 
                             activeClassName="active" 
                             exact>

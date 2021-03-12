@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { NavBar, Logo } from "../../component";
+import { NavBar, Logo, Burger } from "../../component";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 export const HeaderStyled = styled.div `
     position: fixed;
@@ -10,18 +11,17 @@ export const HeaderStyled = styled.div `
     display: flex;
     align-items: center; 
     justify-content: space-around;
-    div {
-        height: 100%;
-    }
-    img {
-        height: 100%;
-    }
+    z-index: 500;
+    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        justify-content: space-between;
+    };
 `;
 
 const Header = () => {
     return (
        <HeaderStyled>
            <Logo />
+           <Burger />
            <NavBar />
         </HeaderStyled>
     );

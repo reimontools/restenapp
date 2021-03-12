@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { ButtonIcon} from "../../component";
+import { MEDIUM_SCREEN_SIZE_PX, SMALL_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 const Container = styled.div `
     position: fixed;
@@ -13,12 +14,23 @@ const Container = styled.div `
     align-items: center;
     transition: all .5s ease;
     .dialog {
+        width: 500px;
         position: relative;
-        background: #ddd;
+        background: #dddd;
         border-radius: 3px;
     };
     &.open {
-        display: grid;
+        display: flex;
+    };
+    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        .dialog {
+            width: 70%;
+        }
+    };
+    @media screen and (max-width: ${SMALL_SCREEN_SIZE_PX}) {
+        .dialog {
+            width: 90%;
+        }
     };
 `;
 
