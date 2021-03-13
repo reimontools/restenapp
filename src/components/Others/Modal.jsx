@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { ButtonIcon} from "../../component";
-import { MEDIUM_SCREEN_SIZE_PX, SMALL_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 const Container = styled.div `
     position: fixed;
