@@ -16,7 +16,7 @@ const Container = styled.div `
 
     justify-content: center;
     align-items: center;
-    /* transition: all .5s ease; */
+    
     .dialog {
         width: 500px;
         position: relative;
