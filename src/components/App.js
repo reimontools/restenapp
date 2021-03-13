@@ -1,10 +1,12 @@
-import '../styles/app.css';
+import '../assets/css/app.css';
+import { Routes } from "../component";
+import AppState from '../store/AppProvider';
 
 const App = () => {
     return (
-        <>
-            <h1>I's working</h1>
-        </>
+        <AppState>
+            <Routes />
+        </AppState>
     );
 };
 

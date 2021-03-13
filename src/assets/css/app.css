@@ -1,0 +1,57 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-family: questrialRegular;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+@font-face {
+    font-family: sundayBest;
+    src: url("../fonts/sundayBest.ttf");
+}
+
+@font-face {
+    font-family: questrialRegular;
+    src: url("../fonts/questrialRegular.ttf");
+}
+
+/* 
+[data-title]:hover:after {
+    opacity: 1;
+    transition: all 0.1s ease .7s;
+    visibility: visible;
+}
+
+[data-title]:after {
+    content: attr(data-title);
+    background-color: #333;
+    color: #fff;
+    font-size: 8px;
+    position: absolute;
+    padding: 2px 8px;
+    top: -100%;
+    left: 0%;
+    white-space: nowrap;
+    box-shadow: 1px 1px 3px #222222;
+    opacity: 0;
+    border: 1px solid #111111;
+    z-index: 99999;
+    visibility: hidden;
+    border-radius: 3px;
+    
+}
+
+[data-title] {
+    position: relative;
+} */
