@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Input, ButtonIcon, Modal, Button, Card } from "../../component";
 import {db} from "../../config/firebase";
-import useModal from "../../hooks/useModal";
+import useModal from "../../customhooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
