@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Input, ButtonIcon, Modal, Button, Card } from "../../component";
 import {db} from "../../config/firebase";
-import useModal from "../../customhooks/useModal";
+import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
@@ -206,7 +206,8 @@ const User = () => {
                                 return val;
                             } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.surname.toLowerCase().includes(searchTerm.toLowerCase())) {
                                 return val;
-                            }
+                            };
+                            return null;
                         }).map(user => (
                             <tr key={user.id}>
                                 <td data-label='Name'>{user.name}</td>

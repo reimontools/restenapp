@@ -9,10 +9,10 @@ export {default as NavBar} from "./components/header/NavBar";
 export {default as Header} from "./components/header/Header";
 export {default as Logo} from "./components/header/Logo";
 export {default as Burger} from "./components/header/Burger";
-export {default as Modal} from "./components/otherss/Modal";
+export {default as Modal} from "./components/others/Modal";
 
-export {default as Card} from "./components/otherss/Card";
-export {default as Input} from "./components/otherss/Input";
-export {default as Button} from "./components/otherss/Button";
-export {default as ButtonIcon} from "./components/otherss/ButtonIcon";
+export {default as Card} from "./components/others/Card";
+export {default as Input} from "./components/others/Input";
+export {default as Button} from "./components/others/Button";
+export {default as ButtonIcon} from "./components/others/ButtonIcon";
 
