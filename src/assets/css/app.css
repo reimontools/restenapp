@@ -3,7 +3,7 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-family: calibriRegular;
+    font-family: questrialRegular;
 }
 
 html {
@@ -22,10 +22,11 @@ body {
 }
 
 @font-face {
-    font-family: calibriRegular;
-    src: url("../fonts/calibriRegular.ttf");
+    font-family: questrialRegular;
+    src: url("../fonts/questrialRegular.ttf");
 }
 
+/* 
 [data-title]:hover:after {
     opacity: 1;
     transition: all 0.1s ease .7s;
@@ -53,4 +54,4 @@ body {
 
 [data-title] {
     position: relative;
-}
+} */

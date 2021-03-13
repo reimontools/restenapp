@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { BiEdit, BiTrash } from "react-icons/bi";
 import { IoMdPersonAdd } from "react-icons/io";
 import { CgClose } from "react-icons/cg";
-
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 const DivButtonIconStyled = styled.div `
     width: 20px;
