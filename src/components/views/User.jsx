@@ -188,7 +188,7 @@ const User = () => {
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
                     <Input.TextValidation name="birth_date" placeholder="2013/07/15" register={register} error={errors.birth_date}/>
-                    <Select.SelectValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
+                    <Select.TextValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
                     <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
                 </Card.Primary>
             </Modal>
