@@ -13,6 +13,6 @@ export {default as Modal} from "./components/others/Modal";
 
 export {default as Card} from "./components/others/Card";
 export {default as Input} from "./components/others/Input";
+export {default as Select} from "./components/others/Select";
 export {default as Button} from "./components/others/Button";
 export {default as ButtonIcon} from "./components/others/ButtonIcon";
-

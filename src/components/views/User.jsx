@@ -2,12 +2,14 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import { Input, ButtonIcon, Modal, Button, Card } from "../../component";
-import {db} from "../../config/firebase";
+import { Input, ButtonIcon, Modal, Button, Card, Select } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { getList } from '../../helpers/listHelper'; 
+import axios from '../../config/axios'
+import useList from '../../hooks/useList';
 
 const TableContainer = styled.div `
     width: 90%;
@@ -91,7 +93,6 @@ const TableContainer = styled.div `
         };
     };
 `;
-
 const Container = styled.div `
     display: flex;
     flex-direction: column;
@@ -107,18 +108,21 @@ const Container = styled.div `
 `;
 
 const User = () => {
-    useEffect(() => getUser(), []);
-    const [searchTerm, setSearchTerm] = useState("");
+    useEffect(() => fetchUsers(), []);
     const [users, setUsers] = useState([]);
+    const userTypes = useList("list/user-type");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-    const defaultData = {id: '', name: '', surname: '', email: ''};
-    const [currentId, setCurrentID] = useState('');
+    const defaultData = {user_id: 0, name: '', surname: '', email: '', birth_date: '', user_type_id: '1'};
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
         surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        email: Yup.string().email("Invalid format").required('Required')
+        email: Yup.string().email("Invalid format").required('Required'),
+        birth_date: Yup.string().required('Required'),
+        user_type_id: Yup.string().required('Required')
     });
 
     const { register, handleSubmit, errors, reset } = useForm({
@@ -127,47 +131,49 @@ const User = () => {
     });
 
     const openForm = user => {
-        setCurrentID(user.id);
+        setCurrentID(user.user_id);
         reset(user);
         openModal();
     };
 
-    const onSubmit = data => {
-        setUser(data);
-    };
-
     /*CRUD ###########################################################################################*/ 
-    const getUser = () => {
-        try {
-            db.collection('user').onSnapshot((querySnapshot) => {
-                const users = [];
-                querySnapshot.forEach((user) => {
-                    users.push({...user.data(), id: user.id})
-                });
-                setUsers(users);
-            });
-        } catch (err) {
-            console.log(err);
-        };
+    const fetchUsers = async () => {
+        const users = await getList("/user");
+        setUsers(users);
     };
 
-    const setUser = async (data) => {
+    const addUser = async data => {
+        // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
-            if (currentId === '') {
-                await db.collection('user').doc().set(data);
-            } else {
-                await db.collection('user').doc(currentId).update(data);
-                setCurrentID('');
+            const res = await axios.post("user", {user_id: currentID, ...data});
+            switch(res.data.result[0][0].cod) {
+                case 0:
+                    alert('registrado correctamente!');
+                    fetchUsers();
+                    closeModal();
+                    break;
+                case 1:
+                    alert('Ya existe!');
+                    break;
+                case 2:
+                    alert('Ya existe inactivo!');
+                    break;
+                default:
+                    alert('Otro problema, error: ' + + res.data.result[0][0].msg);
+                    break;
             };
-            closeModal();
-        } catch (err) {
-            console.log(err);
+        } catch(err) {
+            console.log('Err: ' + err);
         };
     };
     
-    const delUser = async (id) => {
+    const staUser = async (user_id) => {
         try {
-            await db.collection('user').doc(id).delete();
+            const res = await axios.put("user/" + user_id);
+            if (!res.data.error) {
+                alert('Inactivado!');
+                fetchUsers();
+            };
         } catch (err) {
             console.log(err);
         };
@@ -181,7 +187,9 @@ const User = () => {
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
-                    <Button.Primary action={handleSubmit(onSubmit)}>Save</Button.Primary>   
+                    <Input.TextValidation name="birth_date" placeholder="2013/07/15" register={register} error={errors.birth_date}/>
+                    <Select.SelectValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
+                    <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
                 </Card.Primary>
             </Modal>
 
@@ -196,7 +204,7 @@ const User = () => {
                         <tr>
                             <th>Name</th>
                             <th>Surname</th>
-                            <th>Email</th>
+                            <th>Rol</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -209,14 +217,14 @@ const User = () => {
                             };
                             return null;
                         }).map(user => (
-                            <tr key={user.id}>
+                            <tr key={user.user_id}>
                                 <td data-label='Name'>{user.name}</td>
                                 <td data-label='Surname'>{user.surname}</td>
-                                <td data-label='Email'>{user.email}</td>
+                                <td data-label='Rol'>{user.user_type_name}</td>
                                 <td data-label='Actions'>
                                     <div className="td-container">
                                         <ButtonIcon.Update action={() => openForm(user)} />
-                                        <ButtonIcon.Delete action={() => delUser(user.id)} />
+                                        <ButtonIcon.Delete action={() => staUser(user.user_id)} />
                                     </div>
                                 </td>
                             </tr>
