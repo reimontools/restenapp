@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 import { getList } from '../../helpers/listHelper'; 
-import axios from "axios";
+import axios from '../../config/axios'
 import useList from '../../hooks/useList';
 
 const TableContainer = styled.div `
@@ -138,14 +138,14 @@ const User = () => {
 
     /*CRUD ###########################################################################################*/ 
     const fetchUsers = async () => {
-        const users = await getList("/user");
+        const users = await getList("user");
         setUsers(users);
     };
 
     const addUser = async data => {
         // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
-            const res = await axios.post('https://rfsoftdev.xyz' + "user", {user_id: currentID, ...data});
+            const res = await axios.post("user", {user_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
                     alert('registrado correctamente!');
@@ -169,7 +169,7 @@ const User = () => {
     
     const staUser = async (user_id) => {
         try {
-            const res = await axios.put('https://rfsoftdev.xyz' + "user/" + user_id);
+            const res = await axios.put("user/" + user_id);
             if (!res.data.error) {
                 alert('Inactivado!');
                 fetchUsers();

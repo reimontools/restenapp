@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from '../config/axios';
 
 export async function getList(route) {
     try {
         var result = [];
-        const res = await axios.get('https://rfsoftdev.xyz' + route);
+        const res = await axios.get(route);
         if (!res.data.error) {
             result = res.data.result;
         } else {
