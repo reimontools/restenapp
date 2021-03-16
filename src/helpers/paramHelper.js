@@ -13,6 +13,10 @@ export const NAV_ELEMENTS = [
         path: '/user'
     },
     {
+        title: 'Championship',
+        path: '/championship'
+    },
+    {
         title: 'Group',
         path: '/group'
     }

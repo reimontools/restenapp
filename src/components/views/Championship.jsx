@@ -1,29 +1,23 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Table, Container } from "../../component";
+import { Input, ButtonIcon, Modal, Button, Card, Table, Container } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
-import useList from '../../hooks/useList';
 
-const User = () => {
-    useEffect(() => fetchUsers(), []);
-    const [users, setUsers] = useState([]);
-    const userTypes = useList("list/user-type");
+const Championship = () => {
+    useEffect(() => fetchChampionship(), []);
+    const [championships, setChampionships] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-    const defaultData = {user_id: 0, name: '', surname: '', email: '', birth_date: '', user_type_id: '1'};
+    const defaultData = {championship_id: 0, name: ''};
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
-        name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        email: Yup.string().email("Invalid format").required('Required'),
-        birth_date: Yup.string().required('Required'),
-        user_type_id: Yup.string().required('Required')
+        name: Yup.string().required('Required')
     });
 
     const { register, handleSubmit, errors, reset } = useForm({
@@ -31,26 +25,26 @@ const User = () => {
         resolver: yupResolver(schema)
     });
 
-    const openForm = user => {
-        setCurrentID(user.user_id);
-        reset(user);
+    const openForm = championship => {
+        setCurrentID(championship.championship_id);
+        reset(championship);
         openModal();
     };
 
     /*CRUD ###########################################################################################*/ 
-    const fetchUsers = async () => {
-        const users = await getList("user");
-        setUsers(users);
+    const fetchChampionship = async () => {
+        const championships = await getList("championship");
+        setChampionships(championships);
     };
 
-    const addUser = async data => {
+    const addChampionship = async data => {
         // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
-            const res = await axios.post("user", {user_id: currentID, ...data});
+            const res = await axios.post("championship", {championship_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
                     alert('registrado correctamente!');
-                    fetchUsers();
+                    fetchChampionship();
                     closeModal();
                     break;
                 case 1:
@@ -68,12 +62,12 @@ const User = () => {
         };
     };
     
-    const staUser = async (user_id) => {
+    const staChampionship = async (championship_id) => {
         try {
-            const res = await axios.put("user/" + user_id);
+            const res = await axios.put("championship/" + championship_id);
             if (!res.data.error) {
                 alert('Inactivado!');
-                fetchUsers();
+                fetchChampionship();
             };
         } catch (err) {
             console.log(err);
@@ -84,13 +78,9 @@ const User = () => {
     return (
         <Container.Primary>
             <Modal isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title="User">
-                    <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
-                    <Input.TextValidation name="birth_date" placeholder="2013/07/15" register={register} error={errors.birth_date}/>
-                    <Select.TextValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
-                    <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
+                <Card.Primary title="Championship">
+                    <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
+                    <Button.Primary action={handleSubmit(addChampionship)}>Save</Button.Primary>   
                 </Card.Primary>
             </Modal>
 
@@ -102,29 +92,25 @@ const User = () => {
             <Table.Primary>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Rol</th>
+                        <th>Championship name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.filter(val => {
+                    {championships.filter(val => {
                         if(searchTerm === "") {
                             return val;
-                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.surname.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase())) {
                             return val;
                         };
                         return null;
-                    }).map(user => (
-                        <tr key={user.user_id}>
-                            <td data-label='Name'>{user.name}</td>
-                            <td data-label='Surname'>{user.surname}</td>
-                            <td data-label='Rol'>{user.user_type_name}</td>
+                    }).map(championship => (
+                        <tr key={championship.championship_id}>
+                            <td data-label='Name'>{championship.name}</td>
                             <td data-label='Actions'>
                                 <div className="td-container">
-                                    <ButtonIcon.Update action={() => openForm(user)} />
-                                    <ButtonIcon.Delete action={() => staUser(user.user_id)} />
+                                    <ButtonIcon.Update action={() => openForm(championship)} />
+                                    <ButtonIcon.Delete action={() => staChampionship(championship.championship_id)} />
                                 </div>
                             </td>
                         </tr>
@@ -135,4 +121,4 @@ const User = () => {
     );
 };
 
-export default User;
+export default Championship;

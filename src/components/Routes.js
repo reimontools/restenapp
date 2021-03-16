@@ -1,5 +1,5 @@
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import { Home, User, Group, Header } from "../component";
+import { Home, User, Group, Championship, Header } from "../component";
 import styled from "styled-components";
 
 export const ContentStyled = styled.div `
@@ -20,6 +20,7 @@ const Routes = () => {
                 <Switch>                    
                     <Route component={Home} path='/' exact />
                     <Route component={User} path='/user' />
+                    <Route component={Championship} path='/championship' />
                     <Route component={Group} path='/group' />
                 </Switch>
             </ContentStyled>

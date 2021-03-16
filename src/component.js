@@ -4,6 +4,7 @@ export {default as Routes} from "./components/Routes";
 export {default as Home} from "./components/views/Home";
 export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
+export {default as Championship} from "./components/views/Championship";
 
 export {default as NavBar} from "./components/header/NavBar";
 export {default as Header} from "./components/header/Header";
@@ -16,3 +17,5 @@ export {default as Input} from "./components/others/Input";
 export {default as Select} from "./components/others/Select";
 export {default as Button} from "./components/others/Button";
 export {default as ButtonIcon} from "./components/others/ButtonIcon";
+export {default as Table} from "./components/others/Table";
+export {default as Container} from "./components/others/Container";
