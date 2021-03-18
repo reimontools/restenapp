@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { BiEdit, BiTrash } from "react-icons/bi";
-import { IoMdPersonAdd, IoMdAdd } from "react-icons/io";
+// import { IoMdPersonAdd, IoMdAdd } from "react-icons/io";
 import { CgClose } from "react-icons/cg";
-import { SiPluscodes } from "react-icons/si";
-import { RiAddCircleLine } from "react-icons/ri";
+// import { SiPluscodes } from "react-icons/si";
+// import { RiAddCircleLine } from "react-icons/ri";
 import { GoPlus } from "react-icons/go";
 
 const DivButtonIconStyled = styled.div `

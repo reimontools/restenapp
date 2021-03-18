@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Table, Container } from "../../component";
-import useList from '../../hooks/useList';
+import { Input, ButtonIcon, Modal, Button, Card, Select, Container } from "../../component";
+// import useList from '../../hooks/useList';
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
