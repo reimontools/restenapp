@@ -112,7 +112,7 @@ const User = () => {
                     {users.filter(val => {
                         if(searchTerm === "") {
                             return val;
-                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.surname.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        } else if (val.user_fullname.toLowerCase().includes(searchTerm.toLowerCase()) || val.user_type_name.toLowerCase().includes(searchTerm.toLowerCase())) {
                             return val;
                         };
                         return null;

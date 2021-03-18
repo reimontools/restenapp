@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
+import moment from 'moment';
 
 const Championship = () => {
     useEffect(() => fetchChampionship(), []);
@@ -85,14 +86,15 @@ const Championship = () => {
             </Modal>
 
             <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
+                <Input.TextAction name="search" placeholder="Look for a championship..." value={searchTerm} action={setSearchTerm} />
                 <ButtonIcon.Add action={() => openForm(defaultData)}/>
             </div>
 
             <Table.Primary>
                 <thead>
                     <tr>
-                        <th>Championship name</th>
+                        <th>Championship</th>
+                        <th>Created</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -106,7 +108,8 @@ const Championship = () => {
                         return null;
                     }).map(championship => (
                         <tr key={championship.championship_id}>
-                            <td data-label='Name'>{championship.name}</td>
+                            <td data-label='Championship'>{championship.name}</td>
+                            <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD [at] h:mm a') }</td>
                             <td data-label='Actions'>
                                 <div className="td-container">
                                     <ButtonIcon.Update action={() => openForm(championship)} />

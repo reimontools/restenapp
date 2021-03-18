@@ -19,10 +19,10 @@ const TableStyled = styled.div `
         vertical-align: top;
     };
     thead tr th:first-child {
-        border-radius: 3px 0 0 0
+        border-radius: 5px 0 0 0
     };
     thead tr th:last-child {
-        border-radius: 0 3px 0 0
+        border-radius: 0 5px 0 0
     };
     tbody tr td {
         font-size: 14px;
@@ -48,31 +48,33 @@ const TableStyled = styled.div `
         tbody, tr, td  {
             display: block;
             width: 100%;
+            
         };
         tbody tr {
             margin-bottom: 15px;
         };
         tbody tr td {
             text-align: right;
-            padding-left: 30%;
+            padding-left: 40%;
             position: relative;
             background-color: #d1ebf7;
+            word-wrap: break-word;
         };
-        tbody tr td:first-child {
-            border-radius: 3px 3px 0 0
-        };
-        tbody tr td:last-child {
-            border-radius: 0 0 3px 3px
-        };
-        tbody td:before {
+        tbody tr td:before {
             content: attr(data-label);
             position: absolute;
             left: 0;
-            width: 30%;
+            width: 40%;
             padding-left: 8px;
             font-weight: 600;
             font-size: 14px;
             text-align: left;
+        };
+        tbody tr td:first-child {
+            border-radius: 5px 5px 0 0
+        };
+        tbody tr td:last-child {
+            border-radius: 0 0 5px 5px
         };
         .td-container {
             padding-left: 65%;

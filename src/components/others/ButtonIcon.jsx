@@ -1,7 +1,10 @@
 import styled from "styled-components";
 import { BiEdit, BiTrash } from "react-icons/bi";
-import { IoMdPersonAdd } from "react-icons/io";
+import { IoMdPersonAdd, IoMdAdd } from "react-icons/io";
 import { CgClose } from "react-icons/cg";
+import { SiPluscodes } from "react-icons/si";
+import { RiAddCircleLine } from "react-icons/ri";
+import { GoPlus } from "react-icons/go";
 
 const DivButtonIconStyled = styled.div `
     width: 20px;
@@ -17,6 +20,9 @@ const DivButtonIconStyled = styled.div `
     };
     &.delete {
         color: #bb3345;
+    };
+    &.plus {
+        color: #ced922;
     };
     &.add {
         color: #ced922;
@@ -49,7 +55,7 @@ const ButtonIcon = {
     Add: ({action}) => {
         return (
             <DivButtonIconStyled onClick={action} className="add">
-                <IoMdPersonAdd/>
+                <GoPlus/>
             </DivButtonIconStyled>
         );
     },
@@ -57,6 +63,13 @@ const ButtonIcon = {
         return (
             <DivButtonIconStyled onClick={action} className="close">
                 <CgClose/>
+            </DivButtonIconStyled>
+        );
+    },
+    Plus: ({action}) => {
+        return (
+            <DivButtonIconStyled onClick={action} className="plus">
+                <GoPlus/>
             </DivButtonIconStyled>
         );
     },

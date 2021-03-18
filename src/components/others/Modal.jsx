@@ -21,7 +21,7 @@ const Container = styled.div `
         width: 500px;
         position: relative;
         background: #dddd;
-        border-radius: 3px;
+        border-radius: 5px;
     };
     &.open {
         display: flex;

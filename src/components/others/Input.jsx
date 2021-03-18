@@ -10,18 +10,19 @@ const DivInputStyled = styled.div `
         padding: 3px;
         cursor: pointer; 
     };
+
     input {
         width: 100%;
         background: #fff;
         border: 3px solid transparent;
-        border-radius: 3px;
+        border-radius: 5px;
         height: 45px;
         line-height: 45px;
         padding: 0 40px 0 10px;
         transition: .3s ease all;
+        outline: none;
         &:focus {
             border: 3px solid #0e70b8;
-            outline: none;
             box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
         };
     };
