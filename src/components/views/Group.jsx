@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios'
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/listHelper';
 
 const Group = () => {
     const [championships, setChampionships] = useState([]);
@@ -19,16 +19,21 @@ const Group = () => {
 
     const [isOpenModal, openModal, closeModal] = useModal();
 
-    /*USEEFFECT ####################################################################################*/ 
+    /*USEEFFECT ####################################################################################*/
     useEffect(() => {
         fetchChampionships();
     }, []);
 
     useEffect(() => {
+        async function fetchGroups() {
+            const res = await getList("group/" + currentChampionshipId);
+            setGroups(res);
+        };
         fetchGroups();
-    }, [currentChampionshipId]);
+    }, [currentChampionshipId]); 
 
-    /*VALIDATIONS ####################################################################################*/ 
+
+    /*VALIDATIONS ####################################################################################*/
     const schema = Yup.object().shape({
         name: Yup.string().required('Required'),
         championship_id: Yup.string().required('Required')
@@ -50,7 +55,7 @@ const Group = () => {
         fetchGroups();
     };
 
-    /*CRUD ###########################################################################################*/ 
+    /*CRUD ###########################################################################################*/
     const fetchChampionships = async () => {
         const res = await getList("championship");
         setChampionships(res);
@@ -88,11 +93,11 @@ const Group = () => {
 
     return (
         <Container.Primary>
-            
+
             <Modal isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title={currentGroupId === 0 ? 'New Group' : 'Update Group'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Button.Primary action={handleSubmit(addGroup)}>Save</Button.Primary>   
+                    <Button.Primary action={handleSubmit(addGroup)}>Save</Button.Primary>
                 </Card.Primary>
             </Modal>
 
