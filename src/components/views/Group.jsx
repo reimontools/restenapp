@@ -27,16 +27,24 @@ const Group = () => {
 
     /*USEEFFECT ####################################################################################*/
     useEffect(() => {
+        async function fetchChampionships() {
+            const res = await getList("championship/active");
+            setChampionships(res);
+        };
         fetchChampionships();
     }, []);
 
-    useEffect(() => {
-        async function fetchGroups() {
-            const res = await getList("group/" + currentChampionshipId);
-            setGroups(res);
-        };
-        fetchGroups();
-    }, [currentChampionshipId]); 
+    // useEffect(() => {
+    //     fetchChampionships();
+    // }, []);
+
+    // useEffect(() => {
+    //     async function fetchGroups() {
+    //         const res = await getList("group/" + currentChampionshipId);
+    //         setGroups(res);
+    //     };
+    //     fetchGroups();
+    // }, [currentChampionshipId]); 
 
     const openGroup = (id) => {
         setGlobalGroupId(id);
@@ -61,19 +69,24 @@ const Group = () => {
     };
 
     const handleChampionshipOnChange = (id) => {
-        setCurrentChampionshipId(id);
-        fetchGroups();
+        // setCurrentChampionshipId(id);
+        fetchGroups(id);
     };
 
     /*CRUD ###########################################################################################*/
-    const fetchChampionships = async () => {
-        const res = await getList("championship/active");
-        setChampionships(res);
-        setCurrentChampionshipId(res[0]?.championship_id);
-    };
+    // const fetchChampionships = async () => {
+    //     const res = await getList("championship/active");
+    //     setChampionships(res);
+    //     setCurrentChampionshipId(res[0]?.championship_id);
+    // };
 
-    const fetchGroups = async () => {
-        const res = await getList("group/" + currentChampionshipId);
+    // const fetchGroups = async () => {
+    //     const res = await getList("group/" + currentChampionshipId);
+    //     setGroups(res);
+    // };
+
+    const fetchGroups = async (id) => {
+        const res = await getList("group/" + id);
         setGroups(res);
     };
 
