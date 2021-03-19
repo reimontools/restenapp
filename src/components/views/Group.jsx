@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext} from "react";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Container } from "../../component";
+import { Input, ButtonIcon, Modal, Button, Card, Select, Container, Loading } from "../../component";
 // import useList from '../../hooks/useList';
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -13,7 +13,7 @@ import { AppContext } from "../../store/AppProvider";
 
 const Group = () => {
     const [championships, setChampionships] = useState([]);
-    // const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
 
     const [groups, setGroups] = useState([]);
     const [currentGroupId, setCurrentGroupId] = useState(0);
@@ -25,26 +25,18 @@ const Group = () => {
     const { setGlobalGroupId } = useContext(AppContext);
     const history = useHistory();
 
+    const [loading, setLoading] = useState(true);
+
     /*USEEFFECT ####################################################################################*/
     useEffect(() => {
         async function fetchChampionships() {
             const res = await getList("championship/active");
             setChampionships(res);
+            fetchGroups(res[0].championship_id);
+            setCurrentChampionshipId(res[0].championship_id);
         };
         fetchChampionships();
     }, []);
-
-    // useEffect(() => {
-    //     fetchChampionships();
-    // }, []);
-
-    // useEffect(() => {
-    //     async function fetchGroups() {
-    //         const res = await getList("group/" + currentChampionshipId);
-    //         setGroups(res);
-    //     };
-    //     fetchGroups();
-    // }, [currentChampionshipId]); 
 
     const openGroup = (id) => {
         setGlobalGroupId(id);
@@ -69,25 +61,16 @@ const Group = () => {
     };
 
     const handleChampionshipOnChange = (id) => {
-        // setCurrentChampionshipId(id);
+        setCurrentChampionshipId(id);
         fetchGroups(id);
     };
 
     /*CRUD ###########################################################################################*/
-    // const fetchChampionships = async () => {
-    //     const res = await getList("championship/active");
-    //     setChampionships(res);
-    //     setCurrentChampionshipId(res[0]?.championship_id);
-    // };
-
-    // const fetchGroups = async () => {
-    //     const res = await getList("group/" + currentChampionshipId);
-    //     setGroups(res);
-    // };
-
     const fetchGroups = async (id) => {
+        setLoading(true);
         const res = await getList("group/" + id);
         setGroups(res);
+        setLoading(false);
     };
 
     const addGroup = async data => {
@@ -97,7 +80,7 @@ const Group = () => {
             switch(res.data.result[0][0].cod) {
                 case 0:
                     // alert('registrado correctamente!');
-                    fetchGroups();
+                    fetchGroups(currentChampionshipId);
                     closeModal();
                     break;
                 case 1:
@@ -119,7 +102,7 @@ const Group = () => {
         try {
             const res = await axios.put("group/" + group_id);
             if (!res.data.error) {
-                fetchGroups();
+                fetchGroups(currentChampionshipId);
             };
         } catch (err) {
             console.log(err);
@@ -141,19 +124,23 @@ const Group = () => {
                 {championships[0] && <ButtonIcon.Add action={() => openForm(defaultData)}/>}
             </div>
 
-            <div className="card-container">
-                {groups.map(group => (
-                    <div className="card" key={group.group_id}>
-                        <div className="text-container" onClick={() => openGroup(group.group_id)}>
-                            {group.name}
+            {loading 
+                ? <Loading/>
+                : 
+                <div className="card-container">
+                    {groups.map(group => (
+                        <div className="card" key={group.group_id}>
+                            <div className="text-container" onClick={() => openGroup(group.group_id)}>
+                                {group.name}
+                            </div>
+                            <div className="icon-container">
+                                <ButtonIcon.Update action={() => openForm(group)} />
+                                <ButtonIcon.Delete action={() => staGroup(group.group_id)}/>
+                            </div>
                         </div>
-                        <div className="icon-container">
-                            <ButtonIcon.Update action={() => openForm(group)} />
-                            <ButtonIcon.Delete action={() => staGroup(group.group_id)}/>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            }
         </Container.Primary>
     );
 };

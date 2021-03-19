@@ -20,3 +20,4 @@ export {default as Button} from "./components/others/Button";
 export {default as ButtonIcon} from "./components/others/ButtonIcon";
 export {default as Table} from "./components/others/Table";
 export {default as Container} from "./components/others/Container";
+export {default as Loading} from "./components/others/Loading";
