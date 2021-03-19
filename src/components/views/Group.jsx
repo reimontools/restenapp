@@ -13,7 +13,7 @@ import { AppContext } from "../../store/AppProvider";
 
 const Group = () => {
     const [championships, setChampionships] = useState([]);
-    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    // const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
 
     const [groups, setGroups] = useState([]);
     const [currentGroupId, setCurrentGroupId] = useState(0);
