@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BiEdit, BiTrash } from "react-icons/bi";
-// import { IoMdPersonAdd, IoMdAdd } from "react-icons/io";
+import { IoMdPersonAdd } from "react-icons/io";
 import { CgClose } from "react-icons/cg";
 // import { SiPluscodes } from "react-icons/si";
 // import { RiAddCircleLine } from "react-icons/ri";
@@ -56,6 +56,13 @@ const ButtonIcon = {
         return (
             <DivButtonIconStyled onClick={action} className="add">
                 <GoPlus/>
+            </DivButtonIconStyled>
+        );
+    },
+    AddPerson: ({action}) => {
+        return (
+            <DivButtonIconStyled onClick={action} className="add">
+                <IoMdPersonAdd/>
             </DivButtonIconStyled>
         );
     },

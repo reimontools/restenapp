@@ -4,8 +4,10 @@ const DivInputStyled = styled.div `
     margin: 10px 0 10px 0;
     width: 100%;
     color: #222;
+    
     label {
-        display: block;
+        position: absolute;
+            top: -10px;
         font-weight: 600;
         padding: 3px;
         cursor: pointer; 
@@ -37,6 +39,51 @@ const DivInputStyled = styled.div `
     };
 `;
 
+const DivCheckStyled = styled.div `
+    display: flex;
+    align-items: center; 
+    justify-content: flex-end;
+
+    input {
+        position: absolute;
+        left: 9999px;
+        
+        &:checked + label:after {
+            transform: scale(1);
+        };
+    };
+    
+    label {
+        font-size: 14px;
+        cursor: pointer;
+        position: relative;
+        
+        &:before {
+            content: '';
+            background-color: #0e70b8;
+            border: 1px solid #0e70b8;
+            border-radius: 3px;
+            display: inline-block;
+            position: absolute;
+            left: -18px;
+            bottom: 1px;
+            width: 14px;
+            height: 14px;
+        };
+
+        &:after {
+            content: '✔';
+            color: white;
+            border-radius: 3px;
+            display: inline-block;
+            position: absolute;
+            left: -16px;
+            bottom: 1px;
+            transform: scale(0);
+        };
+    };
+`;
+
 const Input = {
     TextValidation: ({register, label, error, ...inputTextProps}) => {
         return (
@@ -52,9 +99,10 @@ const Input = {
             </DivInputStyled>
         );
     },
-    TextAction: ({action, ...inputTextProps}) => {
+    TextAction: ({label, action, ...inputTextProps}) => {
         return (
             <DivInputStyled>
+                {label && <label>{label}</label>}
                 <input 
                     type="text"
                     autoComplete="off"
@@ -62,6 +110,19 @@ const Input = {
                     onChange={e => action(e.target.value)}
                 />
             </DivInputStyled>
+        );
+    },
+    Check: ({register, text, ...inputTextProps}) => {
+        return (
+            <DivCheckStyled>
+                <input 
+                    type="checkbox"
+                    id="checkbox"
+                    {...inputTextProps}
+                    ref={register}
+                />
+                <label htmlFor="checkbox">{text}</label>
+            </DivCheckStyled>
         );
     }
 };

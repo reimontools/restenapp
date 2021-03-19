@@ -5,7 +5,8 @@ const DivSelectStyled = styled.div `
     width: 100%;
     color: #222;
     label {
-        display: block;
+        position: absolute;
+            top: -10px;
         font-weight: 600;
         padding: 3px;
         cursor: pointer; 
@@ -57,17 +58,15 @@ const Select = {
     },
     OnChange: ({register, label, content, action, ...inputTextProps}) => {
         return (
-            <>
-                {/* {label && <label>{label}</label>} */}
-                <DivSelectStyled>
-                    <select 
-                        ref={register}
-                        onChange={e => action(e.target.value)}
-                        {...inputTextProps}>
-                            {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
-                    </select>
-                </DivSelectStyled>
-            </>
+            <DivSelectStyled>
+                {label && <label>{label}</label>}
+                <select 
+                    ref={register}
+                    onChange={e => action(e.target.value)}
+                    {...inputTextProps}>
+                        {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                </select>
+            </DivSelectStyled>
         );
     }
 };

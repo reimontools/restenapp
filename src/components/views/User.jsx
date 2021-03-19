@@ -15,15 +15,16 @@ const User = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-    const defaultData = {user_id: 0, name: '', surname: '', email: '', birth_date: '', user_type_id: '1'};
+    const defaultData = {user_id: 0, name: '', surname: '', gender: 'F',  email: '', birth_date: '', user_type_id: '3'};
+    const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
         surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        email: Yup.string().email("Invalid format").required('Required'),
+        email: Yup.string().email("Invalid format"),
         birth_date: Yup.string().required('Required'),
-        user_type_id: Yup.string().required('Required')
+        // user_type_id: Yup.string().required('Required')
     });
 
     const { register, handleSubmit, errors, reset } = useForm({
@@ -49,7 +50,6 @@ const User = () => {
             const res = await axios.post("user", {user_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
-                    alert('registrado correctamente!');
                     fetchUsers();
                     closeModal();
                     break;
@@ -83,16 +83,17 @@ const User = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <Modal isOpen={isOpenModal} closeModal={closeModal}>
+            <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title="User">
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
+                    <Select.TextValidation name="gender" type="select" register={register} error={errors.user_type_id} content={genders} />
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
                     <Input.TextValidation name="birth_date" placeholder="2013/07/15" register={register} error={errors.birth_date}/>
                     <Select.TextValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
                     <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
                 </Card.Primary>
-            </Modal>
+            </Modal.ForForm>
 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />

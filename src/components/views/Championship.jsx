@@ -14,7 +14,7 @@ const Championship = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-    const defaultData = {championship_id: 0, name: ''};
+    const defaultData = {championship_id: 0, name: '', state: 0};
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
@@ -44,7 +44,6 @@ const Championship = () => {
             const res = await axios.post("championship", {championship_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
-                    alert('registrado correctamente!');
                     fetchChampionship();
                     closeModal();
                     break;
@@ -78,15 +77,16 @@ const Championship = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <Modal isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title="Championship">
+            <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
+                <Card.Primary title={currentID === 0 ? 'New Championship' : 'Update Championship'}>
                     <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
-                    <Button.Primary action={handleSubmit(addChampionship)}>Save</Button.Primary>   
+                    {currentID !== 0 && <Input.Check name="state" text="Finished?" register={register} />}
+                    <Button.Primary action={handleSubmit(addChampionship)}>Save</Button.Primary>  
                 </Card.Primary>
-            </Modal>
+            </Modal.ForForm>
 
             <div className="search-container">
-                <Input.TextAction name="search" placeholder="Look for a championship..." value={searchTerm} action={setSearchTerm} />
+                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 <ButtonIcon.Add action={() => openForm(defaultData)}/>
             </div>
 
@@ -94,6 +94,7 @@ const Championship = () => {
                 <thead>
                     <tr>
                         <th>Championship</th>
+                        <th>State</th>
                         <th>Created</th>
                         <th>Actions</th>
                     </tr>
@@ -102,15 +103,16 @@ const Championship = () => {
                     {championships.filter(val => {
                         if(searchTerm === "") {
                             return val;
-                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
                             return val;
                         };
                         return null;
                     }).map(championship => (
                         <tr key={championship.championship_id}>
                             <td data-label='Championship'>{championship.name}</td>
-                            <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD [at] h:mm a') }</td>
-                            <td data-label='Actions'>
+                            <td data-label='State' className={championship.state === 0 ? 'active' : ''}>{championship.state_name} {championship.state === 0 && '✔'}</td>
+                            <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
+                            <td data-label=''>
                                 <div className="td-container">
                                     <ButtonIcon.Update action={() => openForm(championship)} />
                                     <ButtonIcon.Delete action={() => staChampionship(championship.championship_id)} />

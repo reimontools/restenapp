@@ -4,6 +4,7 @@ export {default as Routes} from "./components/Routes";
 export {default as Home} from "./components/views/Home";
 export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
+export {default as GroupAdmin} from "./components/views/GroupAdmin";
 export {default as Championship} from "./components/views/Championship";
 
 export {default as NavBar} from "./components/header/NavBar";

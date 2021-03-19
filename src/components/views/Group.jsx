@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useContext} from "react";
 import { Input, ButtonIcon, Modal, Button, Card, Select, Container } from "../../component";
 // import useList from '../../hooks/useList';
 import { useForm } from "react-hook-form";
@@ -7,6 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios'
 import { getList } from '../../helpers/listHelper';
+
+import { useHistory } from 'react-router-dom'
+import { AppContext } from "../../store/AppProvider";
 
 const Group = () => {
     const [championships, setChampionships] = useState([]);
@@ -18,6 +21,9 @@ const Group = () => {
     const defaultData = {group_id: 0, name: ''};
 
     const [isOpenModal, openModal, closeModal] = useModal();
+
+    const { setGlobalGroupId } = useContext(AppContext);
+    const history = useHistory();
 
     /*USEEFFECT ####################################################################################*/
     useEffect(() => {
@@ -32,6 +38,10 @@ const Group = () => {
         fetchGroups();
     }, [currentChampionshipId]); 
 
+    const openGroup = (id) => {
+        setGlobalGroupId(id);
+        history.push('/admin');
+    };
 
     /*VALIDATIONS ####################################################################################*/
     const schema = Yup.object().shape({
@@ -57,7 +67,7 @@ const Group = () => {
 
     /*CRUD ###########################################################################################*/
     const fetchChampionships = async () => {
-        const res = await getList("championship");
+        const res = await getList("championship/active");
         setChampionships(res);
         setCurrentChampionshipId(res[0]?.championship_id);
     };
@@ -73,8 +83,9 @@ const Group = () => {
             const res = await axios.post("group", {group_id: currentGroupId, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
-                    alert('registrado correctamente!');
+                    // alert('registrado correctamente!');
                     fetchGroups();
+                    closeModal();
                     break;
                 case 1:
                     alert('Ya existe!');
@@ -91,30 +102,41 @@ const Group = () => {
         };
     };
 
+    const staGroup = async (group_id) => {
+        try {
+            const res = await axios.put("group/" + group_id);
+            if (!res.data.error) {
+                fetchGroups();
+            };
+        } catch (err) {
+            console.log(err);
+        };
+    };
+
     return (
         <Container.Primary>
 
-            <Modal isOpen={isOpenModal} closeModal={closeModal}>
+            <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title={currentGroupId === 0 ? 'New Group' : 'Update Group'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Button.Primary action={handleSubmit(addGroup)}>Save</Button.Primary>
                 </Card.Primary>
-            </Modal>
+            </Modal.ForForm>
 
             <div className="search-container">
-                <Select.OnChange name="championship_id" label="Choose a Championship" register={register} content={championships} action={handleChampionshipOnChange} />
+                <Select.OnChange name="championship_id" register={register} content={championships} action={handleChampionshipOnChange} />
                 {championships[0] && <ButtonIcon.Add action={() => openForm(defaultData)}/>}
             </div>
 
             <div className="card-container">
                 {groups.map(group => (
                     <div className="card" key={group.group_id}>
-                        <div className="text-container">
+                        <div className="text-container" onClick={() => openGroup(group.group_id)}>
                             {group.name}
                         </div>
                         <div className="icon-container">
                             <ButtonIcon.Update action={() => openForm(group)} />
-                            <ButtonIcon.Delete />
+                            <ButtonIcon.Delete action={() => staGroup(group.group_id)}/>
                         </div>
                     </div>
                 ))}

@@ -29,7 +29,13 @@ const TableStyled = styled.div `
         font-weight: normal;
         letter-spacing: 0.35px;
         padding: 8px;
-        text-align: center;        
+        text-align: center;   
+        &.active {
+            color: green;
+        };
+        &.finished {
+            color: blue;
+        };
     };
     .td-container {
         display: flex;
@@ -65,6 +71,7 @@ const TableStyled = styled.div `
             position: absolute;
             left: 0;
             width: 40%;
+            color: #222;
             padding-left: 8px;
             font-weight: 600;
             font-size: 14px;
