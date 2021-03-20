@@ -1,31 +1,29 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Table, Container } from "../../component";
+import { Input, ButtonIcon, Modal, Button, Card, Select, Table, Container, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
-import useList from '../../hooks/useList';
 import moment from 'moment';
 
-const User = () => {
-    useEffect(() => fetchUsers(), []);
-    const [users, setUsers] = useState([]);
-    const userTypes = useList("list/user-type");
+const Player = () => {
+    useEffect(() => fetchPlayers(), []);
+    const [players, setPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-    const defaultData = {user_id: 0, name: '', surname: '', gender: 'F',  email: '', birth_date: '', user_type_id: '3'};
+    const defaultData = {player_id: 0, name: '', surname: '', gender: 'F', birth_date: ''};
     const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
+    const [loading, setLoading] = useState(true);
 
-    console.log(users);
+    console.log(players);
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
         surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        email: Yup.string().email("Invalid format"),
         birth_date: Yup
             .date()
             .nullable()
@@ -40,25 +38,27 @@ const User = () => {
         resolver: yupResolver(schema)
     });
 
-    const openForm = user => {
-        setCurrentID(user.user_id);
-        reset(user);
+    const openForm = player => {
+        setCurrentID(player.player_id);
+        reset(player);
         openModal();
     };
 
     /*CRUD ###########################################################################################*/ 
-    const fetchUsers = async () => {
-        const users = await getList("user");
-        setUsers(users);
+    const fetchPlayers = async () => {
+        setLoading(true);
+        const res = await getList("player");
+        setPlayers(res);
+        setLoading(false);
     };
 
-    const addUser = async data => {
-        console.log('Antes de guardar', {user_id: currentID, ...data});
+    const addPlayer = async data => {
+        console.log('Antes de guardar', {player_id: currentID, ...data});
         try {
-            const res = await axios.post("user", {user_id: currentID, ...data});
+            const res = await axios.post("player", {player_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
-                    fetchUsers();
+                    fetchPlayers();
                     closeModal();
                     break;
                 case 1:
@@ -76,12 +76,12 @@ const User = () => {
         };
     };
     
-    const staUser = async (user_id) => {
+    const staPlayer = async (player_id) => {
         try {
-            const res = await axios.put("user/" + user_id);
+            const res = await axios.put("player/" + player_id);
             if (!res.data.error) {
                 alert('Inactivado!');
-                fetchUsers();
+                fetchPlayers();
             };
         } catch (err) {
             console.log(err);
@@ -91,16 +91,13 @@ const User = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title="User">
+                <Card.Primary title={currentID === 0 ? 'New Player' : 'Update Player'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.TextValidation name="gender" type="select" register={register} error={errors.user_type_id} content={genders} />
-                    <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
+                    <Select.TextValidation name="gender" type="select" register={register} error={errors.gender} content={genders} />
                     <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Select.TextValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
-                    <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
+                    <Button.Primary action={handleSubmit(addPlayer)}>Save</Button.Primary>   
                 </Card.Primary>
             </Modal.ForForm>
 
@@ -109,42 +106,43 @@ const User = () => {
                 <ButtonIcon.Add action={() => openForm(defaultData)}/>
             </div>
 
-            <Table.Primary>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Rol</th>
-                        <th>Age</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.filter(val => {
-                        if(searchTerm === "") {
-                            return val;
-                        } else if (val.user_fullname.toLowerCase().includes(searchTerm.toLowerCase()) || val.user_type_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                            return val;
-                        };
-                        return null;
-                    }).map(user => (
-                        <tr key={user.user_id}>
-                            <td data-label='Name'>{user.name}</td>
-                            <td data-label='Surname'>{user.surname}</td>
-                            <td data-label='Rol'>{user.user_type_name}</td>
-                            <td data-label='Age'>{user.user_age}</td>
-                            <td data-label='Actions'>
-                                <div className="td-container">
-                                    <ButtonIcon.Update action={() => openForm(user)} />
-                                    <ButtonIcon.Delete action={() => staUser(user.user_id)} />
-                                </div>
-                            </td>
+            {loading 
+                ? <Loading/>
+                : <Table.Primary>
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table.Primary>
+                    </thead>
+                    <tbody>
+                        {players.filter(val => {
+                            if(searchTerm === "") {
+                                return val;
+                            } else if (val.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                return val;
+                            };
+                            return null;
+                        }).map(player => (
+                            <tr key={player.player_id}>
+                                <td data-label='Full Name'>{player.player_fullname}</td>
+                                <td data-label='Gender'>{player.gender}</td>
+                                <td data-label='Age'>{player.player_age}</td>
+                                <td data-label='Actions'>
+                                    <div className="td-container">
+                                        <ButtonIcon.Update action={() => openForm(player)} />
+                                        <ButtonIcon.Delete action={() => staPlayer(player.player_id)} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table.Primary>
+            }
         </Container.Primary>
     );
 };
 
-export default User;
+export default Player;

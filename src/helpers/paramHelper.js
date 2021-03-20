@@ -13,7 +13,7 @@ export const NAV_ELEMENTS = [
         path: '/championship'
     },
     {
-        title: 'User',
-        path: '/user'
+        title: 'Players',
+        path: '/player'
     }
 ];

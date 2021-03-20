@@ -126,8 +126,7 @@ const Group = () => {
 
             {loading 
                 ? <Loading/>
-                : 
-                <div className="card-container">
+                : <div className="card-container">
                     {groups.map(group => (
                         <div className="card" key={group.group_id}>
                             <div className="text-container" onClick={() => openGroup(group.group_id)}>

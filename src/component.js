@@ -2,7 +2,7 @@ export {default as App} from "./components/App";
 export {default as Routes} from "./components/Routes";
 
 export {default as Home} from "./components/views/Home";
-export {default as User} from "./components/views/User";
+export {default as Player} from "./components/views/Player";
 export {default as Group} from "./components/views/Group";
 export {default as GroupAdmin} from "./components/views/GroupAdmin";
 export {default as Championship} from "./components/views/Championship";
