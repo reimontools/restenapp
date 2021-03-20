@@ -4,7 +4,7 @@ const DivInputStyled = styled.div `
     margin: 10px 0 10px 0;
     width: 100%;
     color: #222;
-    
+
     label {
         position: absolute;
             top: -10px;
@@ -20,7 +20,7 @@ const DivInputStyled = styled.div `
         border-radius: 5px;
         height: 45px;
         line-height: 45px;
-        padding: 0 40px 0 10px;
+        padding: 0 10px 0 10px;
         transition: .3s ease all;
         outline: none;
         &:focus {
@@ -28,6 +28,7 @@ const DivInputStyled = styled.div `
             box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
         };
     };
+
     p {
         font-size: 10px;
         font-weight: 600;
@@ -37,6 +38,7 @@ const DivInputStyled = styled.div `
         padding-top: 1px;
         padding-right: 5px;
     };
+
 `;
 
 const DivCheckStyled = styled.div `
@@ -99,6 +101,21 @@ const Input = {
             </DivInputStyled>
         );
     },
+
+    DateValidation: ({register, label, error, ...inputTextProps}) => {
+        return (
+            <DivInputStyled>
+                {label && <label>{label}</label>}
+                <input 
+                    type="date"
+                    {...inputTextProps}
+                    ref={register}
+                />
+                {error && <p>{error.message}</p>}
+            </DivInputStyled>
+        );
+    },
+
     TextAction: ({label, action, ...inputTextProps}) => {
         return (
             <DivInputStyled>
@@ -112,6 +129,7 @@ const Input = {
             </DivInputStyled>
         );
     },
+
     Check: ({register, text, ...inputTextProps}) => {
         return (
             <DivCheckStyled>

@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
 import useList from '../../hooks/useList';
+import moment from 'moment';
 
 const User = () => {
     useEffect(() => fetchUsers(), []);
@@ -18,13 +19,20 @@ const User = () => {
     const defaultData = {user_id: 0, name: '', surname: '', gender: 'F',  email: '', birth_date: '', user_type_id: '3'};
     const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
 
+    console.log(users);
+
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
         surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
         email: Yup.string().email("Invalid format"),
-        birth_date: Yup.string().required('Required'),
-        // user_type_id: Yup.string().required('Required')
+        birth_date: Yup
+            .date()
+            .nullable()
+            .transform((curr, orig) => orig === '' ? null : curr)
+            .max(moment().subtract(2, 'years').calendar(), "Too young")
+            .min(moment().subtract(70, 'years').calendar(), "Too old")
+            .required('Required')
     });
 
     const { register, handleSubmit, errors, reset } = useForm({
@@ -45,7 +53,7 @@ const User = () => {
     };
 
     const addUser = async data => {
-        // console.log('Antes de guardar', {user_id: currentID, ...data});
+        console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
             const res = await axios.post("user", {user_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
@@ -83,13 +91,14 @@ const User = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
+            
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title="User">
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
                     <Select.TextValidation name="gender" type="select" register={register} error={errors.user_type_id} content={genders} />
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
-                    <Input.TextValidation name="birth_date" placeholder="2013/07/15" register={register} error={errors.birth_date}/>
+                    <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
                     <Select.TextValidation name="user_type_id" type="select" register={register} error={errors.user_type_id} content={userTypes} />
                     <Button.Primary action={handleSubmit(addUser)}>Save</Button.Primary>   
                 </Card.Primary>
@@ -106,6 +115,7 @@ const User = () => {
                         <th>Name</th>
                         <th>Surname</th>
                         <th>Rol</th>
+                        <th>Age</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -122,6 +132,7 @@ const User = () => {
                             <td data-label='Name'>{user.name}</td>
                             <td data-label='Surname'>{user.surname}</td>
                             <td data-label='Rol'>{user.user_type_name}</td>
+                            <td data-label='Age'>{user.user_age}</td>
                             <td data-label='Actions'>
                                 <div className="td-container">
                                     <ButtonIcon.Update action={() => openForm(user)} />
