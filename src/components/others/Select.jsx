@@ -39,18 +39,27 @@ const DivSelectStyled = styled.div `
 `;
 
 const Select = {
+    Basic: ({label, content, action, ...inputTextProps}) => {
+        return (
+            <DivSelectStyled>
+                {label && <label>{label}</label>}
+                <select 
+                    onChange={e => action(e)}
+                    {...inputTextProps}>
+                        {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                </select>
+            </DivSelectStyled>
+        );
+    },
     TextValidation: ({register, label, error, content, ...inputTextProps}) => {
         return (
             <DivSelectStyled>
                 {label && <label>{label}</label>}
                 <select 
-                    type="text"
-                    autoComplete="off"
-                    {...inputTextProps}
-                    ref={register}>
-                        {/* <option hidden value="">Select one...</option> */}
-                        {/* {content.map(e => (<option key={e.user_type_id} value={e.user_type_id}>{e.name}</option>))} */}
+                    ref={register}
+                    {...inputTextProps}>
                         {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                        {/* <option hidden value="">Select one...</option> */}
                 </select>
                 {error && <p>{error.message}</p>}
             </DivSelectStyled>

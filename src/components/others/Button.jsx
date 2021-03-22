@@ -1,34 +1,43 @@
+import { MEDIUM_SCREEN_SIZE_PX, getColorByFamily } from "../../helpers/paramHelper";
 import styled from "styled-components";
 
-const ButtonStyled = styled.button `
-    height: 45px;
-    line-height: 45px;
-    width: 100%;
-    background: #0e70b8;
+const DivButtonStyled = styled.button `
+    cursor: pointer;
+    margin: ${({ margin }) => margin ? margin : '0'};
+    padding: 5px;
+    height: ${({ height }) => height ? height : '45px'};
+    background: ${({ family }) => getColorByFamily(family)};
+    width: ${({ fit }) => fit ? 'auto' : '100%'};
+    font-size: ${({ size }) => size ? size : '16px'};
     color: #fff;
-    font-size: 16px;
     font-weight: 600;
     border: none;
+    outline: none;
     border-radius: 5px;
-    cursor: pointer;
     transition: .1s ease all;
-    margin: 10px 0 10px 0;
     &:hover {
-        outline: none;
+        transition: .1s ease all;
         box-shadow: 3px 0px 30px rgba(163, 163, 163, 1)
-    }
+    };
+    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        &:hover {
+            transform: none;
+            transition: none;
+        };
+    };
 `;
 
 const Button = {
-    Primary: ({action, ...buttonProps}) => {
+    Basic: ({action, ...props}) => {
         return (
-            <ButtonStyled 
-                type="button"
+            <DivButtonStyled 
+                type='button'
+                {...props}
                 onClick={action}
-                {...buttonProps}
             />
         );
     }
 };
 
 export default Button;
+

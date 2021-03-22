@@ -87,6 +87,20 @@ const DivCheckStyled = styled.div `
 `;
 
 const Input = {
+    Basic: ({label, action, ...inputTextProps}) => {
+        return (
+            <DivInputStyled>
+                {label && <label>{label}</label>}
+                <input 
+                    type="text"
+                    autoComplete="off"
+                    {...inputTextProps}
+                    onChange={e => action(e)}
+                />
+            </DivInputStyled>
+        );
+    },
+
     TextValidation: ({register, label, error, ...inputTextProps}) => {
         return (
             <DivInputStyled>

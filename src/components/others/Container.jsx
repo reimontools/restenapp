@@ -1,6 +1,17 @@
 import styled from "styled-components";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
+const ContainerRightStyled = styled.div `
+    display: flex;
+    align-items: center; 
+    justify-content: flex-end;
+    width: 100%;
+`;
+
+const ContainerTableStyled = styled.div `
+    width: 90%;
+`;
+
 const ContainerStyled = styled.div `
     display: flex;
     flex-direction: column;
@@ -68,6 +79,20 @@ const Container = {
             <ContainerStyled>
                 {children}
             </ContainerStyled>
+        );
+    },
+    Right: ({children}) => {
+        return (
+            <ContainerRightStyled>
+                {children}
+            </ContainerRightStyled>
+        );
+    },
+    Table: ({children}) => {
+        return (
+            <ContainerTableStyled>
+                {children}
+            </ContainerTableStyled>
         );
     }
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext} from "react";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Container, Loading } from "../../component";
+import { Input, Icon, Modal, Button, Card, Select, Container, Loading } from "../../component";
 // import useList from '../../hooks/useList';
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -115,13 +115,13 @@ const Group = () => {
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title={currentGroupId === 0 ? 'New Group' : 'Update Group'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Button.Primary action={handleSubmit(addGroup)}>Save</Button.Primary>
+                    <Button.Basic action={handleSubmit(addGroup)}>Save</Button.Basic>
                 </Card.Primary>
             </Modal.ForForm>
 
             <div className="search-container">
                 <Select.OnChange name="championship_id" register={register} content={championships} action={handleChampionshipOnChange} />
-                {championships[0] && <ButtonIcon.Add action={() => openForm(defaultData)}/>}
+                {championships[0] && <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>}
             </div>
 
             {loading 
@@ -133,8 +133,8 @@ const Group = () => {
                                 {group.name}
                             </div>
                             <div className="icon-container">
-                                <ButtonIcon.Update action={() => openForm(group)} />
-                                <ButtonIcon.Delete action={() => staGroup(group.group_id)}/>
+                                <Icon.Basic family="edit" action={() => openForm(group)} hover/>
+                                <Icon.Basic family="delete" action={() => staGroup(group.group_id)} hover/>
                             </div>
                         </div>
                     ))}

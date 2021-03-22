@@ -1,3 +1,15 @@
+import { BiEdit } from "react-icons/bi";
+import { GoPlus } from "react-icons/go";
+import { MdClose } from "react-icons/md";
+import { RiAliensLine } from "react-icons/ri";
+import { BiTrash } from "react-icons/bi";
+import { IoMdPersonAdd } from "react-icons/io";
+import { FaCheck } from "react-icons/fa";
+
+// import { CgClose } from "react-icons/cg";
+// import { SiPluscodes } from "react-icons/si";
+// import { RiAddCircleLine } from "react-icons/ri";
+
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
 export const SMALL_SCREEN_SIZE_PX = SMALL_SCREEN_SIZE + "px";
@@ -17,3 +29,31 @@ export const NAV_ELEMENTS = [
         path: '/player'
     }
 ];
+
+export const getColorByFamily = family => {
+    switch(family) {
+        case "close": return "#666666";
+        case "add": return "#ced922";
+        case "addPerson": return "#ced922";
+        case "check": return "#0e70b8";
+        case "edit": return "#0e70b8";
+        case "save": return "#0e70b8";
+        case "delete": return "#bb3345";
+        case "remove": return "#bb3345";
+        default: return "#0e70b8"
+    };
+};
+
+export const getIconByFamily = family => {
+    switch(family) {
+        case "close": return <MdClose />;
+        case "add": return <GoPlus />;
+        case "addPerson": return <IoMdPersonAdd />;
+        case "check": return <FaCheck />;
+        case "edit": return <BiEdit />;
+        case "save": return <IoMdPersonAdd />;
+        case "delete": return <BiTrash />;
+        case "remove": return <MdClose />;
+        default: return <RiAliensLine />
+    };
+};

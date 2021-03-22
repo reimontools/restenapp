@@ -1,12 +1,9 @@
 import styled from "styled-components";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
-const TableStyled = styled.div `
-   width: 90%;
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    };
+const TableStyled = styled.table `
+    width: 100%;
+    border-collapse: collapse;
     thead {
         background: #0e70b8;
     };
@@ -45,9 +42,7 @@ const TableStyled = styled.div `
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         color: #222;
-        table {
-            border-radius: 10px;
-        };
+        border-radius: 10px;
         thead {
             display: none;
         };
@@ -95,9 +90,7 @@ const Table = {
     Primary: ({children}) => {
         return (
             <TableStyled>
-                <table>
-                    {children}
-                </table>
+                {children}
             </TableStyled>
         );
     }

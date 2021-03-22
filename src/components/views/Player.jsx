@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, ButtonIcon, Modal, Button, Card, Select, Table, Container, Loading } from "../../component";
+import { Input, Icon, Modal, Button, Card, Select, Table, Container, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,12 +14,11 @@ const Player = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
+
     const defaultData = {player_id: 0, name: '', surname: '', gender: 'F', birth_date: ''};
     const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
     const [loading, setLoading] = useState(true);
-
-    console.log(players);
-
+    
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
@@ -88,6 +87,15 @@ const Player = () => {
         };
     };
 
+    function filPlayer(player) {
+        if(searchTerm === "") {
+            return player;
+        } else if (player.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return player;
+        };
+        return null;
+    };
+
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
@@ -97,49 +105,44 @@ const Player = () => {
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
                     <Select.TextValidation name="gender" type="select" register={register} error={errors.gender} content={genders} />
                     <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Primary action={handleSubmit(addPlayer)}>Save</Button.Primary>   
+                    <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
                 </Card.Primary>
             </Modal.ForForm>
 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <ButtonIcon.Add action={() => openForm(defaultData)}/>
+                <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>
             </div>
 
             {loading 
                 ? <Loading/>
-                : <Table.Primary>
-                    <thead>
-                        <tr>
-                            <th>Full Name</th>
-                            <th>Gender</th>
-                            <th>Age</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {players.filter(val => {
-                            if(searchTerm === "") {
-                                return val;
-                            } else if (val.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                return val;
-                            };
-                            return null;
-                        }).map(player => (
-                            <tr key={player.player_id}>
-                                <td data-label='Full Name'>{player.player_fullname}</td>
-                                <td data-label='Gender'>{player.gender}</td>
-                                <td data-label='Age'>{player.player_age}</td>
-                                <td data-label='Actions'>
-                                    <div className="td-container">
-                                        <ButtonIcon.Update action={() => openForm(player)} />
-                                        <ButtonIcon.Delete action={() => staPlayer(player.player_id)} />
-                                    </div>
-                                </td>
+                : <Container.Table>
+                    <Table.Primary>
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table.Primary>
+                        </thead>
+                        <tbody>
+                            {players.filter(filPlayer).map(player => (
+                                <tr key={player.player_id}>
+                                    <td data-label='Full Name'>{player.player_fullname}</td>
+                                    <td data-label='Gender'>{player.gender}</td>
+                                    <td data-label='Age'>{player.player_age}</td>
+                                    <td data-label='Actions'>
+                                        <div className="td-container">
+                                            <Icon.Basic family="edit" action={() => openForm(player)} hover/>
+                                            <Icon.Basic family="delete" action={() => staPlayer(player.player_id)} hover/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table.Primary>
+                </Container.Table>
             }
         </Container.Primary>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, ButtonIcon, Modal, Button, Card, Table, Container } from "../../component";
+import { Input, Modal, Button, Card, Table, Container, Icon } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -81,47 +81,48 @@ const Championship = () => {
                 <Card.Primary title={currentID === 0 ? 'New Championship' : 'Update Championship'}>
                     <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
                     {currentID !== 0 && <Input.Check name="state" text="Finished?" register={register} />}
-                    <Button.Primary action={handleSubmit(addChampionship)}>Save</Button.Primary>  
+                    <Button.Basic action={handleSubmit(addChampionship)}>Save</Button.Basic>
                 </Card.Primary>
             </Modal.ForForm>
 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <ButtonIcon.Add action={() => openForm(defaultData)}/>
+                <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>
             </div>
-
-            <Table.Primary>
-                <thead>
-                    <tr>
-                        <th>Championship</th>
-                        <th>State</th>
-                        <th>Created</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {championships.filter(val => {
-                        if(searchTerm === "") {
-                            return val;
-                        } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                            return val;
-                        };
-                        return null;
-                    }).map(championship => (
-                        <tr key={championship.championship_id}>
-                            <td data-label='Championship'>{championship.name}</td>
-                            <td data-label='State' className={championship.state === 0 ? 'active' : ''}>{championship.state_name} {championship.state === 0 && '✔'}</td>
-                            <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
-                            <td data-label=''>
-                                <div className="td-container">
-                                    <ButtonIcon.Update action={() => openForm(championship)} />
-                                    <ButtonIcon.Delete action={() => staChampionship(championship.championship_id)} />
-                                </div>
-                            </td>
+            <Container.Table>
+                <Table.Primary>
+                    <thead>
+                        <tr>
+                            <th>Championship</th>
+                            <th>State</th>
+                            <th>Created</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table.Primary>
+                    </thead>
+                    <tbody>
+                        {championships.filter(val => {
+                            if(searchTerm === "") {
+                                return val;
+                            } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                return val;
+                            };
+                            return null;
+                        }).map(championship => (
+                            <tr key={championship.championship_id}>
+                                <td data-label='Championship'>{championship.name}</td>
+                                <td data-label='State' className={championship.state === 0 ? 'active' : ''}>{championship.state_name} {championship.state === 0 && '✔'}</td>
+                                <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
+                                <td data-label=''>
+                                    <div className="td-container">
+                                        <Icon.Basic family="edit" action={() => openForm(championship)} hover/>
+                                        <Icon.Basic family="delete" action={() => staChampionship(championship.championship_id)} hover/>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table.Primary>
+            </Container.Table>
         </Container.Primary>
     );
 };
