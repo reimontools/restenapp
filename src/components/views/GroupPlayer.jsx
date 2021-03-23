@@ -1,32 +1,10 @@
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from "react";
 import { getList } from '../../helpers/listHelper';
-import styled from "styled-components";
-import { Input, Modal, Button, Card, Select, Table, Container, Icon, Loading } from "../../component";
+import { Input, Modal, Button, Select, Table, Container, Icon, Loading, Title } from "../../component";
 import useModal from "../../hooks/useModal";
 import useList from "../../hooks/useList";
 import axios from '../../config/axios'
-
-const DivTitle = styled.div `
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-`;
-
-const DivSelected = styled.div `
-    display: flex;
-    flex-wrap: wrap;
-    height: auto;
-    font-size: 11px;
-    margin: 10px 0 10px 0;
-    .item-container {
-        width: auto;
-        display: flex;
-        align-items: center;
-        border-radius: 5px;
-        padding: 2px;
-    }
-`;
 
 const GroupAdmin = () => {
     const { prm_group_id } = useParams();
@@ -40,6 +18,7 @@ const GroupAdmin = () => {
     const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
     const [playerSelected, setPlayerSelected] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hasFilter, setHasFilter] = useState(false);
 
     useEffect(() => {
         fetchGroup(prm_group_id);
@@ -156,10 +135,10 @@ const GroupAdmin = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <DivTitle>
+            <Title.Basic2>
                 <h2>{groupInfo?.championship_name}</h2>
                 <h1>{groupInfo?.name}</h1>
-            </DivTitle>
+            </Title.Basic2>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 <Icon.Basic family="addPerson" action={() => openFilter()} right="12px" hover/>
@@ -197,11 +176,20 @@ const GroupAdmin = () => {
                 </Container.Table>
             }
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title='Filter'>
-                    <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genders} action={handleSearchOptions}/>
-                    <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="All ages" action={handleSearchOptions}/>
-                    <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} action={handleSearchOptions}/>
-                    <DivSelected>
+                
+                <Container.Basic>
+                    <Title.Basic>
+                        Players
+                        <Icon.Basic family="search" action={() => setHasFilter(!hasFilter)} hover padding="0 0 0 5px" size="30px" />
+                    </Title.Basic>
+                    {hasFilter && 
+                        <>
+                            <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genders} action={handleSearchOptions}/>
+                            <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="All ages" action={handleSearchOptions}/>
+                            <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} action={handleSearchOptions}/>
+                        </>
+                    }
+                    <Container.Label>
                         {playerSelected.map(player => (
                             <div className="item-container" key={player.player_id}>
                                 <p>{player.player_fullname}</p>
@@ -209,7 +197,7 @@ const GroupAdmin = () => {
                             </div>
                         ))}
                         {playerSelected.length > 0 && <Button.Basic family="add" action={() => addGroupPlayer()} fit height="auto" size="11px" margin="0 0 0 15px">Ready</Button.Basic>}
-                    </DivSelected>
+                    </Container.Label>
                     <Table.Primary>
                         <thead>
                             <tr>
@@ -234,7 +222,7 @@ const GroupAdmin = () => {
                             ))}
                         </tbody>
                     </Table.Primary>
-                </Card.Primary>
+                </Container.Basic> 
             </Modal.ForForm>
         </Container.Primary>
     );

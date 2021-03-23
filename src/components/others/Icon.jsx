@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 const DivIconStyled = styled.div `
     cursor: pointer;
+    padding: ${({ padding }) => padding ? padding : '0'};
     width: ${({ size }) => size ? size : '20px'};
     height: ${({ size }) => size ? size : '20px'};
     font-size: ${({ size }) => size ? size : '20px'};

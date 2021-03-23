@@ -1,11 +1,24 @@
 import styled from "styled-components";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
-const ContainerRightStyled = styled.div `
-    display: flex;
-    align-items: center; 
-    justify-content: flex-end;
+const ContainerBasicStyled = styled.div `
     width: 100%;
+    padding: 10px;
+`;
+
+const ContainerLabelStyled = styled.div `
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    font-size: 11px;
+    margin: 10px 0 10px 0;
+    .item-container {
+        width: auto;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        padding: 2px;
+    }
 `;
 
 const ContainerTableStyled = styled.div `
@@ -81,11 +94,18 @@ const Container = {
             </ContainerStyled>
         );
     },
-    Right: ({children}) => {
+    Basic: ({children}) => {
         return (
-            <ContainerRightStyled>
+            <ContainerBasicStyled>
                 {children}
-            </ContainerRightStyled>
+            </ContainerBasicStyled>
+        );
+    },
+    Label: ({children}) => {
+        return (
+            <ContainerLabelStyled>
+                {children}
+            </ContainerLabelStyled>
         );
     },
     Table: ({children}) => {

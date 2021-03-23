@@ -4,8 +4,9 @@ import { MdClose } from "react-icons/md";
 import { RiAliensLine } from "react-icons/ri";
 import { BiTrash } from "react-icons/bi";
 import { IoMdPersonAdd } from "react-icons/io";
+// import { IoSearchCircle } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
-
+import { HiOutlineSearchCircle } from "react-icons/hi";
 // import { CgClose } from "react-icons/cg";
 // import { SiPluscodes } from "react-icons/si";
 // import { RiAddCircleLine } from "react-icons/ri";
@@ -44,6 +45,7 @@ export const getColorByFamily = family => {
         case "save": return "#0e70b8";
         case "delete": return "#bb3345";
         case "remove": return "#bb3345";
+        case "search": return "#0d5f1b";
         default: return "#0e70b8"
     };
 };
@@ -58,6 +60,7 @@ export const getIconByFamily = family => {
         case "save": return <IoMdPersonAdd />;
         case "delete": return <BiTrash />;
         case "remove": return <MdClose />;
+        case "search": return <HiOutlineSearchCircle />;
         default: return <RiAliensLine />
     };
 };

@@ -14,6 +14,7 @@ export {default as Header} from "./components/header/Header";
 export {default as Logo} from "./components/header/Logo";
 export {default as Burger} from "./components/header/Burger";
 export {default as Modal} from "./components/others/Modal";
+export {default as Title} from "./components/others/Title";
 
 export {default as Card} from "./components/others/Card";
 export {default as Input} from "./components/others/Input";

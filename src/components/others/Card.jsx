@@ -5,9 +5,9 @@ const CardStyled = styled.div `
     padding: 10px;
     div.card-head {
         width: 100%;
-        font-size: 15px;
-        color: rgb(55, 55, 55);
-        font-family: sundayBest;
+        /* font-size: 15px; */
+        /* color: rgb(55, 55, 55); */
+        /* font-family: sundayBest; */
         font-weight: 700;
         text-align: center;
     };
@@ -15,6 +15,7 @@ const CardStyled = styled.div `
         width: 100%;
     };
 `;
+
 
 const Card = {
     Primary: ({children, ...formTextProps}) => {
