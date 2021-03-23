@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext} from "react";
+import { useState, useEffect } from "react";
 import { Input, Icon, Modal, Button, Card, Select, Container, Loading } from "../../component";
 // import useList from '../../hooks/useList';
 import { useForm } from "react-hook-form";
@@ -9,7 +9,7 @@ import axios from '../../config/axios'
 import { getList } from '../../helpers/listHelper';
 
 import { useHistory } from 'react-router-dom'
-import { AppContext } from "../../store/AppProvider";
+// import { AppContext } from "../../store/AppProvider";
 
 const Group = () => {
     const [championships, setChampionships] = useState([]);
@@ -22,7 +22,7 @@ const Group = () => {
 
     const [isOpenModal, openModal, closeModal] = useModal();
 
-    const { setGlobalGroupId } = useContext(AppContext);
+    // const { setGlobalGroupId } = useContext(AppContext);
     const history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -39,13 +39,11 @@ const Group = () => {
     }, []);
 
     const openGroup = (id) => {
-        setGlobalGroupId(id);
-        history.push('/admin');
+        history.push('/group-player/' + id);
     };
 
     /*VALIDATIONS ####################################################################################*/
     const schema = Yup.object().shape({
-        name: Yup.string().required('Required'),
         championship_id: Yup.string().required('Required')
     });
 
@@ -90,7 +88,7 @@ const Group = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + + res.data.result[0][0].msg);
+                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
                     break;
             };
         } catch(err) {

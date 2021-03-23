@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Card, Table, Container, Icon } from "../../component";
+import { Input, Modal, Button, Card, Table, Container, Icon, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,6 +15,7 @@ const Championship = () => {
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
     const defaultData = {championship_id: 0, name: '', state: 0};
+    const [loading, setLoading] = useState(true);
 
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
@@ -34,8 +35,10 @@ const Championship = () => {
 
     /*CRUD ###########################################################################################*/ 
     const fetchChampionship = async () => {
+        setLoading(true);
         const championships = await getList("championship");
         setChampionships(championships);
+        setLoading(false);
     };
 
     const addChampionship = async data => {
@@ -54,7 +57,7 @@ const Championship = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + + res.data.result[0][0].msg);
+                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
                     break;
             };
         } catch(err) {
@@ -62,11 +65,10 @@ const Championship = () => {
         };
     };
     
-    const staChampionship = async (championship_id) => {
+    const staChampionship = async (id) => {
         try {
-            const res = await axios.put("championship/" + championship_id);
+            const res = await axios.put("championship/" + id);
             if (!res.data.error) {
-                alert('Inactivado!');
                 fetchChampionship();
             };
         } catch (err) {
@@ -89,40 +91,43 @@ const Championship = () => {
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>
             </div>
-            <Container.Table>
-                <Table.Primary>
-                    <thead>
-                        <tr>
-                            <th>Championship</th>
-                            <th>State</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {championships.filter(val => {
-                            if(searchTerm === "") {
-                                return val;
-                            } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                return val;
-                            };
-                            return null;
-                        }).map(championship => (
-                            <tr key={championship.championship_id}>
-                                <td data-label='Championship'>{championship.name}</td>
-                                <td data-label='State' className={championship.state === 0 ? 'active' : ''}>{championship.state_name} {championship.state === 0 && '✔'}</td>
-                                <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
-                                <td data-label=''>
-                                    <div className="td-container">
-                                        <Icon.Basic family="edit" action={() => openForm(championship)} hover/>
-                                        <Icon.Basic family="delete" action={() => staChampionship(championship.championship_id)} hover/>
-                                    </div>
-                                </td>
+            {loading 
+                ? <Loading/>
+                : <Container.Table>
+                    <Table.Primary>
+                        <thead>
+                            <tr>
+                                <th>Championship</th>
+                                <th>State</th>
+                                <th>Created</th>
+                                <th>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table.Primary>
-            </Container.Table>
+                        </thead>
+                        <tbody>
+                            {championships.filter(val => {
+                                if(searchTerm === "") {
+                                    return val;
+                                } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                    return val;
+                                };
+                                return null;
+                            }).map(championship => (
+                                <tr key={championship.championship_id}>
+                                    <td data-label='Championship'>{championship.name}</td>
+                                    <td data-label='State' className={championship.state === 0 ? 'active' : ''}>{championship.state_name} {championship.state === 0 && '✔'}</td>
+                                    <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
+                                    <td data-label=''>
+                                        <div className="td-container">
+                                            <Icon.Basic family="edit" action={() => openForm(championship)} hover/>
+                                            <Icon.Basic family="delete" action={() => staChampionship(championship.championship_id)} hover/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table.Primary>
+                </Container.Table>
+            }
         </Container.Primary>
     );
 };

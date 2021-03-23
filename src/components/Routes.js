@@ -1,5 +1,5 @@
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import { Home, Player, Group, GroupPlayer, Championship, Header } from "../component";
+import { Home, Player, Group, GroupPlayer, Championship, NotFound, Header, User } from "../component";
 import styled from "styled-components";
 
 export const ContentStyled = styled.div `
@@ -18,11 +18,13 @@ const Routes = () => {
             <Header />
             <ContentStyled>
                 <Switch>                    
-                    <Route component={Home} path='/' exact />
                     <Route component={Player} path='/player' />
+                    <Route component={User} path='/user' />
                     <Route component={Championship} path='/championship' />
                     <Route component={Group} path='/group' />
-                    <Route component={GroupPlayer} path='/admin' />
+                    <Route component={GroupPlayer} path='/group-player/:prm_group_id' />
+                    <Route component={Home} path='/' exact />
+                    <Route component={NotFound} path='*' />
                 </Switch>
             </ContentStyled>
         </Router>

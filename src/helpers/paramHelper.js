@@ -27,6 +27,10 @@ export const NAV_ELEMENTS = [
     {
         title: 'Players',
         path: '/player'
+    },
+    {
+        title: 'Users',
+        path: '/user'
     }
 ];
 

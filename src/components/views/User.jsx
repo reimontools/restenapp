@@ -6,30 +6,22 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
-import moment from 'moment';
+import useList from '../../hooks/useList';
 
-const Player = () => {
-    useEffect(() => fetchPlayers(), []);
-    const [players, setPlayers] = useState([]);
+const User = () => {
+    useEffect(() => fetchUsers(), []);
+    const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-
-    const defaultData = {player_id: 0, name: '', surname: '', gender: 'F', birth_date: ''};
-    const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
+    const defaultData = {user_id: 0, name: '', email: '', rol_id: 3};
     const [loading, setLoading] = useState(true);
+    const rols = useList("list/rol");
     
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
         name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        birth_date: Yup
-            .date()
-            .nullable()
-            .transform((curr, orig) => orig === '' ? null : curr)
-            .max(moment().subtract(2, 'years').calendar(), "Too young")
-            .min(moment().subtract(70, 'years').calendar(), "Too old")
-            .required('Required')
+        email: Yup.string().email("Invalid format").required('Required')
     });
 
     const { register, handleSubmit, errors, reset } = useForm({
@@ -37,27 +29,27 @@ const Player = () => {
         resolver: yupResolver(schema)
     });
 
-    const openForm = player => {
-        setCurrentID(player.player_id);
-        reset(player);
+    const openForm = user => {
+        setCurrentID(user.user_id);
+        reset(user);
         openModal();
     };
 
     /*CRUD ###########################################################################################*/ 
-    const fetchPlayers = async () => {
+    const fetchUsers = async () => {
         setLoading(true);
-        const res = await getList("player");
-        setPlayers(res);
+        const res = await getList("user");
+        setUsers(res);
         setLoading(false);
     };
 
-    const addPlayer = async data => {
-        console.log('Antes de guardar', {player_id: currentID, ...data});
+    const addUser = async data => {
+        // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
-            const res = await axios.post("player", {player_id: currentID, ...data});
+            const res = await axios.post("user", {user_id: currentID, ...data});
             switch(res.data.result[0][0].cod) {
                 case 0:
-                    fetchPlayers();
+                    fetchUsers();
                     closeModal();
                     break;
                 case 1:
@@ -75,22 +67,22 @@ const Player = () => {
         };
     };
     
-    const staPlayer = async (id) => {
+    const staUser = async (id) => {
         try {
-            const res = await axios.put("player/" + id);
+            const res = await axios.put("user/" + id);
             if (!res.data.error) {
-                fetchPlayers();
+                fetchUsers();
             };
         } catch (err) {
             console.log(err);
         };
     };
 
-    function filPlayer(player) {
+    function filUser(user) {
         if(searchTerm === "") {
-            return player;
-        } else if (player.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return player;
+            return user;
+        } else if (user.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return user;
         };
         return null;
     };
@@ -99,12 +91,11 @@ const Player = () => {
     return (
         <Container.Primary>
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title={currentID === 0 ? 'New Player' : 'Update Player'}>
+                <Card.Primary title={currentID === 0 ? 'New User' : 'Update User'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.TextValidation name="gender" type="select" register={register} error={errors.gender} content={genders} />
-                    <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
+                    <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
+                    <Select.TextValidation name="rol_id" type="select" register={register} error={errors.user_type_id} content={rols} />
+                    <Button.Basic action={handleSubmit(addUser)}>Save</Button.Basic>
                 </Card.Primary>
             </Modal.ForForm>
 
@@ -119,22 +110,22 @@ const Player = () => {
                     <Table.Primary>
                         <thead>
                             <tr>
-                                <th>Full Name</th>
-                                <th>Gender</th>
-                                <th>Age</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Rol</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {players.filter(filPlayer).map(player => (
-                                <tr key={player.player_id}>
-                                    <td data-label='Full Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender}</td>
-                                    <td data-label='Age'>{player.player_age}</td>
+                            {users.filter(filUser).map(user => (
+                                <tr key={user.user_id}>
+                                    <td data-label='Name'>{user.name}</td>
+                                    <td data-label='Email'>{user.email}</td>
+                                    <td data-label='Rol'>{user.rol_name}</td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => openForm(player)} hover/>
-                                            <Icon.Basic family="delete" action={() => staPlayer(player.player_id)} hover/>
+                                            <Icon.Basic family="edit" action={() => openForm(user)} hover/>
+                                            <Icon.Basic family="delete" action={() => staUser(user.user_id)} hover/>
                                         </div>
                                     </td>
                                 </tr>
@@ -147,4 +138,4 @@ const Player = () => {
     );
 };
 
-export default Player;
+export default User;

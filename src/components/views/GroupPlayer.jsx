@@ -1,10 +1,11 @@
-import { useState, useEffect, useContext} from "react";
-import { AppContext } from "../../store/AppProvider";
+import { useParams } from 'react-router-dom'
+import { useState, useEffect } from "react";
 import { getList } from '../../helpers/listHelper';
 import styled from "styled-components";
-import { Input, Modal, Button, Card, Select, Table, Container, Icon } from "../../component";
+import { Input, Modal, Button, Card, Select, Table, Container, Icon, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import useList from "../../hooks/useList";
+import axios from '../../config/axios'
 
 const DivTitle = styled.div `
     display: flex;
@@ -28,34 +29,26 @@ const DivSelected = styled.div `
 `;
 
 const GroupAdmin = () => {
-    const { globalGroupId } = useContext(AppContext);
+    const { prm_group_id } = useParams();
     const [groupInfo, setGroupInfo] = useState({});
     const [groupPlayers, setgroupPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    
     const genders = [{gender: "*", gender_name: "All"}, {gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
+    const defaultSearchOptions = {filter_gender: "*", filter_age: "", filter_fullname: ""};
     const [isOpenModal, openModal, closeModal] = useModal();
     const players = useList('player');
-    const [searchOptions, setSearchOptions] = useState({filter_gender: "*", filter_age: "", filter_fullname: ""});
-    const [selected, setSelected] = useState([]);
+    const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
+    const [playerSelected, setPlayerSelected] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchGroup() {
-            const res = await getList("group/admin/" + globalGroupId);
-            setGroupInfo(res[0]);
-        };
-        fetchGroup();
-    }, [globalGroupId]); 
-
-    useEffect(() => {
-        async function fetchGroupPlayer() {
-            const res = await getList("group-player/" + globalGroupId);
-            setgroupPlayers(res);
-        };
-        fetchGroupPlayer();
-    }, [globalGroupId]); 
+        fetchGroup(prm_group_id);
+        fetchGroupPlayer(prm_group_id);
+    }, [prm_group_id]); 
 
     const openFilter = () => {
+        setSearchOptions(defaultSearchOptions);
+        setPlayerSelected([]);
         openModal();
     };
 
@@ -66,6 +59,7 @@ const GroupAdmin = () => {
         });
     };
 
+    /*FILTER ############################################################################################*/ 
     function filByGender(player) {
         if(searchOptions.filter_gender === "*") {
             return player;
@@ -94,38 +88,127 @@ const GroupAdmin = () => {
     };
 
     function filBySelected(player) {
-        if(selected.length === 0) {
+        if(playerSelected.length === 0) {
             return player;
-        } else if (!selected.includes(player)) {
+        } else if (!playerSelected.includes(player)) {
             return player;
         };
         return null;
     };    
     
-    const addSelected = (player) => {
-        setSelected([...selected, player]);
+    const addPlayerSelected = (player) => {
+        setPlayerSelected([...playerSelected, player]);
     };
 
-    const removeSelected = (player) => {
-        setSelected(selected.filter(item => item.player_id !== player.player_id));
+    const removePlayerSelected = (player) => {
+        setPlayerSelected(playerSelected.filter(item => item.player_id !== player.player_id));
+    };
+
+    /*FETCH ############################################################################################*/ 
+    const fetchGroup = async (id) => {
+        const res = await getList("group/admin/" + id);
+        setGroupInfo(res[0]);
+    };
+
+    const fetchGroupPlayer = async (id) => {
+        setLoading(true);
+        const res = await getList("group-player/" + id);
+        setgroupPlayers(res);
+        setLoading(false);
+    };
+
+    /*CRUD ############################################################################################*/ 
+    const addGroupPlayer = async () => {
+        try {
+            const res = await axios.post("group-player", {group_id: prm_group_id, playerSelected});
+            switch(res.data.result[0][0].cod) {
+                case 0:
+                    // alert('registrado correctamente!');
+                    fetchGroupPlayer(prm_group_id);
+                    closeModal();
+                    break;
+                case 1:
+                    alert('Ya existe!');
+                    break;
+                case 2:
+                    alert('Ya existe inactivo!');
+                    break;
+                default:
+                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    break;
+            };
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
+    const staGroupPlayer = async (id) => {
+        try {
+            const res = await axios.put("group-player/" + id);
+            if (!res.data.error) {
+                fetchGroupPlayer(prm_group_id);
+            };
+        } catch (err) {
+            console.log(err);
+        };
     };
 
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
+            <DivTitle>
+                <h2>{groupInfo?.championship_name}</h2>
+                <h1>{groupInfo?.name}</h1>
+            </DivTitle>
+            <div className="search-container">
+                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
+                <Icon.Basic family="addPerson" action={() => openFilter()} right="12px" hover/>
+            </div>
+            {loading 
+                ? <Loading/>
+                : <Container.Table>
+                    <Table.Primary>
+                        <thead>
+                            <tr>
+                                <th>Players</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {groupPlayers.filter(val => {
+                                if(searchTerm === "") {
+                                    return val;
+                                } else if (val.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                    return val;
+                                };
+                                return null;
+                            }).map(groupPlayer => (
+                                <tr key={groupPlayer.group_player_id}>
+                                    <td data-label='Player'>{groupPlayer.player_fullname}</td>
+                                    <td data-label=''>
+                                        <div className="td-container">
+                                            <Icon.Basic family="delete" action={() => staGroupPlayer(groupPlayer.group_player_id)} hover/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table.Primary>
+                </Container.Table>
+            }
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
                 <Card.Primary title='Filter'>
-                    <Select.Basic name="filter_gender" content={genders} action={handleSearchOptions}/>
-                    <Input.Basic name="filter_age" placeholder="All ages" action={handleSearchOptions}/>
-                    <Input.Basic name="filter_fullname" action={handleSearchOptions}/>
+                    <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genders} action={handleSearchOptions}/>
+                    <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="All ages" action={handleSearchOptions}/>
+                    <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} action={handleSearchOptions}/>
                     <DivSelected>
-                        {selected.map(player => (
+                        {playerSelected.map(player => (
                             <div className="item-container" key={player.player_id}>
                                 <p>{player.player_fullname}</p>
-                                <Icon.Basic family="remove" action={() => removeSelected(player)} />
+                                <Icon.Basic family="remove" action={() => removePlayerSelected(player)} />
                             </div>
                         ))}
-                        {selected.length > 0 && <Button.Basic family="add" fit height="auto" size="11px" margin="0 0 0 15px">Ready</Button.Basic>}
+                        {playerSelected.length > 0 && <Button.Basic family="add" action={() => addGroupPlayer()} fit height="auto" size="11px" margin="0 0 0 15px">Ready</Button.Basic>}
                     </DivSelected>
                     <Table.Primary>
                         <thead>
@@ -144,7 +227,7 @@ const GroupAdmin = () => {
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td>
                                         <div className="td-container">
-                                            <Icon.Basic family="check" action={() => addSelected(player)} hover/>
+                                            <Icon.Basic family="check" action={() => addPlayerSelected(player)} hover/>
                                         </div>
                                     </td>
                                 </tr>
@@ -153,49 +236,7 @@ const GroupAdmin = () => {
                     </Table.Primary>
                 </Card.Primary>
             </Modal.ForForm>
-
-            <DivTitle>
-                <h2>{groupInfo?.championship_name}</h2>
-                <h1>{groupInfo?.name}</h1>
-            </DivTitle>
-
-            <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="addPerson" action={() => openFilter()} right="12px" hover/>
-            </div>
-            
-            <Container.Table>
-                <Table.Primary>
-                    <thead>
-                        <tr>
-                            <th>Players</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {groupPlayers.filter(val => {
-                            if(searchTerm === "") {
-                                return val;
-                            } else if (val.user_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                return val;
-                            };
-                            return null;
-                        }).map(groupPlayer => (
-                            <tr key={groupPlayer.group_player_id}>
-                                <td data-label='Player'>{groupPlayer.user_fullname}</td>
-                                <td data-label=''>
-                                    <div className="td-container">
-                                        <Icon.Basic family="delete" hover/>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table.Primary>
-            </Container.Table>
-            
         </Container.Primary>
     );
 };
-
 export default GroupAdmin;

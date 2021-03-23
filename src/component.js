@@ -3,9 +3,11 @@ export {default as Routes} from "./components/Routes";
 
 export {default as Home} from "./components/views/Home";
 export {default as Player} from "./components/views/Player";
+export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
 export {default as GroupPlayer} from "./components/views/GroupPlayer";
 export {default as Championship} from "./components/views/Championship";
+export {default as NotFound} from "./components/views/NotFound";
 
 export {default as NavBar} from "./components/header/NavBar";
 export {default as Header} from "./components/header/Header";
