@@ -10,19 +10,19 @@ const DivButtonStyled = styled.button `
     width: ${({ fit }) => fit ? 'auto' : '100%'};
     font-size: ${({ size }) => size ? size : '16px'};
     color: #fff;
-    font-weight: 600;
+    /* font-weight: 600; */
+    font-weight: ${({ weight }) => weight ? weight : '600'};
     border: none;
     outline: none;
     border-radius: 5px;
     transition: .1s ease all;
     &:hover {
-        transition: .1s ease all;
-        box-shadow: 3px 0px 30px rgba(163, 163, 163, 1)
+        /* box-shadow: 3px 0px 30px rgba(163, 163, 163, 1); */
+        transform: ${({ hover }) => hover ? 'scale(1.5)' : 'none'};
     };
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         &:hover {
             transform: none;
-            transition: none;
         };
     };
 `;

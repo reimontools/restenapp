@@ -9,12 +9,11 @@ import axios from '../../config/axios'
 const GroupAdmin = () => {
     const { prm_group_id } = useParams();
     const [groupInfo, setGroupInfo] = useState({});
-    const [groupPlayers, setgroupPlayers] = useState([]);
+    const [groupPlayers, setGroupPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const genders = [{gender: "*", gender_name: "All"}, {gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
+    const genderList = [{gender_id: "*", name: "Filter by gender..."}, ...useList("list/gender")];
     const defaultSearchOptions = {filter_gender: "*", filter_age: "", filter_fullname: ""};
     const [isOpenModal, openModal, closeModal] = useModal();
-    const players = useList('player');
     const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
     const [playerSelected, setPlayerSelected] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,34 +23,32 @@ const GroupAdmin = () => {
         fetchGroup(prm_group_id);
         fetchGroupPlayer(prm_group_id);
     }, [prm_group_id]); 
-
-    const openFilter = () => {
-        setSearchOptions(defaultSearchOptions);
-        setPlayerSelected([]);
-        openModal();
-    };
-
+    
     const handleSearchOptions = (e) => {
         setSearchOptions({
             ...searchOptions,
             [e.target.name]: e.target.value
         });
     };
-
+    
     /*FILTER ############################################################################################*/ 
+    const playerList = useList('player');
+    const playerListFiltered = playerList.filter(filByGender).filter(filByAge).filter(filByFullName).filter(filBySelected).filter(filByAlreadyOnGroup);
+    
     function filByGender(player) {
         if(searchOptions.filter_gender === "*") {
             return player;
-        } else if (player.gender === searchOptions.filter_gender) {
+        } else if (player.gender_id === parseInt(searchOptions.filter_gender)) {
             return player;
         };
         return null;
     };
 
     function filByAge(player) {
+        const ages = searchOptions.filter_age.split(',').map(Number);
         if(searchOptions.filter_age === "") {
             return player;
-        } else if (player.player_age === parseInt(searchOptions.filter_age)) {
+        } else if (ages.includes(player.player_age)) {
             return player;
         };
         return null;
@@ -73,7 +70,20 @@ const GroupAdmin = () => {
             return player;
         };
         return null;
+    };  
+    
+    function filByAlreadyOnGroup(player) {
+        if(groupPlayers.length === 0) {
+            return player;
+        } else if (!groupPlayers.some(value => value.player_id === player.player_id)) {
+            return player;
+        };
+        return null;
     };    
+
+    const addAllPlayer = () => {
+        setPlayerSelected([...playerSelected, ...playerListFiltered]);
+    };
     
     const addPlayerSelected = (player) => {
         setPlayerSelected([...playerSelected, player]);
@@ -81,6 +91,13 @@ const GroupAdmin = () => {
 
     const removePlayerSelected = (player) => {
         setPlayerSelected(playerSelected.filter(item => item.player_id !== player.player_id));
+    };
+    
+    const openFilter = () => {
+        setSearchOptions(defaultSearchOptions);
+        setPlayerSelected([]);
+        setHasFilter(false);
+        openModal();
     };
 
     /*FETCH ############################################################################################*/ 
@@ -92,7 +109,7 @@ const GroupAdmin = () => {
     const fetchGroupPlayer = async (id) => {
         setLoading(true);
         const res = await getList("group-player/" + id);
-        setgroupPlayers(res);
+        setGroupPlayers(res);
         setLoading(false);
     };
 
@@ -176,17 +193,16 @@ const GroupAdmin = () => {
                 </Container.Table>
             }
             <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                
                 <Container.Basic>
                     <Title.Basic>
-                        Players
-                        <Icon.Basic family="search" action={() => setHasFilter(!hasFilter)} hover padding="0 0 0 5px" size="30px" />
+                        Add players
+                        <Icon.Basic family="search" action={() => setHasFilter(!hasFilter)} hover padding="0 0 0 10px" size="30px" />
                     </Title.Basic>
                     {hasFilter && 
                         <>
-                            <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genders} action={handleSearchOptions}/>
-                            <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="All ages" action={handleSearchOptions}/>
-                            <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} action={handleSearchOptions}/>
+                            <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genderList} action={handleSearchOptions}/>
+                            <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="Filter by age..." action={handleSearchOptions}/>
+                            <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} placeholder="Filter by name" action={handleSearchOptions}/>
                         </>
                     }
                     <Container.Label>
@@ -196,22 +212,26 @@ const GroupAdmin = () => {
                                 <Icon.Basic family="remove" action={() => removePlayerSelected(player)} />
                             </div>
                         ))}
-                        {playerSelected.length > 0 && <Button.Basic family="add" action={() => addGroupPlayer()} fit height="auto" size="11px" margin="0 0 0 15px">Ready</Button.Basic>}
+                        {playerSelected.length > 0 && <Button.Basic family="search" action={() => addGroupPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">add {playerSelected.length} player(s)</Button.Basic>}
                     </Container.Label>
                     <Table.Primary>
                         <thead>
                             <tr>
-                                <th>Full Name</th>
+                                <th>Name</th>
                                 <th>Gender</th>
                                 <th>Age</th>
-                                <th>Add</th>
+                                <th>
+                                    <div className="td-container">
+                                        <Icon.Basic family="dobleCheck" action={() => addAllPlayer()} hover/>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {players.filter(filByGender).filter(filByAge).filter(filByFullName).filter(filBySelected).map(player => (
+                            {playerListFiltered.map(player => (
                                 <tr key={player.player_id}> 
-                                    <td data-label='Full Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender}</td>
+                                    <td data-label='Name'>{player.player_fullname}</td>
+                                    <td data-label='Gender'>{player.gender_name}</td>
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td>
                                         <div className="td-container">

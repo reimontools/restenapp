@@ -3,10 +3,11 @@ import { GoPlus } from "react-icons/go";
 import { MdClose } from "react-icons/md";
 import { RiAliensLine } from "react-icons/ri";
 import { BiTrash } from "react-icons/bi";
-import { IoMdPersonAdd } from "react-icons/io";
+import { IoMdPersonAdd , IoMdSearch} from "react-icons/io";
 // import { IoSearchCircle } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa";
-import { HiOutlineSearchCircle } from "react-icons/hi";
+import { FaCheck, FaCheckDouble } from "react-icons/fa";
+// import { BsSearch } from "react-icons/bs";
+// import { HiOutlineSearchCircle } from "react-icons/hi";
 // import { CgClose } from "react-icons/cg";
 // import { SiPluscodes } from "react-icons/si";
 // import { RiAddCircleLine } from "react-icons/ri";
@@ -41,6 +42,7 @@ export const getColorByFamily = family => {
         case "add": return "#ced922";
         case "addPerson": return "#ced922";
         case "check": return "#0e70b8";
+        case "dobleCheck": return "#FFFFFF";
         case "edit": return "#0e70b8";
         case "save": return "#0e70b8";
         case "delete": return "#bb3345";
@@ -56,11 +58,12 @@ export const getIconByFamily = family => {
         case "add": return <GoPlus />;
         case "addPerson": return <IoMdPersonAdd />;
         case "check": return <FaCheck />;
+        case "dobleCheck": return <FaCheckDouble />;
         case "edit": return <BiEdit />;
         case "save": return <IoMdPersonAdd />;
         case "delete": return <BiTrash />;
         case "remove": return <MdClose />;
-        case "search": return <HiOutlineSearchCircle />;
+        case "search": return <IoMdSearch />;
         default: return <RiAliensLine />
     };
 };

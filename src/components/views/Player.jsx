@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
 import moment from 'moment';
+import useList from '../../hooks/useList';
 
 const Player = () => {
     useEffect(() => fetchPlayers(), []);
@@ -14,15 +15,14 @@ const Player = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentID, setCurrentID] = useState(0);
     const [isOpenModal, openModal, closeModal] = useModal();
-
-    const defaultData = {player_id: 0, name: '', surname: '', gender: 'F', birth_date: ''};
-    const genders = [{gender: "F", gender_name: "Female"}, {gender: "M", gender_name: "Male"}];
+    const defaultData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
+    const genderList = useList("list/gender");
     const [loading, setLoading] = useState(true);
     
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
-        name: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
-        surname: Yup.string().matches(/^([^0-9]*)$/,'Name should not containt numbers').required('Required'),
+        name: Yup.string().required('Required'),
+        surname: Yup.string().required('Required'),
         birth_date: Yup
             .date()
             .nullable()
@@ -102,7 +102,7 @@ const Player = () => {
                 <Card.Primary title={currentID === 0 ? 'New Player' : 'Update Player'}>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.TextValidation name="gender" type="select" register={register} error={errors.gender} content={genders} />
+                    <Select.TextValidation name="gender_id" type="select" register={register} content={genderList} />
                     <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
                     <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
                 </Card.Primary>
@@ -119,7 +119,7 @@ const Player = () => {
                     <Table.Primary>
                         <thead>
                             <tr>
-                                <th>Full Name</th>
+                                <th>Name</th>
                                 <th>Gender</th>
                                 <th>Age</th>
                                 <th>Actions</th>
@@ -128,8 +128,8 @@ const Player = () => {
                         <tbody>
                             {players.filter(filPlayer).map(player => (
                                 <tr key={player.player_id}>
-                                    <td data-label='Full Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender}</td>
+                                    <td data-label='Name'>{player.player_fullname}</td>
+                                    <td data-label='Gender'>{player.gender_name}</td>
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
