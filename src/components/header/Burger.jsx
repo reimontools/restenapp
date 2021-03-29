@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import { useContext } from 'react'
-import { AppContext } from "../../store/AppProvider";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import useAppContext from "../../hooks/useAppContext";
 
 const BurgerStyled = styled.div `
+    position: absolute;
+    right: 0;
     display: none;
     padding: 0;
     cursor: pointer;
@@ -33,7 +34,7 @@ const BurgerStyled = styled.div `
 `;
 
 const Burger = () => {
-    const { barState, setBarState } = useContext(AppContext);
+    const { barState, setBarState } = useAppContext();
     return (
        <BurgerStyled open={ barState } onClick={() =>  setBarState(!barState)}>
             <div />

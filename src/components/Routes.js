@@ -1,6 +1,7 @@
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import { Home, Player, Group, GroupPlayer, Championship, NotFound, Header, User } from "../component";
+import { Home, SignIn, Player, Group, GroupPlayer, Championship, NotFound, Header, User } from "../component";
 import styled from "styled-components";
+import { ProtectedRoute, UnProtectedRoute } from "../helpers/routeHelper";
 
 export const ContentStyled = styled.div `
     position: absolute;
@@ -17,13 +18,14 @@ const Routes = () => {
         <Router>
             <Header />
             <ContentStyled>
-                <Switch>                    
-                    <Route component={Player} path='/player' />
-                    <Route component={User} path='/user' />
-                    <Route component={Championship} path='/championship' />
-                    <Route component={Group} path='/group' />
-                    <Route component={GroupPlayer} path='/group-player/:prm_group_id' />
-                    <Route component={Home} path='/' exact />
+                <Switch> 
+                    <ProtectedRoute component={User} path='/user' how={['Admin']} />      
+                    <ProtectedRoute component={Player} path='/player' />
+                    <ProtectedRoute component={Championship} path='/championship' />
+                    <ProtectedRoute component={Group} path='/group' />
+                    <ProtectedRoute component={GroupPlayer} path='/group-player/:prm_group_id' />
+                    <UnProtectedRoute component={SignIn} path='/sign-in' />
+                    <ProtectedRoute exact component={Home} path='/' how={['*']} />
                     <Route component={NotFound} path='*' />
                 </Switch>
             </ContentStyled>

@@ -10,7 +10,6 @@ export const HeaderStyled = styled.div `
     background-color: #0e70b8;
     display: flex;
     align-items: center; 
-    justify-content: space-around;
     z-index: 500;
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         justify-content: space-between;

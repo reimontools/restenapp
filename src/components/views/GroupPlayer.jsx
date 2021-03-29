@@ -117,9 +117,8 @@ const GroupAdmin = () => {
     const addGroupPlayer = async () => {
         try {
             const res = await axios.post("group-player", {group_id: prm_group_id, playerSelected});
-            switch(res.data.result[0][0].cod) {
+            switch(res.data.result.cod) {
                 case 0:
-                    // alert('registrado correctamente!');
                     fetchGroupPlayer(prm_group_id);
                     closeModal();
                     break;
@@ -130,7 +129,7 @@ const GroupAdmin = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    alert('Otro problema!, error: ' + res.data.result.msg);
                     break;
             };
         } catch(err) {

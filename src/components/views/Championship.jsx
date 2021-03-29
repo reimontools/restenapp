@@ -45,7 +45,7 @@ const Championship = () => {
         // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
             const res = await axios.post("championship", {championship_id: currentID, ...data});
-            switch(res.data.result[0][0].cod) {
+            switch(res.data.result.cod) {
                 case 0:
                     fetchChampionship();
                     closeModal();
@@ -57,7 +57,7 @@ const Championship = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    alert('Otro problema!, error: ' + res.data.result.msg);
                     break;
             };
         } catch(err) {

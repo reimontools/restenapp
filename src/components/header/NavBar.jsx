@@ -1,17 +1,17 @@
 import { NAV_ELEMENTS } from "../../helpers/paramHelper.js";
 import styled from "styled-components";
-import { useContext } from 'react'
-import { AppContext } from "../../store/AppProvider";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import useAppContext from "../../hooks/useAppContext.js";
 
 export const NavStyled = styled.nav `
     position: relative;
     bottom: 0;
     height: 100%;
+    width: 100%;
     display: flex;
     align-items: center; 
-    justify-content: flex-end;
+    justify-content: center;
     .navlink {
         font-size: 15px;
         font-family: sundayBest;
@@ -25,6 +25,11 @@ export const NavStyled = styled.nav `
             color: #ced922;
         };
     };
+    .right {
+        position: absolute;
+        right: 0;
+        padding-right: 1%;
+    };
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         width: 100vw;
@@ -37,27 +42,35 @@ export const NavStyled = styled.nav `
         bottom: ${({ open }) => open ? '0' : '100%'};
         left: 0;
         transition: all .5s ease-in-out;
+        .right {
+            position: relative;
+            padding-right: 0;
+        };
     };
 `;
 
 const NavBar = () => {
-    const { barState, setBarState } = useContext(AppContext);
+    const { barState, setBarState, user, logOut, isLogged } = useAppContext();
     return (
         <>
             <NavStyled open={ barState }>
                 {NAV_ELEMENTS.map((item, index) => {
-                    return (
-                        <NavLink
-                            className="navlink" 
-                            key={index}
-                            onClick={() => setBarState(false)} 
-                            to={item.path} 
-                            activeClassName="active" 
-                            exact>
-                                {item.title}
-                        </NavLink>
-                    );
-                })} 
+                    if(item.how.includes(user.rol, "*")) {
+                        return (
+                            <NavLink
+                                className="navlink" 
+                                key={index}
+                                onClick={() => setBarState(false)} 
+                                to={item.path} 
+                                activeClassName="active" 
+                                exact>
+                                    {item.title}
+                            </NavLink>
+                        );
+                    };
+                    return null;
+                })}
+                {isLogged() && <Link className="navlink right" onClick={() => logOut()} to="/" >Exit</Link>}
             </NavStyled>
         </>
     );

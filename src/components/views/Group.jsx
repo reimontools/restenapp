@@ -72,12 +72,10 @@ const Group = () => {
     };
 
     const addGroup = async data => {
-        // console.log('Antes de guardar', {group_id: 0, ...data});
         try {
             const res = await axios.post("group", {group_id: currentGroupId, ...data});
-            switch(res.data.result[0][0].cod) {
+            switch(res.data.result.cod) {
                 case 0:
-                    // alert('registrado correctamente!');
                     fetchGroups(currentChampionshipId);
                     closeModal();
                     break;
@@ -88,7 +86,7 @@ const Group = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    alert('Otro problema!, error: ' + res.data.result.msg);
                     break;
             };
         } catch(err) {

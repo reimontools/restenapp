@@ -44,10 +44,9 @@ const User = () => {
     };
 
     const addUser = async data => {
-        // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
             const res = await axios.post("user", {user_id: currentID, ...data});
-            switch(res.data.result[0][0].cod) {
+            switch(res.data.result.cod) {
                 case 0:
                     fetchUsers();
                     closeModal();
@@ -59,7 +58,7 @@ const User = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    alert('Otro problema!, error: ' + res.data.result.msg);
                     break;
             };
         } catch(err) {
@@ -95,6 +94,7 @@ const User = () => {
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
                     <Select.TextValidation name="rol_id" type="select" register={register} error={errors.user_type_id} content={rols} />
+                    <Input.TextValidation name="password" register={register} />
                     <Button.Basic action={handleSubmit(addUser)}>Save</Button.Basic>
                 </Card.Primary>
             </Modal.ForForm>

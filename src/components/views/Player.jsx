@@ -52,10 +52,9 @@ const Player = () => {
     };
 
     const addPlayer = async data => {
-        console.log('Antes de guardar', {player_id: currentID, ...data});
         try {
             const res = await axios.post("player", {player_id: currentID, ...data});
-            switch(res.data.result[0][0].cod) {
+            switch(res.data.result.cod) {
                 case 0:
                     fetchPlayers();
                     closeModal();
@@ -67,7 +66,7 @@ const Player = () => {
                     alert('Ya existe inactivo!');
                     break;
                 default:
-                    alert('Otro problema, error: ' + res.data.result[0][0].msg);
+                    alert('Otro problema! error: ' + res.data.result.msg);
                     break;
             };
         } catch(err) {

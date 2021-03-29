@@ -19,21 +19,31 @@ export const MEDIUM_SCREEN_SIZE_PX = MEDIUM_SCREEN_SIZE + "px";
 
 export const NAV_ELEMENTS = [
     {
+        title: 'Home',
+        path: '/',
+        how: ['*']
+    },
+    {
         title: 'Group',
-        path: '/group'
+        path: '/group',
+        how: ['Admin', 'Coach']
     },
     {
         title: 'Championship',
-        path: '/championship'
+        path: '/championship',
+        how: ['Admin', 'Coach']
     },
     {
         title: 'Players',
-        path: '/player'
+        path: '/player',
+        how: ['Admin', 'Coach']
     },
     {
         title: 'Users',
-        path: '/user'
+        path: '/user',
+        how: ['Admin']
     }
+    
 ];
 
 export const getColorByFamily = family => {
