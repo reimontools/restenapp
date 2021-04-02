@@ -1,4 +1,4 @@
-import { NAV_ELEMENTS } from "../../helpers/paramHelper.js";
+import { ROUTES } from "../../helpers/routeHelper";
 import styled from "styled-components";
 import { NavLink, Link } from "react-router-dom";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
@@ -54,19 +54,21 @@ const NavBar = () => {
     return (
         <>
             <NavStyled open={ barState }>
-                {NAV_ELEMENTS.map((item, index) => {
-                    if(item.how.includes(user.rol, "*")) {
-                        return (
-                            <NavLink
-                                className="navlink" 
-                                key={index}
-                                onClick={() => setBarState(false)} 
-                                to={item.path} 
-                                activeClassName="active" 
-                                exact>
-                                    {item.title}
-                            </NavLink>
-                        );
+                {ROUTES.map((item, key) => {
+                    if(item.showInBar && isLogged()) {
+                        if (item.allowTo.includes(user.rol) || item.allowTo.includes('*')) { 
+                            return (
+                                <NavLink
+                                    className="navlink" 
+                                    key={key}
+                                    onClick={() => setBarState(false)} 
+                                    to={item.path} 
+                                    activeClassName="active" 
+                                    exact>
+                                        {item.title}
+                                </NavLink>
+                            );
+                        };
                     };
                     return null;
                 })}

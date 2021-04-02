@@ -1,7 +1,7 @@
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import { Home, SignIn, Player, Group, GroupPlayer, Championship, NotFound, Header, User } from "../component";
+import {BrowserRouter as Router, Switch} from "react-router-dom";
+import { Header } from "../component";
 import styled from "styled-components";
-import { ProtectedRoute, UnProtectedRoute } from "../helpers/routeHelper";
+import { ROUTES, CustomRoute } from "../helpers/routeHelper";
 
 export const ContentStyled = styled.div `
     position: absolute;
@@ -19,14 +19,9 @@ const Routes = () => {
             <Header />
             <ContentStyled>
                 <Switch> 
-                    <ProtectedRoute component={User} path='/user' how={['Admin']} />      
-                    <ProtectedRoute component={Player} path='/player' />
-                    <ProtectedRoute component={Championship} path='/championship' />
-                    <ProtectedRoute component={Group} path='/group' />
-                    <ProtectedRoute component={GroupPlayer} path='/group-player/:prm_group_id' />
-                    <UnProtectedRoute component={SignIn} path='/sign-in' />
-                    <ProtectedRoute exact component={Home} path='/' how={['*']} />
-                    <Route component={NotFound} path='*' />
+                    {ROUTES.map((route, key) => {
+                        return <CustomRoute exact path={route.path} component={route.component} key={key} auth={route.auth} allowTo={route.allowTo}/>
+                    })}
                 </Switch>
             </ContentStyled>
         </Router>

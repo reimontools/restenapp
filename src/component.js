@@ -8,6 +8,7 @@ export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
 export {default as GroupPlayer} from "./components/views/GroupPlayer";
 export {default as Championship} from "./components/views/Championship";
+export {default as PlayerResult} from "./components/views/PlayerResult";
 export {default as NotFound} from "./components/views/NotFound";
 
 export {default as NavBar} from "./components/header/NavBar";

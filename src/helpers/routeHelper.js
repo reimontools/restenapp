@@ -1,27 +1,120 @@
 import {Redirect, Route} from "react-router-dom";
 import useAppContext from '../hooks/useAppContext';
 
-export const ProtectedRoute = ({component: Component, how = ['Admin', 'Coach'], ...options}) => {
-    const { user, isLogged } = useAppContext();
-    return (
-        <Route {...options}>
-            {(() => {
-                if (!isLogged())
-                    return <Redirect to="/sign-in" />
-                if (!how.includes(user.rol, "*"))
-                    return <Redirect to="/" />
-                else 
-                    return <Component />
-            })}
-        </Route>
-    );
-};
+import SignIn from '../components/views/SignIn';
+import Player from '../components/views/Player';
+import Group from '../components/views/Group';
+import Championship from '../components/views/Championship';
+import User from '../components/views/User';
+import PlayerResult from '../components/views/PlayerResult';
+import Home from '../components/views/Home';
+import GroupPlayer from '../components/views/GroupPlayer';
+import NotFound from '../components/views/NotFound';
 
-export const UnProtectedRoute = ({component: Component, ...options}) => {
-    const { isLogged } = useAppContext();
-    return (
-        <Route {...options}>
-            {!isLogged() ? (<Component />) : (<Redirect to="/" />)}
-        </Route>
-    );
+// 0: all,
+// 1: auth,
+// 2: Non auth
+
+export const ROUTES = [
+    {
+        title: 'Home',
+        path: '/',
+        component: Home, 
+        allowTo: ['*'],
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Player Result',
+        path: '/player-result',
+        component: PlayerResult, 
+        allowTo: ['*'], 
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Group',
+        path: '/group',
+        component: Group, 
+        allowTo: ['Admin', 'Coach'],
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Championship',
+        path: '/championship',
+        component: Championship, 
+        allowTo: ['Admin', 'Coach'],
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Players',
+        path: '/player',
+        component: Player, 
+        allowTo: ['Admin', 'Coach'],
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Users',
+        path: '/user',
+        component: User, 
+        allowTo: ['Admin'],
+        showInBar: true,
+        auth: 'auth'
+    },
+    {
+        title: 'Sign In',
+        path: '/sign-in',
+        component: SignIn, 
+        allowTo: ['*'],
+        showInBar: false,
+        auth: 'nonAuth'
+    },
+    {
+        title: 'Group Player',
+        path: '/group-player/:prm_group_id',
+        component: GroupPlayer, 
+        allowTo: ['Admin', 'Coach'],
+        showInBar: false,
+        auth: 'auth'
+    },
+    {
+        title: 'Not Found',
+        path: '*',
+        component: NotFound, 
+        allowTo: ['*'],
+        showInBar: false,
+        auth: 'all'
+    }
+];
+
+export const CustomRoute = ({component: Component, allowTo = ['*'], auth, ...options}) => {
+    const { user, isLogged } = useAppContext();
+    if (auth === "all") {
+        return (
+            <Route {...options}>
+                <Component />
+            </Route>
+        );
+    };
+    if (auth === "nonAuth") {
+        return (
+            <Route {...options}>
+                {!isLogged() ? (<Component />) : (<Redirect to="/" />)}
+            </Route>
+        );
+    };
+    if (auth === "auth") {
+        return (
+            <Route {...options}>
+                {(() => {
+                    if (!isLogged()) return <Redirect to="/sign-in" />
+                    if (!allowTo.includes(user.rol) && !allowTo.includes('*')) return <Redirect to="/" />
+                    return <Component />
+                })}
+            </Route>
+        );
+    };
 };

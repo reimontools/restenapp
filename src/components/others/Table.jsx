@@ -34,6 +34,12 @@ const TableStyled = styled.table `
             color: blue;
         };
     };
+
+    tbody tr:hover td {
+        background-color: #dddd;
+        cursor: pointer;
+    };
+
     .td-container {
         display: flex;
         align-items: center; 

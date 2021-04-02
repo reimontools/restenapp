@@ -4,11 +4,11 @@ import jwt_decode from 'jwt-decode';
 export const AppContext = createContext();
 
 const AppProvider = ({children}) => {
-    const defaultUser = {id: 0, rol: 'Stranger'};
+    const defaultUser = null;
     const cookieUser = 'USERINFO';
 
     const getUser = () => {
-        var user = cookie.getJSON("USERINFO");
+        var user = cookie.getJSON(cookieUser);
         if (user) {
             return jwt_decode(user.token);
         };
@@ -25,10 +25,10 @@ const AppProvider = ({children}) => {
         setUser(defaultUser);
     };
     const isLogged = () => {
-        if (user.id === 0) {
-            return false;
-        } else {
+        if (user) {
             return true;
+        } else {
+            return false;
         };
     };
 
