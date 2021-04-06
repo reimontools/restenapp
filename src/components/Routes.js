@@ -1,7 +1,7 @@
 import {BrowserRouter as Router, Switch} from "react-router-dom";
 import { Header } from "../component";
 import styled from "styled-components";
-import { ROUTES, CustomRoute } from "../helpers/routeHelper";
+import { ROUTES, ProtectedRoute } from "../helpers/routeHelper";
 
 export const ContentStyled = styled.div `
     position: absolute;
@@ -20,7 +20,7 @@ const Routes = () => {
             <ContentStyled>
                 <Switch> 
                     {ROUTES.map((route, key) => {
-                        return <CustomRoute exact path={route.path} component={route.component} key={key} auth={route.auth} allowTo={route.allowTo}/>
+                        return <ProtectedRoute exact path={route.path} component={route.component} key={key} auth={route.auth} allowTo={route.allowTo}/>
                     })}
                 </Switch>
             </ContentStyled>

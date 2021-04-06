@@ -20,9 +20,9 @@ const DivSelectStyled = styled.div `
         height: 45px;
         padding: 0 40px 0 10px;
         transition: .3s ease all;
-        border: 3px solid #0e70b8;
         outline: none;
         &:focus {
+            border: 3px solid #0e70b8;
             box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
         };
     };

@@ -11,6 +11,7 @@ const TitleBasicStyled = styled.div `
     font-family: sundayBest;
     font-weight: 700;
     text-align: left;
+    margin: ${({ margin }) => margin ? margin : '0'};
 `;
 
 const TitleBasic2Styled = styled.div `
@@ -22,7 +23,7 @@ const TitleBasic2Styled = styled.div `
 const Title = {
     Basic: ({children, ...props}) => {
         return ( 
-            <TitleBasicStyled>
+            <TitleBasicStyled {...props}>
                 {children}
             </TitleBasicStyled>
         );

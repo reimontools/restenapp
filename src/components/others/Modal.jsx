@@ -13,7 +13,10 @@ const ModalStyled = styled.div `
     height: 100%;
     bottom: 100%;
     
-    z-index: 10000;
+    /* z-index: 10000; */
+
+    z-index: ${({ zindex }) => zindex ? zindex : 10000};
+
     transition: all .5s ease-in-out;
     overflow: auto;
     
@@ -43,11 +46,11 @@ const ModalStyled = styled.div `
 `;
 
 const Modal = {
-    ForForm: ({isOpen, closeModal, children}) => {
+    ForForm: ({isOpen, closeModal, children, ...props}) => {
         return ReactDOM.createPortal(
-            <ModalStyled className={isOpen && 'open form'}>
+            <ModalStyled className={isOpen && 'open form'} {...props}>
                 <div className="dialog ">
-                    <Icon.Basic family="close" action={closeModal} right="10px" top="10px" hover/>
+                    <Icon.Basic family="close" action={closeModal} right="10px" top="10px" size="30px" hover/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")
@@ -57,7 +60,7 @@ const Modal = {
         return ReactDOM.createPortal(
             <ModalStyled className={isOpen && 'open'}>
                 <div className="dialog">
-                <Icon.Basic family="close" action={closeModal} right="10px" top="10px" hover/>
+                <Icon.Basic family="close" action={closeModal} right="10px" top="10px" size="30px" hover/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")

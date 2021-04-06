@@ -4,8 +4,10 @@ import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 const TableStyled = styled.table `
     width: 100%;
     border-collapse: collapse;
+    margin: ${({ margin }) => margin ? margin : '0'};
     thead {
         background: #0e70b8;
+        /* height: 45px; */
     };
     thead tr th {
         font-size: 15px;
@@ -13,7 +15,8 @@ const TableStyled = styled.table `
         letter-spacing: 0.35px;
         color: #FFFFFF;
         padding: 12px;
-        vertical-align: top;
+        vertical-align: center;
+        height: 45px;
     };
     thead tr th:first-child {
         border-radius: 5px 0 0 0
@@ -22,6 +25,7 @@ const TableStyled = styled.table `
         border-radius: 0 5px 0 0
     };
     tbody tr td {
+        
         font-size: 14px;
         font-weight: normal;
         letter-spacing: 0.35px;
@@ -93,9 +97,9 @@ const TableStyled = styled.table `
 `;
 
 const Table = {
-    Primary: ({children}) => {
+    Primary: ({children, ...props}) => {
         return (
-            <TableStyled>
+            <TableStyled {...props}>
                 {children}
             </TableStyled>
         );

@@ -100,7 +100,19 @@ const Input = {
             </DivInputStyled>
         );
     },
-
+    TextAction: ({label, action, ...inputTextProps}) => {
+        return (
+            <DivInputStyled>
+                {label && <label>{label}</label>}
+                <input 
+                    type="text"
+                    autoComplete="off"
+                    {...inputTextProps}
+                    onChange={e => action(e.target.value)}
+                />
+            </DivInputStyled>
+        );
+    },
     TextValidation: ({register, label, error, ...inputTextProps}) => {
         return (
             <DivInputStyled>
@@ -126,20 +138,6 @@ const Input = {
                     ref={register}
                 />
                 {error && <p>{error.message}</p>}
-            </DivInputStyled>
-        );
-    },
-
-    TextAction: ({label, action, ...inputTextProps}) => {
-        return (
-            <DivInputStyled>
-                {label && <label>{label}</label>}
-                <input 
-                    type="text"
-                    autoComplete="off"
-                    {...inputTextProps}
-                    onChange={e => action(e.target.value)}
-                />
             </DivInputStyled>
         );
     },

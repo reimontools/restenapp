@@ -11,10 +11,6 @@ import Home from '../components/views/Home';
 import GroupPlayer from '../components/views/GroupPlayer';
 import NotFound from '../components/views/NotFound';
 
-// 0: all,
-// 1: auth,
-// 2: Non auth
-
 export const ROUTES = [
     {
         title: 'Home',
@@ -90,7 +86,7 @@ export const ROUTES = [
     }
 ];
 
-export const CustomRoute = ({component: Component, allowTo = ['*'], auth, ...options}) => {
+export const ProtectedRoute = ({component: Component, allowTo = ['*'], auth, ...options}) => {
     const { user, isLogged } = useAppContext();
     if (auth === "all") {
         return (

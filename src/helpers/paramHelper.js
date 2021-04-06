@@ -1,4 +1,4 @@
-import { BiEdit } from "react-icons/bi";
+import { BiEdit, BiFilterAlt } from "react-icons/bi";
 import { GoPlus } from "react-icons/go";
 import { MdClose } from "react-icons/md";
 import { RiAliensLine } from "react-icons/ri";
@@ -24,6 +24,7 @@ export const getColorByFamily = family => {
         case "delete": return "#bb3345";
         case "remove": return "#bb3345";
         case "search": return "#0d5f1b";
+        case "filter": return "#0d5f1b";
         default: return "#0e70b8"
     };
 };
@@ -40,6 +41,7 @@ export const getIconByFamily = family => {
         case "delete": return <BiTrash />;
         case "remove": return <MdClose />;
         case "search": return <IoMdSearch />;
+        case "filter": return <BiFilterAlt />;
         default: return <RiAliensLine />
     };
 };

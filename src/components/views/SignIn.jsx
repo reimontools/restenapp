@@ -12,8 +12,7 @@ const SignIn = () => {
     
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
-        email: Yup.string().email("Invalid format").required('Required'),
-        password: Yup.string().required('Required')
+        email: Yup.string().email("Invalid format").required('Required')
     });
 
     const { register, handleSubmit, errors } = useForm({
@@ -40,7 +39,7 @@ const SignIn = () => {
     return (
         <Container.Basic>
             <Title.Basic>Sign In</Title.Basic>
-            <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
+            <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} />
             <Input.TextValidation name="password" type="password" register={register} error={errors.password} />
             <Button.Basic action={handleSubmit(logIn)}>Sign In</Button.Basic>
         </Container.Basic>
