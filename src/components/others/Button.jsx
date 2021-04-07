@@ -18,7 +18,7 @@ const DivButtonStyled = styled.button `
     transition: .1s ease all;
     &:hover {
         /* box-shadow: 3px 0px 30px rgba(163, 163, 163, 1); */
-        transform: ${({ hover }) => hover ? 'scale(1.5)' : 'none'};
+        transform: ${({ hover }) => hover ? 'scale(1.2)' : 'none'};
     };
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         &:hover {
@@ -27,13 +27,18 @@ const DivButtonStyled = styled.button `
     };
 `;
 
+const execActionStopingPropagation = (e, action) => {
+    e.stopPropagation();
+    action();
+};
+
 const Button = {
     Basic: ({action, ...props}) => {
         return (
             <DivButtonStyled 
                 type='button'
                 {...props}
-                onClick={action}
+                onClick={e => execActionStopingPropagation(e, action)}
             />
         );
     }

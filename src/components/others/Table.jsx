@@ -68,7 +68,8 @@ const TableStyled = styled.table `
             text-align: right;
             padding-left: 40%;
             position: relative;
-            background-color: #d1ebf7;
+            /* background-color: #d1ebf7; */
+            background-color: #dbebf36e;
             word-wrap: break-word;
         };
         tbody tr td:before {

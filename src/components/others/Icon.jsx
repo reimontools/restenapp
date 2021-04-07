@@ -24,12 +24,17 @@ const DivIconStyled = styled.div `
     };
 `;
 
+const execActionStopingPropagation = (e, action) => {
+    e.stopPropagation();
+    action();
+};
+
 const Icon = {
     Basic: ({action, ...props}) => {
         return (
             <DivIconStyled 
                 {...props} 
-                onClick={action} > 
+                onClick={e => execActionStopingPropagation(e, action)} > 
                 { getIconByFamily(props.family) }
             </DivIconStyled>
         );

@@ -8,7 +8,7 @@ import Championship from '../components/views/Championship';
 import User from '../components/views/User';
 import PlayerResult from '../components/views/PlayerResult';
 import Home from '../components/views/Home';
-import GroupPlayer from '../components/views/GroupPlayer';
+import Match from '../components/views/Match';
 import NotFound from '../components/views/NotFound';
 
 export const ROUTES = [
@@ -69,9 +69,9 @@ export const ROUTES = [
         auth: 'nonAuth'
     },
     {
-        title: 'Group Player',
-        path: '/group-player/:prm_group_id',
-        component: GroupPlayer, 
+        title: 'Match',
+        path: '/match/:prm_group_id',
+        component: Match, 
         allowTo: ['Admin', 'Coach'],
         showInBar: false,
         auth: 'auth'

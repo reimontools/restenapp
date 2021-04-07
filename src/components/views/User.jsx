@@ -217,6 +217,24 @@ const User = () => {
         };
     };
 
+    const renderBtnPlayers = (user) => {
+        var text = "", family = "";
+        if (user.count_players > 0) {
+            text = user.count_players + " Players";
+            family = "addPerson";
+        } else {
+            text = "No Players";
+            family = "remove";
+        };
+        if (user.rol_name === "User") return <Button.Basic family={family} action={() => showModalAssign(user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+        return null;
+    };
+
+    const beforeCloseModalAssing = () => {
+        fetchUsers();
+        closeModalAssign();
+    };
+
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
@@ -233,6 +251,7 @@ const User = () => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Rol</th>
+                                <th>Players</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -242,9 +261,11 @@ const User = () => {
                                     <td data-label='Name'>{user.name}</td>
                                     <td data-label='Email'>{user.email}</td>
                                     <td data-label='Rol'>{user.rol_name}</td>
+                                    <td data-label=''>
+                                        {renderBtnPlayers(user)}
+                                    </td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
-                                            <Icon.Basic family="addPerson" action={() => showModalAssign(user)} hover/>
                                             <Icon.Basic family="edit" action={() => showModalCrud(user)} hover/>
                                             <Icon.Basic family="delete" action={() => staUser(user.user_id)} hover/>
                                         </div>
@@ -253,7 +274,10 @@ const User = () => {
                             ))}
                         </tbody>
                     </Table.Primary>
-                </Container.Table>}
+                </Container.Table>
+            }
+
+            {/* MODAL CRUD ################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentUserId === 0 ? 'New User' : 'Update User'}</Title.Basic>
@@ -264,7 +288,9 @@ const User = () => {
                     <Button.Basic action={handleSubmit(addUser)} margin="0 0 10px 0px">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
-            <Modal.ForForm isOpen={isOpenModalAssign} closeModal={closeModalAssign}>
+            
+            {/* MODAL ASSIGN ################################################################################################ */}
+            <Modal.ForForm isOpen={isOpenModalAssign} closeModal={beforeCloseModalAssing}>
                 <Container.Basic>
                     <Title.Basic>
                         Assigned players
@@ -292,10 +318,11 @@ const User = () => {
                     </Table.Primary>}
                 </Container.Basic>
             </Modal.ForForm>
+            
+            {/* MODAL PLAYER ################################################################################################ */}
             <Modal.ForForm isOpen={isOpenModalPlayer} closeModal={closeModalPlayer}>
                 <Container.Basic>
-                    <Title.Basic>
-                        Select players
+                    <Title.Basic>Select players
                         <Icon.Basic family="filter" action={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
                     </Title.Basic>
                     {hasFilter && 

@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Card, Select, Table, Container, Loading } from "../../component";
+import { Input, Icon, Title, Modal, Button, Select, Table, Container, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -13,8 +13,8 @@ const Player = () => {
     useEffect(() => fetchPlayers(), []);
     const [players, setPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentID, setCurrentID] = useState(0);
-    const [isOpenModal, openModal, closeModal] = useModal();
+    const [currentPlayerId, setCurrentPlayerId] = useState(0);
+    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     const defaultData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
     const genderList = useList("list/gender");
     const [loading, setLoading] = useState(true);
@@ -37,10 +37,10 @@ const Player = () => {
         resolver: yupResolver(schema)
     });
 
-    const openForm = player => {
-        setCurrentID(player.player_id);
+    const showModalCrud = player => {
+        setCurrentPlayerId(player.player_id);
         reset(player);
-        openModal();
+        openModalCrud();
     };
 
     /*CRUD ###########################################################################################*/ 
@@ -53,11 +53,11 @@ const Player = () => {
 
     const addPlayer = async data => {
         try {
-            const res = await axios.post("player", {player_id: currentID, ...data});
+            const res = await axios.post("player", {player_id: currentPlayerId, ...data});
             switch(res.data.result.cod) {
                 case 0:
                     fetchPlayers();
-                    closeModal();
+                    closeModalCrud();
                     break;
                 case 1:
                     alert('Ya existe!');
@@ -97,21 +97,10 @@ const Player = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title={currentID === 0 ? 'New Player' : 'Update Player'}>
-                    <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.TextValidation name="gender_id" type="select" register={register} content={genderList} />
-                    <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
-                </Card.Primary>
-            </Modal.ForForm>
-
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
-
             {loading 
                 ? <Loading/>
                 : <Container.Table>
@@ -132,7 +121,7 @@ const Player = () => {
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => openForm(player)} hover/>
+                                            <Icon.Basic family="edit" action={() => showModalCrud(player)} hover/>
                                             <Icon.Basic family="delete" action={() => staPlayer(player.player_id)} hover/>
                                         </div>
                                     </td>
@@ -142,6 +131,18 @@ const Player = () => {
                     </Table.Primary>
                 </Container.Table>
             }
+
+            {/* MODAL CRUD ################################################################################################## */}
+            <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
+                <Container.Basic>
+                    <Title.Basic>{currentPlayerId === 0 ? 'New Player' : 'Update Player'}</Title.Basic>
+                    <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
+                    <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
+                    <Select.TextValidation name="gender_id" type="select" register={register} content={genderList} />
+                    <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
+                    <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
+                </Container.Basic>
+            </Modal.ForForm>
         </Container.Primary>
     );
 };

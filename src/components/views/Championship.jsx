@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Card, Table, Container, Icon, Loading } from "../../component";
+import { Input, Modal, Button, Title, Table, Container, Icon, Loading } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,8 +12,8 @@ const Championship = () => {
     useEffect(() => fetchChampionship(), []);
     const [championships, setChampionships] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentID, setCurrentID] = useState(0);
-    const [isOpenModal, openModal, closeModal] = useModal();
+    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     const defaultData = {championship_id: 0, name: '', state: 0};
     const [loading, setLoading] = useState(true);
 
@@ -27,10 +27,10 @@ const Championship = () => {
         resolver: yupResolver(schema)
     });
 
-    const openForm = championship => {
-        setCurrentID(championship.championship_id);
+    const showModalCrud = championship => {
+        setCurrentChampionshipId(championship.championship_id);
         reset(championship);
-        openModal();
+        openModalCrud();
     };
 
     /*CRUD ###########################################################################################*/ 
@@ -42,13 +42,12 @@ const Championship = () => {
     };
 
     const addChampionship = async data => {
-        // console.log('Antes de guardar', {user_id: currentID, ...data});
         try {
-            const res = await axios.post("championship", {championship_id: currentID, ...data});
+            const res = await axios.post("championship", {championship_id: currentChampionshipId, ...data});
             switch(res.data.result.cod) {
                 case 0:
                     fetchChampionship();
-                    closeModal();
+                    closeModalCrud();
                     break;
                 case 1:
                     alert('Ya existe!');
@@ -79,17 +78,9 @@ const Championship = () => {
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <Modal.ForForm isOpen={isOpenModal} closeModal={closeModal}>
-                <Card.Primary title={currentID === 0 ? 'New Championship' : 'Update Championship'}>
-                    <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
-                    {currentID !== 0 && <Input.Check name="state" text="Finished?" register={register} />}
-                    <Button.Basic action={handleSubmit(addChampionship)}>Save</Button.Basic>
-                </Card.Primary>
-            </Modal.ForForm>
-
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" action={() => openForm(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
             {loading 
                 ? <Loading/>
@@ -118,7 +109,7 @@ const Championship = () => {
                                     <td data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
                                     <td data-label=''>
                                         <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => openForm(championship)} hover/>
+                                            <Icon.Basic family="edit" action={() => showModalCrud(championship)} hover/>
                                             <Icon.Basic family="delete" action={() => staChampionship(championship.championship_id)} hover/>
                                         </div>
                                     </td>
@@ -128,6 +119,16 @@ const Championship = () => {
                     </Table.Primary>
                 </Container.Table>
             }
+
+            {/* MODAL CRUD ################################################################################################## */}
+            <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
+                <Container.Basic>
+                    <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
+                    <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
+                    {currentChampionshipId !== 0 && <Input.Check name="state" text="Finished?" register={register} />}
+                    <Button.Basic action={handleSubmit(addChampionship)}>Save</Button.Basic>
+                </Container.Basic>
+            </Modal.ForForm>
         </Container.Primary>
     );
 };

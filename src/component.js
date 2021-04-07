@@ -6,7 +6,7 @@ export {default as SignIn} from "./components/views/SignIn";
 export {default as Player} from "./components/views/Player";
 export {default as User} from "./components/views/User";
 export {default as Group} from "./components/views/Group";
-export {default as GroupPlayer} from "./components/views/GroupPlayer";
+export {default as Match} from "./components/views/Match";
 export {default as Championship} from "./components/views/Championship";
 export {default as PlayerResult} from "./components/views/PlayerResult";
 export {default as NotFound} from "./components/views/NotFound";
@@ -19,7 +19,6 @@ export {default as Loading} from "./components/others/Loading";
 export {default as Modal} from "./components/others/Modal";
 export {default as Title} from "./components/others/Title";
 
-export {default as Card} from "./components/others/Card";
 export {default as Input} from "./components/others/Input";
 export {default as Select} from "./components/others/Select";
 export {default as Button} from "./components/others/Button";
