@@ -6,10 +6,10 @@ const DivSelectStyled = styled.div `
     color: #222;
     label {
         position: absolute;
-            top: -10px;
+        top: -10px;
         font-weight: 600;
         padding: 3px;
-        cursor: pointer; 
+        cursor: pointer;
     };
     select {
         -webkit-appearance: none;
@@ -21,12 +21,16 @@ const DivSelectStyled = styled.div `
         padding: 0 40px 0 10px;
         transition: .3s ease all;
         outline: none;
+        border: 2px solid #0e70b8;
         &:focus {
-            border: 3px solid #0e70b8;
             box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
         };
+        &.disable {
+            pointer-events: none;
+            border: 2px solid #D3D3D3;
+            color: #D3D3D3;
+        };
     };
-    
     p {
         font-size: 10px;
         font-weight: 600;
@@ -39,29 +43,34 @@ const DivSelectStyled = styled.div `
 `;
 
 const Select = {
-    Basic: ({label, content, action, ...inputTextProps}) => {
+    Validation: ({register, ...props}) => {
         return (
             <DivSelectStyled>
-                {label && <label>{label}</label>}
-                <select 
-                    onChange={e => action(e)}
-                    {...inputTextProps}>
-                        {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                <select name={props.name} ref={register} className={props.disable ? "disable" : ""}>
+                    {props.text && <option hidden value="">{props.text}</option>}
+                    {props.content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                </select>
+                {props.error && <p>{props.error.message}</p>}
+            </DivSelectStyled>
+        );
+    },
+    Filter: ({text, content, action, ...props}) => {
+        return (
+            <DivSelectStyled>
+                <select name={props.name} onChange={e => action(e)}>
+                    {text && <option value="">{text}</option>}
+                    {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
                 </select>
             </DivSelectStyled>
         );
     },
-    TextValidation: ({register, label, error, content, ...inputTextProps}) => {
+    Basic: ({text, content, action, ...props}) => {
         return (
             <DivSelectStyled>
-                {label && <label>{label}</label>}
-                <select 
-                    ref={register}
-                    {...inputTextProps}>
-                        {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
-                        {/* <option hidden value="">Select one...</option> */}
+                <select name={props.name} onChange={e => action(e)}>
+                    {text && <option hidden value="">{text}</option>}
+                    {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
                 </select>
-                {error && <p>{error.message}</p>}
             </DivSelectStyled>
         );
     },
@@ -69,7 +78,7 @@ const Select = {
         return (
             <DivSelectStyled>
                 {label && <label>{label}</label>}
-                <select 
+                <select
                     ref={register}
                     onChange={e => action(e.target.value)}
                     {...inputTextProps}>

@@ -68,9 +68,12 @@ const TableStyled = styled.table `
             text-align: right;
             padding-left: 40%;
             position: relative;
-            /* background-color: #d1ebf7; */
             background-color: #dbebf36e;
             word-wrap: break-word;
+        };
+        tbody tr:hover td {
+            background-color: #dbebf36e;
+            cursor: pointer;
         };
         tbody tr td:before {
             content: attr(data-label);
@@ -94,7 +97,6 @@ const TableStyled = styled.table `
             justify-content: space-between;
         };
     };
-
 `;
 
 const Table = {

@@ -5,9 +5,8 @@ const TitleBasicStyled = styled.div `
     font-size: ${({ fontSize }) => fontSize ? fontSize : '15px'};
     display: flex;
     align-items: center; 
-    justify-content: center;
+    justify-content: ${({ flexJustifyContent }) => flexJustifyContent ? flexJustifyContent : 'center'};
     width: 100%;
-    /* font-size: 15px; */
     color: rgb(55, 55, 55);
     font-weight: 700;
     text-align: left;

@@ -1,44 +1,35 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Select, Table, Container, Loading, Title } from "../../component";
+import { Input, Icon, Modal, Button, Select, Table, Container, Loading, Title, Dialog } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
-const Group = () => {
+const Seed = () => {
+    const { prm_championship_id } = useParams();
     const history = useHistory();
-
-    const [championships, setChampionships] = useState([]);
-    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
     const [groups, setGroups] = useState([]);
     const [currentGroupId, setCurrentGroupId] = useState(0);
-    const defaultData = {group_id: 0, name: ''};
+    // const defaultData = {group_id: 0, name: ''};
 
     useEffect(() => {
-        async function fetchChampionships() {
-            const res = await getList("championship/active");
-            setChampionships(res);
-            fetchGroups(res[0].championship_id);
-            setCurrentChampionshipId(res[0].championship_id);
-        };
-        fetchChampionships();
-    }, []);
+        fetchGroups(prm_championship_id);
+    }, [prm_championship_id]); 
 
-    const goGroupPlayer = (id) => {
+    const goGroupPlayer = id => {
         history.push('/match/' + id);
     };
 
     const [loading, setLoading] = useState(true);
-
     const [groupPlayers, setGroupPlayers] = useState([]);
-    const defaultSearchOptions = {filter_gender: "*", filter_age: "", filter_fullname: ""};
+    const defaultSearchOptions = {filter_gender: "", filter_age: "", filter_fullname: ""};
     const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
     const [hasFilter, setHasFilter] = useState(false);
-    const genderList = [{gender_id: "*", name: "Filter by gender..."}, ...useList("list/gender")];
+    const genderList = useList("list/gender");
     const [playerSelected, setPlayerSelected] = useState([]);
     const playerList = useList('player');
     const playerListFiltered = playerList.filter(filByGender).filter(filByAge).filter(filByFullName).filter(filBySelected).filter(filByAlreadyOnGroup);
@@ -46,6 +37,9 @@ const Group = () => {
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     const [isOpenModalPlayer, openModalPlayer, closeModalPlayer] = useModal();
     const [isOpenModalAssign, openModalAssign, closeModalAssign] = useModal();
+
+    const [dialogOptions, setDialogOptions] = useState({});
+    // const [searchTerm, setSearchTerm] = useState("");
     
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
@@ -70,13 +64,8 @@ const Group = () => {
         openModalAssign();
     };
 
-    const handleChampionshipOnChange = (id) => {
-        setCurrentChampionshipId(id);
-        fetchGroups(id);
-    };
-
     /*CRUD ###########################################################################################*/ 
-    const fetchGroups = async (id) => {
+    const fetchGroups = async id => {
         setLoading(true);
         const res = await getList("group/" + id);
         setGroups(res);
@@ -88,7 +77,7 @@ const Group = () => {
             const res = await axios.post("group", {group_id: currentGroupId, ...data});
             switch(res.data.result.cod) {
                 case 0:
-                    fetchGroups(currentChampionshipId);
+                    fetchGroups(prm_championship_id);
                     closeModalCrud();
                     break;
                 case 1:
@@ -106,20 +95,20 @@ const Group = () => {
         };
     };
     
-    const staGroup = async (id) => {
-        try {
-            const res = await axios.put("group/" + id);
-            if (!res.data.error) {
-                fetchGroups();
-            };
-        } catch (err) {
-            console.log(err);
-        };
-    };
+    // const staGroup = async (id) => {
+    //     try {
+    //         const res = await axios.put("group/" + id);
+    //         if (!res.data.error) {
+    //             fetchGroups(prm_championship_id);
+    //         };
+    //     } catch (err) {
+    //         console.log(err);
+    //     };
+    // };
     
     /*PLAYER #########################################################################################*/ 
     function filByGender(player) {
-        if(searchOptions.filter_gender === "*") {
+        if(searchOptions.filter_gender === "") {
             return player;
         } else if (player.gender_id === parseInt(searchOptions.filter_gender)) {
             return player;
@@ -242,24 +231,47 @@ const Group = () => {
     };
 
     const beforeCloseModalAssing = () => {
-        fetchGroups(currentChampionshipId);
+        fetchGroups(prm_championship_id);
         closeModalAssign();
+    };
+
+    const renderActions = obj => {
+        return (
+            <div className="td-container">
+                <Icon.Basic 
+                    action={() => showModalCrud(obj)}
+                    family="edit"
+                    hover
+                />
+                {/* <Icon.Basic 
+                    action={() => setDialogOptions({
+                        family: "delete",
+                        title: 'Delete this group?', 
+                        text : 'Are you sure you want to delete this group?', 
+                        action: () => staGroup(obj.group_id)})} 
+                    family="delete" 
+                    hover
+                /> */}
+            </div>
+        );
     };
 
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
-            <div className="search-container">
-                <Select.OnChange name="championship_id" register={register} content={championships} action={handleChampionshipOnChange} />
-                {championships[0] && <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>}
-            </div>
+            <Title.Basic fontSize="20px">{groups[0]?.championship_name}</Title.Basic> 
+            <Title.Basic>{groups[0]?.championship_type_name}</Title.Basic>
+            {/* <div className="search-container">
+                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
+                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
+            </div> */}
             {loading 
                 ? <Loading/>
                 : <Container.Table>
                     <Table.Primary>
                         <thead>
                             <tr>
-                                <th>Group</th>
+                                <th>Phase</th>
                                 <th>Players</th>
                                 <th>Actions</th>
                             </tr>
@@ -268,31 +280,22 @@ const Group = () => {
                             {groups.map(group => (
                                 <tr key={group.group_id} onClick={() => goGroupPlayer(group.group_id)}>
                                     <td data-label='Group'>{group.name}</td>
-                                    <td data-label=''>
-                                        {renderBtnPlayers(group)}
-                                    </td>
-                                    <td data-label='Actions'>
-                                        <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => showModalCrud(group)} hover/>
-                                            <Icon.Basic family="delete" action={() => staGroup(group.group_id)} hover/>
-                                        </div>
-                                    </td>
+                                    <td data-label=''>{renderBtnPlayers(group)}</td>
+                                    <td data-label='Actions'>{renderActions(group)}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </Table.Primary>
                 </Container.Table>
             }
-
             {/* MODAL CRUD ################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentGroupId === 0 ? 'New Group' : 'Update Group'}</Title.Basic>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Button.Basic action={handleSubmit(addGroup)} margin="0 0 10px 0px">Save</Button.Basic>
+                    <Button.Basic action={handleSubmit(addGroup)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
-            
             {/* MODAL ASSIGN ################################################################################################ */}
             <Modal.ForForm isOpen={isOpenModalAssign} closeModal={beforeCloseModalAssing}>
                 <Container.Basic>
@@ -321,9 +324,8 @@ const Group = () => {
                         </tbody>
                     </Table.Primary>}
                 </Container.Basic>
-            </Modal.ForForm>
-            
-            {/* MODAL PLAYER ################################################################################################ */}
+            </Modal.ForForm>    
+            {/* MODAL FILTER PLAYER ######################################################################################### */}
             <Modal.ForForm isOpen={isOpenModalPlayer} closeModal={closeModalPlayer}>
                 <Container.Basic>
                     <Title.Basic>Select players
@@ -331,7 +333,7 @@ const Group = () => {
                     </Title.Basic>
                     {hasFilter && 
                         <>
-                            <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genderList} action={handleSearchOptions}/>
+                            <Select.Filter name="filter_gender" text="All the guys" value={searchOptions.filter_gender} content={genderList} action={handleSearchOptions}/>
                             <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="Filter by age..." action={handleSearchOptions}/>
                             <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} placeholder="Filter by name" action={handleSearchOptions}/>
                         </>
@@ -376,9 +378,11 @@ const Group = () => {
                         </tbody>
                     </Table.Primary>
                 </Container.Basic>
-            </Modal.ForForm>
+            </Modal.ForForm>    
+            {/* DIALOG  ##################################################################################################### */}
+            <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
         </Container.Primary>
     );
 };
 
-export default Group;
+export default Seed;

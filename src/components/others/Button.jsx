@@ -7,19 +7,19 @@ const DivButtonStyled = styled.button `
     padding: 5px;
     height: ${({ height }) => height ? height : '45px'};
     background: ${({ family }) => getColorByFamily(family)};
-    width: ${({ fit }) => fit ? 'auto' : '100%'};
+    width: ${({ width }) => width ? width : 'auto'};
     font-size: ${({ size }) => size ? size : '16px'};
     color: #fff;
-    /* font-weight: 600; */
-    font-weight: ${({ weight }) => weight ? weight : '600'};
+    font-weight: ${({ weight }) => weight ? weight : '400'};
     border: none;
     outline: none;
     border-radius: 5px;
-    transition: .1s ease all;
+    transition: .1s;
+
     &:hover {
-        /* box-shadow: 3px 0px 30px rgba(163, 163, 163, 1); */
         transform: ${({ hover }) => hover ? 'scale(1.2)' : 'none'};
     };
+
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         &:hover {
             transform: none;

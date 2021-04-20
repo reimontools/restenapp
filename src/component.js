@@ -1,23 +1,15 @@
 export {default as App} from "./components/App";
 export {default as Routes} from "./components/Routes";
 
-export {default as Home} from "./components/views/Home";
-export {default as SignIn} from "./components/views/SignIn";
-export {default as Player} from "./components/views/Player";
-export {default as User} from "./components/views/User";
-export {default as Group} from "./components/views/Group";
-export {default as Match} from "./components/views/Match";
-export {default as Championship} from "./components/views/Championship";
-export {default as PlayerResult} from "./components/views/PlayerResult";
-export {default as NotFound} from "./components/views/NotFound";
-
 export {default as NavBar} from "./components/header/NavBar";
 export {default as Header} from "./components/header/Header";
 export {default as Logo} from "./components/header/Logo";
 export {default as Burger} from "./components/header/Burger";
 export {default as Loading} from "./components/others/Loading";
 export {default as Modal} from "./components/others/Modal";
+export {default as Dialog} from "./components/others/Dialog";
 export {default as Title} from "./components/others/Title";
+export {default as Line} from "./components/others/Line";
 
 export {default as Input} from "./components/others/Input";
 export {default as Select} from "./components/others/Select";

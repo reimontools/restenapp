@@ -4,7 +4,6 @@ const DivInputStyled = styled.div `
     margin: 10px 0 10px 0;
     width: 100%;
     color: #222;
-
     label {
         position: absolute;
             top: -10px;
@@ -12,7 +11,6 @@ const DivInputStyled = styled.div `
         padding: 3px;
         cursor: pointer; 
     };
-
     input {
         width: 100%;
         background: #fff;
@@ -23,12 +21,11 @@ const DivInputStyled = styled.div `
         padding: 0 10px 0 10px;
         transition: .3s ease all;
         outline: none;
+        border: 2px solid #0e70b8;
         &:focus {
-            border: 3px solid #0e70b8;
             box-shadow: 3px 0px 30px rgba(163, 163, 163, 0.4)
         };
     };
-
     p {
         font-size: 10px;
         font-weight: 600;
@@ -37,52 +34,6 @@ const DivInputStyled = styled.div `
         text-align: right;
         padding-top: 1px;
         padding-right: 5px;
-    };
-
-`;
-
-const DivCheckStyled = styled.div `
-    display: flex;
-    align-items: center; 
-    justify-content: flex-end;
-
-    input {
-        position: absolute;
-        left: 9999px;
-        
-        &:checked + label:after {
-            transform: scale(1);
-        };
-    };
-    
-    label {
-        font-size: 14px;
-        cursor: pointer;
-        position: relative;
-        
-        &:before {
-            content: '';
-            background-color: #0e70b8;
-            border: 1px solid #0e70b8;
-            border-radius: 3px;
-            display: inline-block;
-            position: absolute;
-            left: -18px;
-            bottom: 1px;
-            width: 14px;
-            height: 14px;
-        };
-
-        &:after {
-            content: '✔';
-            color: white;
-            border-radius: 3px;
-            display: inline-block;
-            position: absolute;
-            left: -16px;
-            bottom: 1px;
-            transform: scale(0);
-        };
     };
 `;
 
@@ -139,20 +90,6 @@ const Input = {
                 />
                 {error && <p>{error.message}</p>}
             </DivInputStyled>
-        );
-    },
-
-    Check: ({register, text, ...inputTextProps}) => {
-        return (
-            <DivCheckStyled>
-                <input 
-                    type="checkbox"
-                    id="checkbox"
-                    {...inputTextProps}
-                    ref={register}
-                />
-                <label htmlFor="checkbox">{text}</label>
-            </DivCheckStyled>
         );
     }
 };

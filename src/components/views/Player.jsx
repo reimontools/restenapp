@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Title, Modal, Button, Select, Table, Container, Loading } from "../../component";
+import { Input, Icon, Title, Modal, Button, Select, Table, Container, Loading, Dialog } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,6 +18,7 @@ const Player = () => {
     const defaultData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
     const genderList = useList("list/gender");
     const [loading, setLoading] = useState(true);
+    const [dialogOptions, setDialogOptions] = useState({});
     
     /*VALIDATIONS ####################################################################################*/ 
     const schema = Yup.object().shape({
@@ -74,7 +75,7 @@ const Player = () => {
         };
     };
     
-    const staPlayer = async (id) => {
+    const staPlayer = async id => {
         try {
             const res = await axios.put("player/" + id);
             if (!res.data.error) {
@@ -94,6 +95,27 @@ const Player = () => {
         return null;
     };
 
+    const renderActions = player => {
+        return (
+            <div className="td-container">
+                <Icon.Basic 
+                    action={() => showModalCrud(player)}
+                    family="edit"
+                    hover
+                />
+                <Icon.Basic 
+                    action={() => setDialogOptions({
+                        family: "delete",
+                        title: 'Delete this player?', 
+                        text : 'Are you sure you want to delete this player?', 
+                        action: () => staPlayer(player.player_id)})} 
+                    family="delete" 
+                    hover
+                />
+            </div>
+        );
+    };
+
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
@@ -101,36 +123,28 @@ const Player = () => {
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
-            {loading 
-                ? <Loading/>
-                : <Container.Table>
-                    <Table.Primary>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Actions</th>
+            {loading ? <Loading/> : <Container.Table>
+                <Table.Primary>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {players.filter(filPlayer).map(player => (
+                            <tr key={player.player_id}>
+                                <td data-label='Name'>{player.player_fullname}</td>
+                                <td data-label='Gender'>{player.gender_name}</td>
+                                <td data-label='Age'>{player.player_age}</td>
+                                <td data-label='Actions'>{renderActions(player)}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {players.filter(filPlayer).map(player => (
-                                <tr key={player.player_id}>
-                                    <td data-label='Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender_name}</td>
-                                    <td data-label='Age'>{player.player_age}</td>
-                                    <td data-label='Actions'>
-                                        <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => showModalCrud(player)} hover/>
-                                            <Icon.Basic family="delete" action={() => staPlayer(player.player_id)} hover/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table.Primary>
-                </Container.Table>
-            }
+                        ))}
+                    </tbody>
+                </Table.Primary>
+            </Container.Table> }
 
             {/* MODAL CRUD ################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
@@ -138,11 +152,12 @@ const Player = () => {
                     <Title.Basic>{currentPlayerId === 0 ? 'New Player' : 'Update Player'}</Title.Basic>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.TextValidation name="gender_id" type="select" register={register} content={genderList} />
+                    <Select.Validation name="gender_id" type="select" register={register} content={genderList} />
                     <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Basic action={handleSubmit(addPlayer)}>Save</Button.Basic>
+                    <Button.Basic action={handleSubmit(addPlayer)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
+            <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
         </Container.Primary>
     );
 };

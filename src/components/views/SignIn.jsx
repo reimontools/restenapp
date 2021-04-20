@@ -37,11 +37,11 @@ const SignIn = () => {
     
     /*JSX ############################################################################################*/ 
     return (
-        <Container.Basic>
+        <Container.Basic width="400px">
             <Title.Basic>Sign In</Title.Basic>
             <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} />
             <Input.TextValidation name="password" type="password" register={register} error={errors.password} />
-            <Button.Basic action={handleSubmit(logIn)}>Sign In</Button.Basic>
+            <Button.Basic action={handleSubmit(logIn)} width="100%">Sign In</Button.Basic>
         </Container.Basic>
     );
 };
