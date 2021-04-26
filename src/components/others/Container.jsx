@@ -60,6 +60,15 @@ const ContainerFlex = styled.div `
     margin: ${({ margin }) => margin ? margin : '0'};
 `;
 
+const ContainerFlexWrap = styled.div `
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+`;
+
 const ContainerOverlay = styled.div `
     display: flex;
     justify-content: center;
@@ -93,97 +102,6 @@ const ContainerTableStyled = styled.div `
     width: 90%;
 `;
 
-const ContainerScoreStyled = styled.div `
-    width: 90%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 10px;
-    .score {
-        cursor: pointer;
-        padding: 10px;
-        /* margin-right: 10px; */
-        /* margin: 0 10px 10px 0; */
-        /* width: 250px; */
-        min-width: 200px;
-        border: solid 2px #0e70b8;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: flex-start;
-    };
-    .player {
-        width:100%; 
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-    };
-    .player-name {
-        width: 100%;
-    };
-    .player-score {
-        width:100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    };
-    .player-points {
-        width:100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    };
-    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        .score {
-            min-width: 100%; 
-            /* margin: 0 0 10px 0; */
-        };
-    };
-`;
-
-const ContainerScoreCrudStyled = styled.div `
-    width: 100%;
-    .score {
-        padding: 10px;
-        margin: 10px 0 10px 0;
-        border: solid 2px #0e70b8;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: flex-start;
-    };
-    .player {
-        width:100%; 
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-    };
-    .player-name {
-        width: 100%;
-    };
-    .player-score {
-        width:100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    };
-    .player-points {
-        width:100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    };
-    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        .score {
-            min-width: 100%; 
-            /* margin: 0 0 10px 0; */
-        };
-    };
-`;
-
 const Container = { 
     Basic: ({children, ...props}) => {
         return (
@@ -197,6 +115,13 @@ const Container = {
             <ContainerFlex {...props}>
                 {children}
             </ContainerFlex>
+        );
+    },
+    FlexWrap: ({children, ...props}) => {
+        return (
+            <ContainerFlexWrap {...props}>
+                {children}
+            </ContainerFlexWrap>
         );
     },
     Dialog: ({children, ...props}) => {
@@ -233,21 +158,7 @@ const Container = {
                 {children}
             </ContainerTableStyled>
         );
-    },
-    Score: ({children}) => {
-        return (
-            <ContainerScoreStyled>
-                {children}
-            </ContainerScoreStyled>
-        );
-    },
-    ScoreCrud: ({children}) => {
-        return (
-            <ContainerScoreCrudStyled>
-                {children}
-            </ContainerScoreCrudStyled>
-        );
-    },
+    }
 };
 
 export default Container;

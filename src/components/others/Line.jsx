@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 const LineBasicStyled = styled.div `
-    border-bottom: solid 1px #0e70b8;
+    border-bottom: solid 1px;
+    color: ${({ color }) => color ? color : '#0e70b8'};
     margin: 5px 0 5px 0;
     width: 100%;
 `;

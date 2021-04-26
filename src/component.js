@@ -10,6 +10,7 @@ export {default as Modal} from "./components/others/Modal";
 export {default as Dialog} from "./components/others/Dialog";
 export {default as Title} from "./components/others/Title";
 export {default as Line} from "./components/others/Line";
+export {default as Simbol} from "./components/others/Simbol";
 
 export {default as Input} from "./components/others/Input";
 export {default as Select} from "./components/others/Select";
@@ -17,3 +18,6 @@ export {default as Button} from "./components/others/Button";
 export {default as Icon} from "./components/others/Icon";
 export {default as Table} from "./components/others/Table";
 export {default as Container} from "./components/others/Container";
+export {default as ContainerScoreCrud} from "./components/others/ContainerScoreCrud";
+export {default as ContainerScore} from "./components/others/ContainerScore";
+export {default as ContainerNumber} from "./components/others/ContainerNumber";
