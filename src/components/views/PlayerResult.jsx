@@ -54,8 +54,8 @@ const PlayerResult = () => {
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
-                                            <Icon.Basic action={() => console.log("En desarrollo")} family="edit" hover/>
-                                            <Icon.Basic action={() => console.log("En desarrollo")} family="delete" hover/>
+                                            <Icon.Basic onClick={() => console.log("En desarrollo")} family="edit" hover/>
+                                            <Icon.Basic onClick={() => console.log("En desarrollo")} family="delete" hover/>
                                         </div>
                                     </td>
                                 </tr>

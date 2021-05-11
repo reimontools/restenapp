@@ -11,13 +11,14 @@ export const ContentStyled = styled.div `
     align-items: center; 
     justify-content: center;
     z-index: 100;
+    /* padding-bottom: 20px; */
 `;
 
 const Routes = () => {
     return (
         <Router>
             <Header />
-            <ContentStyled>
+            <ContentStyled className="wea">
                 <Switch> 
                     {ROUTES.map((route, key) => {
                         return <ProtectedRoute exact path={route.path} component={route.component} key={key} auth={route.auth} allowTo={route.allowTo}/>

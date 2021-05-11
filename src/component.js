@@ -17,6 +17,8 @@ export {default as Select} from "./components/others/Select";
 export {default as Button} from "./components/others/Button";
 export {default as Icon} from "./components/others/Icon";
 export {default as Table} from "./components/others/Table";
+export {default as Table2} from "./components/others/Table2";
+export {default as TableNew} from "./components/others/TableNew";
 export {default as Container} from "./components/others/Container";
 export {default as ContainerScoreCrud} from "./components/others/ContainerScoreCrud";
 export {default as ContainerScore} from "./components/others/ContainerScore";

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect, useCallback } from "react";
 import { getList } from '../../helpers/listHelper';
-import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore } from "../../component";
+import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore, Icon } from "../../component";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 
@@ -55,21 +55,6 @@ const Match = () => {
     };
 
     /*HANDLE #########################################################################################*/
-    // const handleWinner = score => {
-    //     let player1 = 0, player2 = 0;
-    //     (score[0].point > score[3].point) ? ++player1 : ++player2;
-    //     (score[1].point > score[4].point) ? ++player1 : ++player2;
-    //     if(player1 === 2 || player2 === 2) {
-    //         console.log("acaesta");
-    //         score[2].point = 0;
-    //         score[5].point = 0;
-    //         setCurrentScore(score);
-    //     } else {
-    //         (score[2].point > score[5].point) ? ++player1 : ++player2;
-    //     };
-    //     // console.log(score);
-    // };
-
     const handleScore = e => {
         let new_score = [...currentScore];
         const value = e.target.id;
@@ -125,7 +110,18 @@ const Match = () => {
         };
     };
 
-    /*RENDER FX ######################################################################################*/
+    const initScore = async match_id => {
+        try {
+            const res = await axios.post("match", {match_id});
+            if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
+                fetchMatchesScores();
+                closeModalCrud();
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
+    /*LOCAL COMPONENTS ###############################################################################*/
     const ScorePoint = ({score}) => {
         if(!score[0]?.player_id) return null;
         const scoreToCrud = score.map(item => {return {...item}});
@@ -207,7 +203,10 @@ const Match = () => {
             {/* MODAL CRUD ###########################################################################*/}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
-                    <Title.Basic>Score</Title.Basic>
+                    <Title.Basic>
+                        Score
+                        <Icon.Basic family="clear" onClick={() => initScore(currentScore[0].match_id)} hover size="30px" left="10px" top="10px"/>
+                    </Title.Basic>
                     <ContainerScoreCrud.Container>
                         <ContainerScoreCrud.Score>
                             <ContainerScoreCrud.Player>
@@ -237,7 +236,7 @@ const Match = () => {
                             </ContainerScoreCrud.Player>
                         </ContainerScoreCrud.Score>
                     </ContainerScoreCrud.Container>
-                    <Button.Basic action={() => saveScore()} width="100%">Save</Button.Basic>
+                    <Button.Basic onClick={() => saveScore()} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
             {/* MODAL NUMBERS ########################################################################*/}

@@ -50,7 +50,7 @@ const Modal = {
         return ReactDOM.createPortal(
             <ModalStyled className={isOpen && 'open form'} {...props}>
                 <div className="dialog ">
-                    <Icon.Basic family="close" action={closeModal} right="10px" top="10px" size="30px" hover/>
+                    <Icon.Basic family="close" onClick={closeModal} right="10px" top="10px" size="30px" hover/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")
@@ -60,7 +60,7 @@ const Modal = {
         return ReactDOM.createPortal(
             <ModalStyled className={isOpen && 'open'}>
                 <div className="dialog">
-                <Icon.Basic family="close" action={closeModal} right="10px" top="10px" size="30px" hover/>
+                <Icon.Basic family="close" onClick={closeModal} right="10px" top="10px" size="30px" hover/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")

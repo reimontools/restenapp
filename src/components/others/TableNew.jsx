@@ -1,13 +1,12 @@
 import styled from "styled-components";
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX, PRIMARY_COLOR } from "../../helpers/paramHelper";
 
 const TableStyled = styled.table `
     width: 100%;
     border-collapse: collapse;
     margin: ${({ margin }) => margin ? margin : '0'};
     thead {
-        background: #0e70b8;
-        /* height: 45px; */
+        background: ${PRIMARY_COLOR};
     };
     thead tr th {
         font-size: 15px;
@@ -25,25 +24,16 @@ const TableStyled = styled.table `
         border-radius: 0 5px 0 0
     };
     tbody tr td {
-        
         font-size: 14px;
         font-weight: normal;
         letter-spacing: 0.35px;
         padding: 8px;
         text-align: center;   
-        &.active {
-            color: green;
-        };
-        &.finished {
-            color: blue;
-        };
     };
-
     tbody tr:hover td {
         background-color: #dddd;
         cursor: pointer;
     };
-
     .td-container {
         display: flex;
         align-items: center; 
@@ -52,30 +42,43 @@ const TableStyled = styled.table `
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         color: #222;
-        border-radius: 10px;
-        transition: all .5s ease-in-out;
+        border-collapse: separate; 
+        border-spacing: 0 10px; 
+
         thead {
             display: none;
         };
-        tbody, tr, td  {
-            display: block;
-            width: 100%;
-            
+
+        .head {
+            display:flex;
+            /* font-weight: 600; */
+            font-size: 15px;
+            color: ${PRIMARY_COLOR};
         };
-        tbody tr {
-            margin-bottom: 15px;
-        };
-        tbody tr td {
-            text-align: right;
+
+        .content {
             padding-left: 40%;
+            display: flex;
+            justify-content: flex-end;
+        };
+
+        .hide {
+            display:none;
+        };
+
+        .unhide {
+            display:flex;
+        };
+
+        .td-container {
+            justify-content: space-around;
+            width: 100%;
+        };
+
+        tbody tr td {
             position: relative;
-            background-color: #dbebf36e;
-            word-wrap: break-word;
         };
-        tbody tr:hover td {
-            background-color: #dbebf36e;
-            cursor: pointer;
-        };
+
         tbody tr td:before {
             content: attr(data-label);
             position: absolute;
@@ -83,42 +86,28 @@ const TableStyled = styled.table `
             width: 40%;
             color: #222;
             padding-left: 8px;
-            font-weight: 600;
-            font-size: 14px;
             text-align: left;
         };
+
         tbody tr td:first-child {
-            border-radius: 5px 5px 0 0
-        };
-        tbody tr td:last-child {
-            border-radius: 0 0 5px 5px
-        };
-        .td-container {
-            padding-left: 65%;
-            justify-content: space-between;
-        };
-        .hide {
-            display:none;
+            /* border-bottom: solid 1px ${PRIMARY_COLOR}; */
+            border-bottom: solid 1px #dddd;
         };
 
-        .unhide {
-            display:flex;
-            transition-property: all;
-  transition-duration: 0.2s;
-  transition-timing-function: ease-in;
+        tbody tr:hover td {
+            background-color: transparent;
         };
-        
     };
 `;
 
-const Table = {
-    Primary: ({children, ...props}) => {
+const TableNew = {
+    Basic: ({children, ...tableProps}) => {
         return (
-            <TableStyled {...props}>
+            <TableStyled {...tableProps}>
                 {children}
             </TableStyled>
         );
     }
 };
 
-export default Table;
+export default TableNew;

@@ -228,7 +228,7 @@ const Against = () => {
             text = "No Players";
             family = "remove";
         };
-        return <Button.Basic family={family} action={() => showModalAssign(group)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+        return <Button.Basic family={family} onClick={() => showModalAssign(group)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
     const beforeCloseModalAssing = () => {
@@ -240,12 +240,12 @@ const Against = () => {
         return (
             <div className="td-container">
                 <Icon.Basic 
-                    action={() => showModalCrud(obj)}
+                    onClick={() => showModalCrud(obj)}
                     family="edit"
                     hover
                 />
                 <Icon.Basic 
-                    action={() => setDialogOptions({
+                    onClick={() => setDialogOptions({
                         family: "delete",
                         title: 'Delete this group?', 
                         text : 'Are you sure you want to delete this group?', 
@@ -264,7 +264,7 @@ const Against = () => {
             <Title.Basic>{groups[0]?.championship_type_name}</Title.Basic>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" onClick={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
             {loading 
                 ? <Loading/>
@@ -294,7 +294,7 @@ const Against = () => {
                 <Container.Basic>
                     <Title.Basic>{currentGroupId === 0 ? 'New Group' : 'Update Group'}</Title.Basic>
                     <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Button.Basic action={handleSubmit(addGroup)} width="100%">Save</Button.Basic>
+                    <Button.Basic onClick={handleSubmit(addGroup)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
             {/* MODAL ASSIGN ################################################################################################ */}
@@ -302,7 +302,7 @@ const Against = () => {
                 <Container.Basic>
                     <Title.Basic>
                         Assigned players
-                        <Icon.Basic family="search" action={() => openPlayerFilter()} hover size="30px" left="10px" top="10px"/>
+                        <Icon.Basic family="search" onClick={() => openPlayerFilter()} hover size="30px" left="10px" top="10px"/>
                     </Title.Basic>
                     {groupPlayers.length > 0 &&<Table.Primary margin="10px 0 0 0">
                         <thead>
@@ -317,7 +317,7 @@ const Against = () => {
                                     <td data-label='Player'>{groupPlayer.player_fullname}</td>
                                     <td data-label=''>
                                         <div className="td-container">
-                                            <Icon.Basic family="delete" action={() => staGroupPlayer(groupPlayer.group_player_id)} hover/>
+                                            <Icon.Basic family="delete" onClick={() => staGroupPlayer(groupPlayer.group_player_id)} hover/>
                                         </div>
                                     </td>
                                 </tr>
@@ -330,7 +330,7 @@ const Against = () => {
             <Modal.ForForm isOpen={isOpenModalPlayer} closeModal={closeModalPlayer}>
                 <Container.Basic>
                     <Title.Basic>Select players
-                        <Icon.Basic family="filter" action={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
+                        <Icon.Basic family="filter" onClick={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
                     </Title.Basic>
                     {hasFilter && 
                         <>
@@ -344,10 +344,10 @@ const Against = () => {
                             {playerSelected.map(player => (
                                 <div className="item-container" key={player.player_id}>
                                     <p>{player.player_fullname}</p>
-                                    <Icon.Basic family="remove" action={() => removePlayerSelected(player)} />
+                                    <Icon.Basic family="remove" onClick={() => removePlayerSelected(player)} />
                                 </div>
                             ))}
-                            {playerSelected.length > 0 && <Button.Basic family="search" action={() => addGroupPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">assign {playerSelected.length} player(s)</Button.Basic>}
+                            {playerSelected.length > 0 && <Button.Basic family="search" onClick={() => addGroupPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">assign {playerSelected.length} player(s)</Button.Basic>}
                         </Container.Label>
                     }
                     <Table.Primary margin="10px 0 0 0">
@@ -358,7 +358,7 @@ const Against = () => {
                                 <th>Age</th>
                                 <th>
                                     <div className="td-container">
-                                    <Icon.Basic family="dobleCheck" action={() => addAllPlayer()} hover/>
+                                    <Icon.Basic family="dobleCheck" onClick={() => addAllPlayer()} hover/>
                                     </div>
                                 </th>
                             </tr>
@@ -371,7 +371,7 @@ const Against = () => {
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td>
                                         <div className="td-container">
-                                            <Icon.Basic family="check" action={() => addPlayerSelected(player)} hover/>
+                                            <Icon.Basic family="check" onClick={() => addPlayerSelected(player)} hover/>
                                         </div>
                                     </td>
                                 </tr>

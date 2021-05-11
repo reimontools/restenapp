@@ -12,6 +12,7 @@ const ContainerScoreStyled = styled.div `
     align-items: center;
     flex-direction: column;
     justify-content: flex-start;
+    transition: all .2s ease;
     .player {
         width:100%; 
         display: flex;
@@ -27,12 +28,6 @@ const ContainerScoreStyled = styled.div `
         text-align: right;
         padding-right: 5px;
     };
-    /* .finish {
-        color: green;
-    };
-    .pending {
-        color: #0e70b8;
-    }; */
     .player-name {
         width: 100%;
     };
@@ -52,8 +47,16 @@ const ContainerScoreStyled = styled.div `
         align-items: center;
         justify-content: flex-end;
     };
+    &:hover {
+        background-color: ${({ color }) => color === "#0e70b8" ? "#c8e1f3" : "#bbe4bb"};
+        transform: scale(1.05);
+    };
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         min-width: 100%; 
+        background-color: ${({ color }) => color === "#0e70b8" ? "#c8e1f3" : "#bbe4bb"};
+        &:hover {
+            transform: none;
+        };
     };
 `;
 

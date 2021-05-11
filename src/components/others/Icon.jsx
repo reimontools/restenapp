@@ -10,9 +10,8 @@ const DivIconStyled = styled.div `
     color: ${({ family }) => getColorByFamily(family)};
     transition: all .2s ease;
     right: ${({ right }) => right ? right : 'none'};
-    left: ${({ left }) => left ? left : 'none'};
     top: ${({ top }) => top ? top : 'none'};
-    position: ${({ right, top, left }) => (right || top || left) ? 'absolute' : 'static'};
+    position: ${({ right, top }) => (right || top) ? 'absolute' : 'static'};
     &:hover {
         transform: ${({ hover }) => hover ? 'scale(1.5)' : 'none'};
     };
@@ -24,18 +23,11 @@ const DivIconStyled = styled.div `
     };
 `;
 
-const execActionStopingPropagation = (e, action) => {
-    e.stopPropagation();
-    action();
-};
-
 const Icon = {
-    Basic: ({action, ...props}) => {
+    Basic: ({...iconProps}) => {
         return (
-            <DivIconStyled 
-                {...props} 
-                onClick={e => execActionStopingPropagation(e, action)} > 
-                { getIconByFamily(props.family) }
+            <DivIconStyled {...iconProps}> 
+                {getIconByFamily(iconProps.family)}
             </DivIconStyled>
         );
     }

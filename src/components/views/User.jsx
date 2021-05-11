@@ -226,7 +226,7 @@ const User = () => {
             text = "No Players";
             family = "remove";
         };
-        if (user.rol_name === "User") return <Button.Basic family={family} action={() => showModalAssign(user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+        if (user.rol_name === "User") return <Button.Basic family={family} onClick={() => showModalAssign(user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
         return null;
     };
 
@@ -240,7 +240,7 @@ const User = () => {
         <Container.Primary>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" onClick={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
             {loading 
                 ? <Loading/>
@@ -266,8 +266,8 @@ const User = () => {
                                     </td>
                                     <td data-label='Actions'>
                                         <div className="td-container">
-                                            <Icon.Basic family="edit" action={() => showModalCrud(user)} hover/>
-                                            <Icon.Basic family="delete" action={() => staUser(user.user_id)} hover/>
+                                            <Icon.Basic family="edit" onClick={() => showModalCrud(user)} hover/>
+                                            <Icon.Basic family="delete" onClick={() => staUser(user.user_id)} hover/>
                                         </div>
                                     </td>
                                 </tr>
@@ -285,7 +285,7 @@ const User = () => {
                     <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
                     <Select.Validation name="rol_id" type="select" register={register} error={errors.user_type_id} content={rols} />
                     <Input.TextValidation name="password" type="password" placeholder="Write a password" register={register} />
-                    <Button.Basic action={handleSubmit(addUser)} width="100%">Save</Button.Basic>
+                    <Button.Basic onClick={handleSubmit(addUser)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
             
@@ -294,7 +294,7 @@ const User = () => {
                 <Container.Basic>
                     <Title.Basic>
                         Assigned players
-                        <Icon.Basic family="search" action={() => openPlayerFilter()} hover size="30px" left="10px" top="10px"/>
+                        <Icon.Basic family="search" onClick={() => openPlayerFilter()} hover size="30px" left="10px" top="10px"/>
                     </Title.Basic>
                     {userPlayers.length > 0 &&<Table.Primary margin="10px 0 0 0">
                         <thead>
@@ -309,7 +309,7 @@ const User = () => {
                                     <td data-label='Player'>{userPlayer.player_fullname}</td>
                                     <td data-label=''>
                                         <div className="td-container">
-                                            <Icon.Basic family="delete" action={() => staUserPlayer(userPlayer.user_player_id)} hover/>
+                                            <Icon.Basic family="delete" onClick={() => staUserPlayer(userPlayer.user_player_id)} hover/>
                                         </div>
                                     </td>
                                 </tr>
@@ -323,7 +323,7 @@ const User = () => {
             <Modal.ForForm isOpen={isOpenModalPlayer} closeModal={closeModalPlayer}>
                 <Container.Basic>
                     <Title.Basic>Select players
-                        <Icon.Basic family="filter" action={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
+                        <Icon.Basic family="filter" onClick={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
                     </Title.Basic>
                     {hasFilter && 
                         <>
@@ -337,10 +337,10 @@ const User = () => {
                             {playerSelected.map(player => (
                                 <div className="item-container" key={player.player_id}>
                                     <p>{player.player_fullname}</p>
-                                    <Icon.Basic family="remove" action={() => removePlayerSelected(player)} />
+                                    <Icon.Basic family="remove" onClick={() => removePlayerSelected(player)} />
                                 </div>
                             ))}
-                            {playerSelected.length > 0 && <Button.Basic family="search" action={() => addUserPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">assign {playerSelected.length} player(s)</Button.Basic>}
+                            {playerSelected.length > 0 && <Button.Basic family="search" onClick={() => addUserPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">assign {playerSelected.length} player(s)</Button.Basic>}
                         </Container.Label>
                     }
                     <Table.Primary margin="10px 0 0 0">
@@ -351,7 +351,7 @@ const User = () => {
                                 <th>Age</th>
                                 <th>
                                     <div className="td-container">
-                                    <Icon.Basic family="dobleCheck" action={() => addAllPlayer()} hover/>
+                                    <Icon.Basic family="dobleCheck" onClick={() => addAllPlayer()} hover/>
                                     </div>
                                 </th>
                             </tr>
@@ -364,7 +364,7 @@ const User = () => {
                                     <td data-label='Age'>{player.player_age}</td>
                                     <td>
                                         <div className="td-container">
-                                            <Icon.Basic family="check" action={() => addPlayerSelected(player)} hover/>
+                                            <Icon.Basic family="check" onClick={() => addPlayerSelected(player)} hover/>
                                         </div>
                                     </td>
                                 </tr>

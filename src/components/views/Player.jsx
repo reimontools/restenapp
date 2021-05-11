@@ -99,12 +99,12 @@ const Player = () => {
         return (
             <div className="td-container">
                 <Icon.Basic 
-                    action={() => showModalCrud(player)}
+                    onClick={() => showModalCrud(player)}
                     family="edit"
                     hover
                 />
                 <Icon.Basic 
-                    action={() => setDialogOptions({
+                    onClick={() => setDialogOptions({
                         family: "delete",
                         title: 'Delete this player?', 
                         text : 'Are you sure you want to delete this player?', 
@@ -116,12 +116,21 @@ const Player = () => {
         );
     };
 
+    const [expandir, setExpandir] = useState(0);
+    const handleExpandir = id => {
+        if (id === expandir) {
+            setExpandir(0);
+        } else {
+            setExpandir(id);
+        };
+    };
+
     /*JSX ############################################################################################*/ 
     return (
         <Container.Primary>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" action={() => showModalCrud(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" onClick={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
             {loading ? <Loading/> : <Container.Table>
                 <Table.Primary>
@@ -135,11 +144,15 @@ const Player = () => {
                     </thead>
                     <tbody>
                         {players.filter(filPlayer).map(player => (
-                            <tr key={player.player_id}>
-                                <td data-label='Name'>{player.player_fullname}</td>
-                                <td data-label='Gender'>{player.gender_name}</td>
-                                <td data-label='Age'>{player.player_age}</td>
-                                <td data-label='Actions'>{renderActions(player)}</td>
+                            // <tr key={player.player_id} onClick={() => showModalCrud(player)}>
+                            <tr key={player.player_id} onClick={() => handleExpandir(player.player_id)}>
+                                <td>{player.player_fullname}</td>
+                                {player.player_id === expandir ? <td className="unhide">{player.gender_name}</td> : <td className="hide">{player.gender_name}</td>}
+                                {player.player_id === expandir ? <td className="unhide">{player.player_age}</td> : <td className="hide">{player.player_age}</td>}
+                                {player.player_id === expandir ? <td className="unhide">{renderActions(player)}</td> : <td className="hide">{renderActions(player)}</td>}
+{/* 
+                                <td className="hide">{player.player_age}</td>
+                                <td>{renderActions(player)}</td> */}
                             </tr>
                         ))}
                     </tbody>
@@ -154,7 +167,7 @@ const Player = () => {
                     <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
                     <Select.Validation name="gender_id" type="select" register={register} content={genderList} />
                     <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Basic action={handleSubmit(addPlayer)} width="100%">Save</Button.Basic>
+                    <Button.Basic onClick={handleSubmit(addPlayer)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />

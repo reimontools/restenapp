@@ -4,13 +4,21 @@ import { MdClose } from "react-icons/md";
 import { RiAliensLine } from "react-icons/ri";
 import { BiTrash } from "react-icons/bi";
 import { IoMdPersonAdd , IoMdSearch} from "react-icons/io";
-// import { IoSearchCircle } from "react-icons/io5";
+import { FiArrowRightCircle } from "react-icons/fi";
 import { FaCheck, FaCheckDouble } from "react-icons/fa";
+import { AiOutlineClear } from "react-icons/ai";
 
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
 export const SMALL_SCREEN_SIZE_PX = SMALL_SCREEN_SIZE + "px";
 export const MEDIUM_SCREEN_SIZE_PX = MEDIUM_SCREEN_SIZE + "px";
+
+export const LOWERCASEREGEX = /(?=.*[a-z])/;
+export const UPPERCASEREGEX = /(?=.*[A-Z])/;
+export const NUMERICREGEX = /(?=.*[0-9])/;
+
+export const PRIMARY_COLOR = "#0e70b8";
+export const SECONDARY_COLOR = "#fff";
 
 export const getColorByFamily = family => {
     switch(family) {
@@ -25,6 +33,8 @@ export const getColorByFamily = family => {
         case "remove": return "#bb3345";
         case "search": return "#0d5f1b";
         case "filter": return "#0d5f1b";
+        case "clear": return "#0d5f1b";
+        case "go": return "#0d5f1b";
         default: return "#0e70b8"
     };
 };
@@ -42,6 +52,8 @@ export const getIconByFamily = family => {
         case "remove": return <MdClose />;
         case "search": return <IoMdSearch />;
         case "filter": return <BiFilterAlt />;
+        case "clear": return <AiOutlineClear />;
+        case "go": return <FiArrowRightCircle />;
         default: return <RiAliensLine />
     };
 };

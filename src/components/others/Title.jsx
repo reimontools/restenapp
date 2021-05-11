@@ -14,9 +14,9 @@ const TitleBasicStyled = styled.div `
 `;
 
 const Title = {
-    Basic: ({children, ...props}) => {
+    Basic: ({children, ...titleProps}) => {
         return ( 
-            <TitleBasicStyled {...props}>
+            <TitleBasicStyled {...titleProps}>
                 {children}
             </TitleBasicStyled>
         );
