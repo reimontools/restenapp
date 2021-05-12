@@ -10,8 +10,9 @@ const DivIconStyled = styled.div `
     color: ${({ family }) => getColorByFamily(family)};
     transition: all .2s ease;
     right: ${({ right }) => right ? right : 'none'};
+    left: ${({ left }) => left ? left : 'none'};
     top: ${({ top }) => top ? top : 'none'};
-    position: ${({ right, top }) => (right || top) ? 'absolute' : 'static'};
+    position: ${({ right, top, left }) => (right || top || left) ? 'absolute' : 'static'};
     &:hover {
         transform: ${({ hover }) => hover ? 'scale(1.5)' : 'none'};
     };

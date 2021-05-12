@@ -24,22 +24,24 @@ const Championship = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [dialogOptions, setDialogOptions] = useState({});
+
+    // USEMODAL #####################################################################################################################################
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     
     // LIST #########################################################################################################################################
     const championshipTypeList = useList("list/championship_type");
 
     // CRUD VALIDATIONS ############################################################################################################################# 
-    const schema = Yup.object().shape({
+    const schemaCrud = Yup.object().shape({
         name: Yup.string()
             .required('Required'),
         championship_type_id: Yup.string()
             .required('Required')
     });
 
-    const { register, handleSubmit, errors, reset } = useForm({
-        mode: 'onSubmit',
-        resolver: yupResolver(schema)
+    const { register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud } = useForm({
+        mode: 'onBlur',
+        resolver: yupResolver(schemaCrud)
     });
 
     // FETCHS #######################################################################################################################################
@@ -113,7 +115,7 @@ const Championship = () => {
     const handleModalCrud = (e, championship) => {
         e.stopPropagation();
         setCurrentChampionshipId(championship.championship_id);
-        reset(championship);
+        resetCrud(championship);
         openModalCrud();
     };
 
@@ -195,7 +197,7 @@ const Championship = () => {
         return <Button.Basic family={family} onClick={e => handleChampionshipState(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
-    /*JSX ############################################################################################*/ 
+    // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
             <div className="search-container">
@@ -221,15 +223,17 @@ const Championship = () => {
                 </Container.Table>
             }
 
-            {/* MODAL CRUD ################################################################################################## */}
+            {/* MODAL CRUD ########################################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Championship name" register={register} error={errors.name} />
-                    <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={register} error={errors.championship_type_id} content={championshipTypeList} />
-                    <Button.Basic onClick={handleSubmit(updateChampionship)} width="100%">Save</Button.Basic>
+                    <Input.TextValidation name="name" placeholder="Championship name" register={registerCrud} error={errorsCrud.name} />
+                    <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={registerCrud} error={errorsCrud.championship_type_id} content={championshipTypeList} />
+                    <Button.Basic onClick={handleSubmitCrud(updateChampionship)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
+            
+            {/* DIALOG ############################################################################################################################## */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
         </Container.Primary>
     );

@@ -1,60 +1,72 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Select, Table, Container, Loading, Title } from "../../component";
+import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getList } from '../../helpers/listHelper'; 
 import axios from '../../config/axios'
 import useList from '../../hooks/useList';
+import { LOWERCASEREGEX, UPPERCASEREGEX, NUMERICREGEX } from "../../helpers/paramHelper";
 
 const User = () => {
+    // LIST #########################################################################################################################################
+    const playerList = useList('player');
+    const rolList = useList("list/rol");
+
+    // CONST ########################################################################################################################################
+    const defaultUserData = {user_id: 0, name: '', email: '', rol_id: 3};
+    const defaultPasswordData = {password: "", passwordConfirm: ""};
+
+    // EFFECT #######################################################################################################################################
     useEffect(() => fetchUsers(), []);
+
+    // STATE ########################################################################################################################################
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentUserId, setCurrentUserId] = useState(0);
-    const defaultData = {user_id: 0, name: '', email: '', rol_id: 3};
+    
+    // STATE ########################################################################################################################################
     const [loading, setLoading] = useState(true);
-    const rols = useList("list/rol");
-
+    const [dialogOptions, setDialogOptions] = useState({});
     const [userPlayers, setUserPlayers] = useState([]);
-    const defaultSearchOptions = {filter_gender: "*", filter_age: "", filter_fullname: ""};
-    const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
-    const [hasFilter, setHasFilter] = useState(false);
-    const genderList = [{gender_id: "*", name: "Filter by gender..."}, ...useList("list/gender")];
-    const [playerSelected, setPlayerSelected] = useState([]);
-    const playerList = useList('player');
-    const playerListFiltered = playerList.filter(filByGender).filter(filByAge).filter(filByFullName).filter(filBySelected).filter(filByAlreadyOnGroup);
     
+    // USEMODAL #####################################################################################################################################
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
-    const [isOpenModalPlayer, openModalPlayer, closeModalPlayer] = useModal();
-    const [isOpenModalAssign, openModalAssign, closeModalAssign] = useModal();
-    
-    /*VALIDATIONS ####################################################################################*/ 
-    const schema = Yup.object().shape({
+    const [isOpenModalPassword, openModalPassword, closeModalPassword] = useModal();
+    const [isOpenModalPlayerSearch, openModalPlayerSearch, closeModalPlayerSearch] = useModal();
+    const [isOpenModalPlayerAssigned, openModalPlayerAssigned, closeModalPlayerAssigned] = useModal();  
+
+    // CRUD VALIDATIONS ############################################################################################################################# 
+    const schemaCrud = Yup.object().shape({
         name: Yup.string().required('Required'),
         email: Yup.string().email("Invalid format").required('Required')
     });
 
-    const { register, handleSubmit, errors, reset } = useForm({
-        mode: 'onSubmit',
-        resolver: yupResolver(schema)
+    const {register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud} = useForm({
+        mode: 'onBlur',
+        resolver: yupResolver(schemaCrud)
     });
 
-    const showModalCrud = user => {
-        setCurrentUserId(user.user_id);
-        fetchUserPlayer(user.user_id);
-        reset(user);
-        openModalCrud();
-    };
+    // PASSWORD VALIDATIONS #########################################################################################################################
+    const schemaPassword = Yup.object().shape({
+        password: Yup.string()
+            .required('Required!')
+            .min(8, "Minimun 8 characters required!")
+            .matches(NUMERICREGEX, 'One number required!')
+            .matches(LOWERCASEREGEX, 'One lowercase required!')
+            .matches(UPPERCASEREGEX, 'One uppercase required!'),
+        passwordConfirm: Yup.string()
+            .required('Required!')
+            .oneOf([Yup.ref('password')], 'Password must be the same!')
+    });
 
-    const showModalAssign = user => {
-        setCurrentUserId(user.user_id);
-        fetchUserPlayer(user.user_id);
-        openModalAssign();
-    };
+    const {register: registerPassword, handleSubmit: handleSubmitPassword, errors: errorsPassword, reset: resetPassword} = useForm({
+        mode: 'onBlur',
+        resolver: yupResolver(schemaPassword)
+    });
 
-    /*CRUD ###########################################################################################*/ 
+    // FETCHS #######################################################################################################################################
     const fetchUsers = async () => {
         setLoading(true);
         const res = await getList("user");
@@ -62,7 +74,13 @@ const User = () => {
         setLoading(false);
     };
 
-    const addUser = async data => {
+    const fetchUserPlayer = async user_id => {
+        const res = await getList("user-player/" + user_id);
+        setUserPlayers(res);
+    };
+
+    // CRUD #########################################################################################################################################
+    const updateUser = async data => {
         try {
             const res = await axios.post("user", {user_id: currentUserId, ...data});
             switch(res.data.result.cod) {
@@ -71,23 +89,47 @@ const User = () => {
                     closeModalCrud();
                     break;
                 case 1:
-                    alert('Ya existe!');
+                    setDialogOptions({family: "info", title: 'Alert', text : 'User already exists!'})
                     break;
                 case 2:
-                    alert('Ya existe inactivo!');
+                    setDialogOptions({family: "info", title: 'Alert', text : 'User already exists! (nonActive)'})
                     break;
                 default:
-                    alert('Otro problema!, error: ' + res.data.result.msg);
+                    setDialogOptions({family: "info", title: 'Error', text : 'Error: ' + res.data.result.msg})
                     break;
             };
         } catch(err) {
             console.log('Err: ' + err);
         };
     };
-    
-    const staUser = async (id) => {
+
+    const updateUserPassword = async data => {
         try {
-            const res = await axios.put("user/" + id);
+            const res = await axios.post("user/concre", {user_id: currentUserId, ...data});
+            if (res.data.result.cod === 0) {
+                fetchUsers();
+                closeModalPassword();
+            } else {
+                setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg})
+            };
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
+    const updateUserPlayer = async players => {
+        try {
+            const res = await axios.post("user-player", {user_id: currentUserId, players});
+            if (res.data.result.cod !== 0) return setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg});
+            fetchUserPlayer(currentUserId);
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+    
+    const updateUserIsActive = async user_id => {
+        try {
+            const res = await axios.put("user/" + user_id);
             if (!res.data.error) {
                 fetchUsers();
             };
@@ -96,119 +138,9 @@ const User = () => {
         };
     };
 
-    function filUser(user) {
-        if(searchTerm === "") {
-            return user;
-        } else if (user.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return user;
-        };
-        return null;
-    };
-    
-    /*PLAYER #########################################################################################*/ 
-    function filByGender(player) {
-        if(searchOptions.filter_gender === "*") {
-            return player;
-        } else if (player.gender_id === parseInt(searchOptions.filter_gender)) {
-            return player;
-        };
-        return null;
-    };
-
-    function filByAge(player) {
-        const ages = searchOptions.filter_age.split(',').map(Number);
-        if(searchOptions.filter_age === "") {
-            return player;
-        } else if (ages.includes(player.player_age)) {
-            return player;
-        };
-        return null;
-    };
-
-    function filByFullName(player) {
-        if(searchOptions.filter_fullname === "") {
-            return player;
-        } else if (player.player_fullname.toLowerCase().includes(searchOptions.filter_fullname.toLowerCase())) {
-            return player;
-        };
-        return null;
-    };
-
-    function filBySelected(player) {
-        if(playerSelected.length === 0) {
-            return player;
-        } else if (!playerSelected.includes(player)) {
-            return player;
-        };
-        return null;
-    };  
-    
-    function filByAlreadyOnGroup(player) {
-        if(userPlayers.length === 0) {
-            return player;
-        } else if (!userPlayers.some(value => value.player_id === player.player_id)) {
-            return player;
-        };
-        return null;
-    };
-
-    const addAllPlayer = () => {
-        setPlayerSelected([...playerSelected, ...playerListFiltered]);
-    };
-    
-    const addPlayerSelected = (player) => {
-        setPlayerSelected([...playerSelected, player]);
-    };
-
-    const removePlayerSelected = (player) => {
-        setPlayerSelected(playerSelected.filter(item => item.player_id !== player.player_id));
-    };
-
-    const openPlayerFilter = () => {
-        setSearchOptions(defaultSearchOptions);
-        setPlayerSelected([]);
-        setHasFilter(false);
-        openModalPlayer();
-    };
-
-    const fetchUserPlayer = async (id) => {
-        const res = await getList("user-player/" + id);
-        setUserPlayers(res);
-    };
-
-    const handleSearchOptions = (e) => {
-        setSearchOptions({
-            ...searchOptions,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const addUserPlayer = async () => {
+    const updateUserPlayerIsActive = async player_id => {
         try {
-            const res = await axios.post("user-player", {user_id: currentUserId, playerSelected});
-            switch(res.data.result.cod) {
-                case 0:
-                    fetchUserPlayer(currentUserId);
-                    closeModalPlayer();
-                    break;
-                case 1:
-                    alert('Ya existe!');
-                    break;
-                case 2:
-                    alert('Ya existe inactivo!');
-                    break;
-                default:
-                    alert('Otro problema!, error: ' + res.data.result.msg);
-                    break;
-            };
-        } catch(err) {
-            console.log('Err: ' + err);
-        };
-    };
-
-    const staUserPlayer = async (id) => {
-        try {
-            const res = await axios.put("user-player/" + id);
+            const res = await axios.put("user-player", {user_id: currentUserId, player_id});
             if (!res.data.error) {
                 fetchUserPlayer(currentUserId);
             };
@@ -217,7 +149,127 @@ const User = () => {
         };
     };
 
-    const renderBtnPlayers = (user) => {
+    // HANDLES ######################################################################################################################################
+    const handleExpandir = user_id => {
+        if (user_id === currentUserId) {
+            setCurrentUserId(0);
+        } else {
+            setCurrentUserId(user_id);
+        };
+    };
+    
+    const handleModalCrud = (e, user) => {
+        e.stopPropagation();
+        setCurrentUserId(user.user_id);
+        resetCrud(user);
+        openModalCrud();
+    };
+
+    const handleModalPassword = (e, user) => {
+        e.stopPropagation();
+        setCurrentUserId(user.user_id);
+        resetPassword(defaultPasswordData);
+        openModalPassword();
+    };
+
+    const handleButtonPlayer = (e, user) => {
+        e.stopPropagation();
+        setCurrentUserId(user.user_id);
+        fetchUserPlayer(user.user_id);
+        openModalPlayerAssigned();
+    };
+
+    const handleCloseModalPlayerAssigned = () => {
+        fetchUsers();
+        closeModalPlayerAssigned();
+    };
+
+    const handleUpdateUserIsActive = (e, user) => {
+        e.stopPropagation();
+        setDialogOptions({family: "delete", title: 'Delete this user?', text: 'Are you sure you want to delete this user?', action: () => updateUserIsActive(user.user_id) });
+    };
+
+    // FILTERS ######################################################################################################################################
+    function filPlayersByAlreadyOnGroup(player) {
+        if(userPlayers.length === 0) {
+            return player;
+        } else if (!userPlayers.some(value => value.player_id === player.player_id)) {
+            return player;
+        };
+        return null;
+    };
+
+    function filUserByText(user) {
+        if(searchTerm === "") {
+            return user;
+        } else if (user.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return user;
+        };
+        return null;
+    };
+
+    // RENDERS ######################################################################################################################################
+    const renderTableHead = () => {
+        return (
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Players</th>
+                <th>Actions</th>
+            </tr>
+        );
+    };
+
+    const renderTableRows = user => {
+        var classContent = "";
+        var classActions = "";
+
+        if (user.user_id === currentUserId) {
+            classContent = "content unhide"
+            classActions = "unhide"
+        } else {
+            classContent = "content hide"
+            classActions = "hide"
+        };
+
+        return (
+            <tr key={user.user_id} onClick={() => handleExpandir(user.user_id)}>
+                <td className="head">{user.name}</td>
+                <td className={classContent} data-label='Email'>{user.email}</td>
+                <td className={classContent} data-label='Rol'>{user.rol_name}</td>
+                {user.rol_name === "User" 
+                    ? <td className={classContent} data-label='Players'>{renderButtonPlayer(user)}</td>
+                    : <td className={classContent} />
+                }
+                <td className={classActions}>{renderActions(user)}</td>
+            </tr>  
+        );
+    };
+
+    const renderActions = user => {
+        return (
+            <div className="td-container">
+                <Icon.Basic 
+                    onClick={e => handleModalCrud(e, user)} 
+                    family="edit"
+                    hover
+                />
+                <Icon.Basic
+                    onClick={e => handleUpdateUserIsActive(e, user)} 
+                    family="delete" 
+                    hover
+                />
+                <Icon.Basic
+                    onClick={e => handleModalPassword(e, user)} 
+                    family="password" 
+                    hover
+                />
+            </div>
+        );
+    };
+    
+    const renderButtonPlayer = user => {
         var text = "", family = "";
         if (user.count_players > 0) {
             text = user.count_players + " Players";
@@ -226,153 +278,58 @@ const User = () => {
             text = "No Players";
             family = "remove";
         };
-        if (user.rol_name === "User") return <Button.Basic family={family} onClick={() => showModalAssign(user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
-        return null;
+        return <Button.Basic family={family} onClick={e => handleButtonPlayer(e, user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
-    const beforeCloseModalAssing = () => {
-        fetchUsers();
-        closeModalAssign();
-    };
-
-    /*JSX ############################################################################################*/ 
+    // SX ########################################################################################################################################### 
     return (
         <Container.Primary>
+
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" onClick={() => showModalCrud(defaultData)} right="12px" hover/>
+                <Icon.Basic family="add" onClick={e => handleModalCrud(e, defaultUserData)} right="12px" hover/>
             </div>
+
             {loading 
                 ? <Loading/>
                 : <Container.Table>
-                    <Table.Primary>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Players</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.filter(filUser).map(user => (
-                                <tr key={user.user_id}>
-                                    <td data-label='Name'>{user.name}</td>
-                                    <td data-label='Email'>{user.email}</td>
-                                    <td data-label='Rol'>{user.rol_name}</td>
-                                    <td data-label=''>
-                                        {renderBtnPlayers(user)}
-                                    </td>
-                                    <td data-label='Actions'>
-                                        <div className="td-container">
-                                            <Icon.Basic family="edit" onClick={() => showModalCrud(user)} hover/>
-                                            <Icon.Basic family="delete" onClick={() => staUser(user.user_id)} hover/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table.Primary>
+                    <TableNew.Basic>
+                        <thead>{renderTableHead()}</thead>
+                        <tbody>{users.filter(filUserByText).map(user => renderTableRows(user))}</tbody>
+                    </TableNew.Basic>
                 </Container.Table>
             }
 
-            {/* MODAL CRUD ################################################################################################## */}
+            {/* MODAL CRUD ########################################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentUserId === 0 ? 'New User' : 'Update User'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={register} error={errors.email}/>
-                    <Select.Validation name="rol_id" type="select" register={register} error={errors.user_type_id} content={rols} />
-                    <Input.TextValidation name="password" type="password" placeholder="Write a password" register={register} />
-                    <Button.Basic onClick={handleSubmit(addUser)} width="100%">Save</Button.Basic>
+                    <Input.TextValidation name="name" placeholder="Name" register={registerCrud} error={errorsCrud.name} />
+                    <Input.TextValidation name="email" type="email" placeholder="email@email.com" register={registerCrud} error={errorsCrud.email}/>
+                    <Select.Validation name="rol_id" type="select" register={registerCrud} error={errorsCrud.user_type_id} content={rolList} />
+                    <Button.Basic onClick={handleSubmitCrud(updateUser)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
             
-            {/* MODAL ASSIGN ################################################################################################ */}
-            <Modal.ForForm isOpen={isOpenModalAssign} closeModal={beforeCloseModalAssing}>
+            {/* MODAL PASSWORD ###################################################################################################################### */}
+            <Modal.ForForm isOpen={isOpenModalPassword} closeModal={closeModalPassword}>
                 <Container.Basic>
-                    <Title.Basic>
-                        Assigned players
-                        <Icon.Basic family="search" onClick={() => openPlayerFilter()} hover size="30px" left="10px" top="10px"/>
-                    </Title.Basic>
-                    {userPlayers.length > 0 &&<Table.Primary margin="10px 0 0 0">
-                        <thead>
-                            <tr>
-                                <th>Players</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userPlayers.map(userPlayer => (
-                                <tr key={userPlayer.user_player_id}>
-                                    <td data-label='Player'>{userPlayer.player_fullname}</td>
-                                    <td data-label=''>
-                                        <div className="td-container">
-                                            <Icon.Basic family="delete" onClick={() => staUserPlayer(userPlayer.user_player_id)} hover/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table.Primary>}
+                    <Title.Basic>Update password</Title.Basic>
+                    <Input.TextValidation name="password" placeholder="Password" type="password" register={registerPassword} error={errorsPassword.password} />
+                    <Input.TextValidation name="passwordConfirm" placeholder="Confirm password" type="password" register={registerPassword} error={errorsPassword.passwordConfirm} />
+                    <Button.Basic onClick={handleSubmitPassword(updateUserPassword)}>Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
+
+            {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
+            <PlayerAssigned actionDelete={updateUserPlayerIsActive} actionOpen={openModalPlayerSearch} players={userPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
-            {/* MODAL PLAYER ################################################################################################ */}
-            <Modal.ForForm isOpen={isOpenModalPlayer} closeModal={closeModalPlayer}>
-                <Container.Basic>
-                    <Title.Basic>Select players
-                        <Icon.Basic family="filter" onClick={() => setHasFilter(!hasFilter)} hover size="30px" left="10px" top="10px" />
-                    </Title.Basic>
-                    {hasFilter && 
-                        <>
-                            <Select.Basic name="filter_gender" value={searchOptions.filter_gender} content={genderList} action={handleSearchOptions}/>
-                            <Input.Basic name="filter_age" value={searchOptions.filter_age} placeholder="Filter by age..." action={handleSearchOptions}/>
-                            <Input.Basic name="filter_fullname" value={searchOptions.filter_fullname} placeholder="Filter by name" action={handleSearchOptions}/>
-                        </>
-                    }
-                    {playerSelected.length > 0 && 
-                        <Container.Label>
-                            {playerSelected.map(player => (
-                                <div className="item-container" key={player.player_id}>
-                                    <p>{player.player_fullname}</p>
-                                    <Icon.Basic family="remove" onClick={() => removePlayerSelected(player)} />
-                                </div>
-                            ))}
-                            {playerSelected.length > 0 && <Button.Basic family="search" onClick={() => addUserPlayer()} fit height="auto" weight="100" size="11px" margin="0 0 0 15px">assign {playerSelected.length} player(s)</Button.Basic>}
-                        </Container.Label>
-                    }
-                    <Table.Primary margin="10px 0 0 0">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>
-                                    <div className="td-container">
-                                    <Icon.Basic family="dobleCheck" onClick={() => addAllPlayer()} hover/>
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {playerListFiltered.map(player => (
-                                <tr key={player.player_id}> 
-                                    <td data-label='Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender_name}</td>
-                                    <td data-label='Age'>{player.player_age}</td>
-                                    <td>
-                                        <div className="td-container">
-                                            <Icon.Basic family="check" onClick={() => addPlayerSelected(player)} hover/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table.Primary>
-                </Container.Basic>
-            </Modal.ForForm>
+            {/* PLAYER SELECTION MODAL ############################################################################################################## */}
+            <PlayerSearch action={updateUserPlayer} players={playerList.filter(filPlayersByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            
+            {/* DIALOG  ############################################################################################################################# */}
+            <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
+
         </Container.Primary>
     );
 };

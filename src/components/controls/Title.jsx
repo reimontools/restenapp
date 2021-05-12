@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 const TitleBasicStyled = styled.div `
+    /* position: relative; */
     font-family: sundayBest;
     font-size: ${({ fontSize }) => fontSize ? fontSize : '15px'};
     display: flex;

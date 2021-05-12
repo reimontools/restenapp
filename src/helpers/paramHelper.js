@@ -7,6 +7,7 @@ import { IoMdPersonAdd , IoMdSearch} from "react-icons/io";
 import { FiArrowRightCircle } from "react-icons/fi";
 import { FaCheck, FaCheckDouble } from "react-icons/fa";
 import { AiOutlineClear } from "react-icons/ai";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
@@ -35,6 +36,7 @@ export const getColorByFamily = family => {
         case "filter": return "#0d5f1b";
         case "clear": return "#0d5f1b";
         case "go": return "#0d5f1b";
+        case "password": return PRIMARY_COLOR;
         default: return "#0e70b8"
     };
 };
@@ -54,6 +56,7 @@ export const getIconByFamily = family => {
         case "filter": return <BiFilterAlt />;
         case "clear": return <AiOutlineClear />;
         case "go": return <FiArrowRightCircle />;
+        case "password": return <RiLockPasswordLine />;
         default: return <RiAliensLine />
     };
 };

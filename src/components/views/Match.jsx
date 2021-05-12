@@ -98,8 +98,6 @@ const Match = () => {
 
     /*CRUD ###########################################################################################*/
     const saveScore = async () => {
-        // handleWinner(currentScore);
-        // const score = currentScore.filter(e => typeof(e.point) === 'string');
         try {
             const res = await axios.post("score", {score: currentScore});
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
@@ -112,7 +110,7 @@ const Match = () => {
 
     const initScore = async match_id => {
         try {
-            const res = await axios.post("match", {match_id});
+            const res = await axios.put("score/" + match_id);
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
                 fetchMatchesScores();
                 closeModalCrud();
@@ -177,11 +175,6 @@ const Match = () => {
         };
         return null;
     };
-
-    /*VALIDATIONS FX #################################################################################*/
-    // const validaZeros = value => {
-    //     return (value === 0) ? "-" : value;
-    // };
 
     /*JSX ############################################################################################*/
     return (
