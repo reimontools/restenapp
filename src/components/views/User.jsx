@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned } from "../../component";
+import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -235,7 +235,10 @@ const User = () => {
 
         return (
             <tr key={user.user_id} onClick={() => handleExpandir(user.user_id)}>
-                <td className="head">{user.name}</td>
+                <td className="head">
+                    <Avatar.Letter>{user.name[0]}</Avatar.Letter>
+                    {user.name}
+                </td>
                 <td className={classContent} data-label='Email'>{user.email}</td>
                 <td className={classContent} data-label='Rol'>{user.rol_name}</td>
                 {user.rol_name === "User" 
@@ -246,6 +249,14 @@ const User = () => {
             </tr>  
         );
     };
+
+    // const renderAvatarContainer = user => {
+    //     return (
+    //         <div>
+                
+    //         </div>
+    //     );
+    // };
 
     const renderActions = user => {
         return (
