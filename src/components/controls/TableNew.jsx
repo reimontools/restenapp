@@ -92,8 +92,7 @@ const TableStyled = styled.table `
         };
 
         tbody tr td:first-child {
-            /* border-bottom: solid 1px ${PRIMARY_COLOR}; */
-            border-bottom: solid 1px #dddd;
+            border-bottom: ${({ borderBottom }) => borderBottom ? borderBottom : 'solid 1px #dddd'};
         };
 
         tbody tr:hover td {

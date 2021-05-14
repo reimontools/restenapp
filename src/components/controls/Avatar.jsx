@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { MEDIUM_SCREEN_SIZE_PX, getIconByFamily, PRIMARY_COLOR } from "../../helpers/paramHelper";
 
-const IconAvatarStyled = styled.div `
+const AvatarIconStyled = styled.div `
     display: none;
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        background-color: ${PRIMARY_COLOR};
+        background-color: ${({ backColor }) => backColor ? backColor : PRIMARY_COLOR};
         width: 30px;
         height: 30px;
         border-radius: 30px;
@@ -12,15 +12,15 @@ const IconAvatarStyled = styled.div `
         align-items: center; 
         justify-content: center;
         color: white;
-        font-size: 15px;
+        font-size: ${({ fontSize }) => fontSize ? fontSize : '18px'};
         margin-right: 5px;
     };
 `;
 
-const LetterAvatarStyled = styled.div `
+const AvatarLetterStyled = styled.div `
     display: none;
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        background-color: ${PRIMARY_COLOR};
+        background-color: ${({ backColor }) => backColor ? backColor : PRIMARY_COLOR};
         width: 30px;
         height: 30px;
         border-radius: 30px;
@@ -28,24 +28,24 @@ const LetterAvatarStyled = styled.div `
         align-items: center; 
         justify-content: center;
         color: white;
-        font-size: 18px;
+        font-size: ${({ fontSize }) => fontSize ? fontSize : '18px'};
         margin-right: 5px;
     }
 `;
 
 const Avatar = {
-    Icon: () => {
+    Icon: ({...avatarProps}) => {
         return ( 
-            <IconAvatarStyled>
-                {getIconByFamily("user")}
-            </IconAvatarStyled>
+            <AvatarIconStyled {...avatarProps}>
+                {getIconByFamily(avatarProps.family)}
+            </AvatarIconStyled>
         );
     },
-    Letter: ({children}) => {
+    Letter: ({children, ...avatarProps}) => {
         return ( 
-            <LetterAvatarStyled>
+            <AvatarLetterStyled {...avatarProps}>
                 {children}
-            </LetterAvatarStyled>
+            </AvatarLetterStyled>
         );
     }
 };

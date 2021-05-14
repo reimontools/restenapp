@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Icon, Loading, Select, Dialog } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Icon, Loading, Select, Dialog, Avatar, ButtonFloat } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,9 +15,9 @@ const Championship = () => {
     useEffect(() => fetchChampionships(), []);
 
     // CONST ########################################################################################################################################
-    const defaultData = {championship_id: 0, name: '', state: 0, championship_type_id: ""};
+    const defaultChampionshipData = {championship_id: 0, name: '', state: 0, championship_type_id: ""};
     const history = useHistory();
-
+    
     // STATE ########################################################################################################################################
     const [championships, setChampionships] = useState([]);
     const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
@@ -97,6 +97,16 @@ const Championship = () => {
         };
     };
 
+    // FILTERS ######################################################################################################################################
+    function filChampionshipByText(championship) {
+        if(searchTerm === "") {
+            return championship;
+        } else if (championship.name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return championship;
+        };
+        return null;
+    };
+
     // HANDLES ######################################################################################################################################
     const handleExpandir = championship_id => {
         if (championship_id === currentChampionshipId) {
@@ -128,7 +138,7 @@ const Championship = () => {
         };
     };
 
-    const handleClickOptions = (e, championship) => {
+    const handleDelete = (e, championship) => {
         e.stopPropagation();
         setDialogOptions({family: "delete", title: 'Delete this championship?', text: 'Are you sure you want to delete this championship?', action: () => updateChampionshipIsActive(championship.championship_id) });
     };
@@ -160,13 +170,23 @@ const Championship = () => {
 
         return (
             <tr key={championship.championship_id} onClick={() => handleExpandir(championship.championship_id)}>
-                <td className="head">{championship.name}</td>
+                <td className="head">
+                    {renderAvatarByChampionchipTypeId(championship.championship_type_id)}
+                    {championship.name}
+                </td>
                 <td className={classContent} data-label='Type'>{championship.championship_type_name}</td>
                 <td className={classContent} data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
                 <td className={classContent} data-label='Status'>{renderButtonState(championship)}</td>
                 <td className={classActions}>{renderActions(championship)}</td>
             </tr>  
         );
+    };
+
+    const renderAvatarByChampionchipTypeId = championship_type_id => {
+        let backColor="#f8db27";
+        if (championship_type_id === 1) return <Avatar.Letter backColor={backColor}>A</Avatar.Letter>
+        if (championship_type_id === 2) return <Avatar.Letter backColor={backColor}>S</Avatar.Letter>
+        return null;        
     };
     
     const renderActions = championship => {
@@ -183,7 +203,7 @@ const Championship = () => {
                     hover
                 />
                 <Icon.Basic 
-                    onClick={e => handleClickOptions(e, championship)}
+                    onClick={e => handleDelete(e, championship)}
                     family="delete" 
                     hover
                 />
@@ -202,7 +222,6 @@ const Championship = () => {
         <Container.Primary>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" onClick={e => handleModalCrud(e, defaultData)} right="12px" hover/>
             </div>
             {loading 
                 ? <Loading/>
@@ -210,14 +229,7 @@ const Championship = () => {
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
                         <tbody>
-                            {championships.filter(val => {
-                                if(searchTerm === "") {
-                                    return val;
-                                } else if (val.name.toLowerCase().includes(searchTerm.toLowerCase()) || val.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                    return val;
-                                };
-                                return null;
-                            }).map(championship => renderTableRows(championship))}
+                            {championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}
                         </tbody>
                     </TableNew.Basic>
                 </Container.Table>
@@ -235,6 +247,9 @@ const Championship = () => {
             
             {/* DIALOG ############################################################################################################################## */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
+
+            {/* NEW  ################################################################################################################################ */}
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultChampionshipData)} />
         </Container.Primary>
     );
 };

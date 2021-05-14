@@ -1,13 +1,12 @@
-import { BiEdit, BiFilterAlt } from "react-icons/bi";
+import { BiTrash, BiEdit, BiFilterAlt } from "react-icons/bi";
 import { GoPlus } from "react-icons/go";
 import { MdClose } from "react-icons/md";
-import { RiAliensLine } from "react-icons/ri";
-import { BiTrash } from "react-icons/bi";
 import { IoMdPersonAdd , IoMdSearch} from "react-icons/io";
 import { FiArrowRightCircle } from "react-icons/fi";
 import { FaCheck, FaCheckDouble, FaRegUser } from "react-icons/fa";
-import { AiOutlineClear } from "react-icons/ai";
-import { RiLockPasswordLine } from "react-icons/ri";
+import { AiOutlineClear, AiOutlineTrophy } from "react-icons/ai";
+import { RiAliensLine, RiLockPasswordLine, RiSeedlingLine } from "react-icons/ri";
+import { CgGirl, CgBoy } from "react-icons/cg";
 
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
@@ -38,6 +37,10 @@ export const getColorByFamily = family => {
         case "go": return "#0d5f1b";
         case "password": return PRIMARY_COLOR;
         case "user": return PRIMARY_COLOR;
+        case "trophy": return PRIMARY_COLOR;
+        case "seed": return PRIMARY_COLOR;
+        case "female": return PRIMARY_COLOR;
+        case "male": return PRIMARY_COLOR;
         default: return "#0e70b8"
     };
 };
@@ -59,6 +62,10 @@ export const getIconByFamily = family => {
         case "go": return <FiArrowRightCircle />;
         case "password": return <RiLockPasswordLine />;
         case "user": return <FaRegUser />;
+        case "trophy": return <AiOutlineTrophy />;
+        case "seed": return <RiSeedlingLine />;
+        case "female": return <CgGirl />;
+        case "male": return <CgBoy />;
         default: return <RiAliensLine />
     };
 };

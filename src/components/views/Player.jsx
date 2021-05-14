@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Title, Modal, Button, Select, Table, Container, Loading, Dialog } from "../../component";
+import { Input, Icon, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,18 +10,27 @@ import moment from 'moment';
 import useList from '../../hooks/useList';
 
 const Player = () => {
+    // EFFECT #######################################################################################################################################
     useEffect(() => fetchPlayers(), []);
+
+    // CONST ########################################################################################################################################
+    const defaultPlayerData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
+    
+    // STATE ########################################################################################################################################
     const [players, setPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPlayerId, setCurrentPlayerId] = useState(0);
-    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
-    const defaultData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
-    const genderList = useList("list/gender");
+    const [currentPlayerId, setCurrentPlayerId] = useState(0);   
     const [loading, setLoading] = useState(true);
     const [dialogOptions, setDialogOptions] = useState({});
+
+    // USEMODAL #####################################################################################################################################
+    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
+    
+    // LIST #########################################################################################################################################
+    const genderList = useList("list/gender");
     
     /*VALIDATIONS ####################################################################################*/ 
-    const schema = Yup.object().shape({
+    const schemaCrud = Yup.object().shape({
         name: Yup.string().required('Required'),
         surname: Yup.string().required('Required'),
         birth_date: Yup
@@ -33,18 +42,12 @@ const Player = () => {
             .required('Required')
     });
 
-    const { register, handleSubmit, errors, reset } = useForm({
+    const { register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud } = useForm({
         mode: 'onSubmit',
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schemaCrud)
     });
 
-    const showModalCrud = player => {
-        setCurrentPlayerId(player.player_id);
-        reset(player);
-        openModalCrud();
-    };
-
-    /*CRUD ###########################################################################################*/ 
+    // FETCHS #######################################################################################################################################
     const fetchPlayers = async () => {
         setLoading(true);
         const res = await getList("player");
@@ -52,7 +55,8 @@ const Player = () => {
         setLoading(false);
     };
 
-    const addPlayer = async data => {
+    // CRUD #########################################################################################################################################
+    const updatePlayer = async data => {
         try {
             const res = await axios.post("player", {player_id: currentPlayerId, ...data});
             switch(res.data.result.cod) {
@@ -61,13 +65,13 @@ const Player = () => {
                     closeModalCrud();
                     break;
                 case 1:
-                    alert('Ya existe!');
+                    setDialogOptions({family: "info", title: 'Alert', text : 'player already exists!'})
                     break;
                 case 2:
-                    alert('Ya existe inactivo!');
+                    setDialogOptions({family: "info", title: 'Alert', text : 'player already exists! (nonActive)'})
                     break;
                 default:
-                    alert('Otro problema! error: ' + res.data.result.msg);
+                    setDialogOptions({family: "info", title: 'Error', text : 'Error: ' + res.data.result.msg})
                     break;
             };
         } catch(err) {
@@ -75,9 +79,9 @@ const Player = () => {
         };
     };
     
-    const staPlayer = async id => {
+    const updatePlayerIsActive = async player_id => {
         try {
-            const res = await axios.put("player/" + id);
+            const res = await axios.put("player/" + player_id);
             if (!res.data.error) {
                 fetchPlayers();
             };
@@ -86,7 +90,8 @@ const Player = () => {
         };
     };
 
-    function filPlayer(player) {
+    // FILTERS ######################################################################################################################################
+    function filPlayersByText(player) {
         if(searchTerm === "") {
             return player;
         } else if (player.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -95,20 +100,76 @@ const Player = () => {
         return null;
     };
 
+    // HANDLES ######################################################################################################################################
+    const handleExpandir = player_id => {
+        if (player_id === currentPlayerId) {
+            setCurrentPlayerId(0);
+        } else {
+            setCurrentPlayerId(player_id);
+        };
+    };
+
+    const handleModalCrud = (e, player) => {
+        e.stopPropagation();
+        setCurrentPlayerId(player.player_id);
+        resetCrud(player);
+        openModalCrud();
+    };
+
+    const handleDelete = (e, player) => {
+        e.stopPropagation();
+        setDialogOptions({family: "delete", title: 'Delete this player?', text: 'Are you sure you want to delete this player?', action: () => updatePlayerIsActive(player.player_id) });
+    };
+
+    // RENDERS ######################################################################################################################################
+    const renderTableHead = () => {
+        return (
+            <tr>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Birth Date</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+        );
+    };
+
+    const renderTableRows = player => {
+        var classContent = "";
+        var classActions = "";
+
+        if (player.player_id === currentPlayerId) {
+            classContent = "content unhide"
+            classActions = "unhide"
+        } else {
+            classContent = "content hide"
+            classActions = "hide"
+        };
+
+        return (
+            <tr key={player.player_id} onClick={() => handleExpandir(player.player_id)}>
+                <td className="head">
+                    {renderAvatarByPlayer(player)}
+                    {player.player_fullname}
+                </td>
+                <td className={classContent} data-label='Gender'>{player.gender_name}</td>
+                <td className={classContent} data-label='Birth Date'>{moment(player.birth_date).format('YYYY-MM-DD')}</td>
+                <td className={classContent} data-label='Age'>{player.player_age}</td>
+                <td className={classActions}>{renderActions(player)}</td>
+            </tr>  
+        );
+    };
+
     const renderActions = player => {
         return (
             <div className="td-container">
                 <Icon.Basic 
-                    onClick={() => showModalCrud(player)}
+                    onClick={e => handleModalCrud(e, player)}
                     family="edit"
                     hover
                 />
                 <Icon.Basic 
-                    onClick={() => setDialogOptions({
-                        family: "delete",
-                        title: 'Delete this player?', 
-                        text : 'Are you sure you want to delete this player?', 
-                        action: () => staPlayer(player.player_id)})} 
+                    onClick={e => handleDelete(e, player)}
                     family="delete" 
                     hover
                 />
@@ -116,61 +177,45 @@ const Player = () => {
         );
     };
 
-    const [expandir, setExpandir] = useState(0);
-    const handleExpandir = id => {
-        if (id === expandir) {
-            setExpandir(0);
-        } else {
-            setExpandir(id);
-        };
+    const renderAvatarByPlayer = player => {
+        if (player.gender_id === 1) return <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
+        if (player.gender_id === 2) return <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+        return null;        
     };
 
-    /*JSX ############################################################################################*/ 
+    /*JSX ###########################################################################################################################################*/ 
     return (
         <Container.Primary>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" onClick={() => showModalCrud(defaultData)} right="12px" hover/>
             </div>
-            {loading ? <Loading/> : <Container.Table>
-                <Table.Primary>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Gender</th>
-                            <th>Age</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {players.filter(filPlayer).map(player => (
-                            // <tr key={player.player_id} onClick={() => showModalCrud(player)}>
-                            <tr key={player.player_id} onClick={() => handleExpandir(player.player_id)}>
-                                <td>{player.player_fullname}</td>
-                                {player.player_id === expandir ? <td className="unhide">{player.gender_name}</td> : <td className="hide">{player.gender_name}</td>}
-                                {player.player_id === expandir ? <td className="unhide">{player.player_age}</td> : <td className="hide">{player.player_age}</td>}
-                                {player.player_id === expandir ? <td className="unhide">{renderActions(player)}</td> : <td className="hide">{renderActions(player)}</td>}
-{/* 
-                                <td className="hide">{player.player_age}</td>
-                                <td>{renderActions(player)}</td> */}
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table.Primary>
-            </Container.Table> }
+            {loading 
+                ? <Loading/> 
+                : <Container.Table>
+                    <TableNew.Basic>
+                        <thead>{renderTableHead()}</thead>
+                        <tbody>{players.filter(filPlayersByText).map(player => renderTableRows(player))}</tbody>
+                    </TableNew.Basic>
+                </Container.Table>
+            }
 
-            {/* MODAL CRUD ################################################################################################## */}
+            {/* MODAL CRUD ########################################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentPlayerId === 0 ? 'New Player' : 'Update Player'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Name" register={register} error={errors.name} />
-                    <Input.TextValidation name="surname" placeholder="Surname" register={register} error={errors.surname} />
-                    <Select.Validation name="gender_id" type="select" register={register} content={genderList} />
-                    <Input.DateValidation name="birth_date" register={register} error={errors.birth_date}/>
-                    <Button.Basic onClick={handleSubmit(addPlayer)} width="100%">Save</Button.Basic>
+                    <Input.TextValidation name="name" placeholder="Name" register={registerCrud} error={errorsCrud.name} />
+                    <Input.TextValidation name="surname" placeholder="Surname" register={registerCrud} error={errorsCrud.surname} />
+                    <Select.Validation name="gender_id" type="select" register={registerCrud} content={genderList} />
+                    <Input.DateValidation name="birth_date" register={registerCrud} error={errorsCrud.birth_date}/>
+                    <Button.Basic onClick={handleSubmitCrud(updatePlayer)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
+            
+            {/* DIALOG ############################################################################################################################## */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
+
+            {/* NEW  ################################################################################################################################ */}
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultPlayerData)} />
         </Container.Primary>
     );
 };

@@ -1,4 +1,4 @@
-import { Icon, Table, Container, Title, Modal } from "../../component";
+import { Icon, TableNew, Container, Title, Modal, Avatar } from "../../component";
 
 const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
     // RENDERS ######################################################################################################################################
@@ -12,16 +12,35 @@ const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
     };
 
     const renderTableRows = player => {
+        console.log("player", player);
         return (
             <tr key={player.player_id}>
-                <td data-label='Player'>{player.player_fullname}</td>
-                <td data-label=''>
-                    <div className="td-container">
-                        <Icon.Basic family="delete" onClick={() => actionDelete(player.player_id)} hover/>
-                    </div>
+                <td className="head">
+                    {renderAvatarByPlayer(player)}
+                    {player.player_fullname}
                 </td>
-            </tr>
+                <td>{renderActions(player)}</td>
+            </tr>  
         );
+    };
+
+    const renderActions = player => {
+        return (
+            <div className="td-container">
+                <Icon.Basic 
+                    onClick={() => actionDelete(player.player_id)}
+                    family="delete" 
+                    hover
+                />
+            </div>
+        );
+    };
+
+    const renderAvatarByPlayer = player => {
+        console.log("player.gender_id", player.gender_id);
+        if (player.gender_id === 1) return <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
+        if (player.gender_id === 2) return <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+        return null;        
     };
 
     // JSX ##########################################################################################################################################
@@ -33,10 +52,10 @@ const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
                     <Icon.Basic family="search" onClick={() => actionOpen()} hover size="30px" left="10px" top="10px"/>
                 </Title.Basic>
                 {players.length > 0 &&
-                    <Table.Primary margin="10px 0 0 0">
+                    <TableNew.Basic margin="10px 0 0 0" borderBottom="none">
                         <thead>{renderTableHead()}</thead>
                         <tbody>{players.map(player => renderTableRows(player))}</tbody>
-                    </Table.Primary>
+                    </TableNew.Basic>
                 }
             </Container.Basic>
         </Modal.ForForm>

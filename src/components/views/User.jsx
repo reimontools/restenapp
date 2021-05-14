@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonUp } from "../../component";
+import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -236,7 +236,7 @@ const User = () => {
         return (
             <tr key={user.user_id} onClick={() => handleExpandir(user.user_id)}>
                 <td className="head">
-                    <Avatar.Letter>{user.name[0]}</Avatar.Letter>
+                    {renderAvatar(user)}
                     {user.name}
                 </td>
                 <td className={classContent} data-label='Email'>{user.email}</td>
@@ -250,13 +250,9 @@ const User = () => {
         );
     };
 
-    // const renderAvatarContainer = user => {
-    //     return (
-    //         <div>
-                
-    //         </div>
-    //     );
-    // };
+    const renderAvatar = user => {
+        return <Avatar.Letter>{user.name[0]}</Avatar.Letter>
+    };
 
     const renderActions = user => {
         return (
@@ -298,7 +294,6 @@ const User = () => {
 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                <Icon.Basic family="add" onClick={e => handleModalCrud(e, defaultUserData)} right="12px" hover/>
             </div>
 
             {loading 
@@ -341,10 +336,9 @@ const User = () => {
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
+            {/* NEW  ################################################################################################################################ */}
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultUserData)} />
 
-            <ButtonUp />
-
-            
         </Container.Primary>
     );
 };
