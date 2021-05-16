@@ -12,14 +12,13 @@ const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
     };
 
     const renderTableRows = player => {
-        console.log("player", player);
         return (
             <tr key={player.player_id}>
                 <td className="head">
                     {renderAvatarByPlayer(player)}
                     {player.player_fullname}
                 </td>
-                <td>{renderActions(player)}</td>
+                <td className="hide">{renderActions(player)}</td>
             </tr>  
         );
     };
@@ -37,9 +36,8 @@ const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
     };
 
     const renderAvatarByPlayer = player => {
-        console.log("player.gender_id", player.gender_id);
-        if (player.gender_id === 1) return <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
-        if (player.gender_id === 2) return <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+        if (player.gender_id === 1) return <Avatar.Delete onClick={() => actionDelete(player.player_id)} backColor="#f9d2df">{player.name[0]}</Avatar.Delete>
+        if (player.gender_id === 2) return <Avatar.Delete onClick={() => actionDelete(player.player_id)} backColor="#d3e5f1">{player.name[0]}</Avatar.Delete>
         return null;        
     };
 

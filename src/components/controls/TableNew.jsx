@@ -42,8 +42,8 @@ const TableStyled = styled.table `
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         color: #222;
-        border-collapse: separate; 
-        border-spacing: 0 10px; 
+        /* border-collapse: separate; */
+        /* border-spacing: 0 10px;  */
 
         thead {
             display: none;
