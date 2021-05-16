@@ -228,9 +228,7 @@ const Championship = () => {
                 : <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
-                        <tbody>
-                            {championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}
-                        </tbody>
+                        <tbody>{championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
             }

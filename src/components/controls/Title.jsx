@@ -10,7 +10,6 @@ const TitleBasicStyled = styled.div `
     width: 100%;
     color: rgb(55, 55, 55);
     font-weight: 700;
-    text-align: left;
     margin: ${({ margin }) => margin ? margin : '0'};
 `;
 

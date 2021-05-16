@@ -47,7 +47,7 @@ const PlayerSearch = ({actionDelete, actionOpen, players, isOpen, close}) => {
             <Container.Basic>
                 <Title.Basic>
                     Assigned players
-                    <Icon.Basic family="search" onClick={() => actionOpen()} hover size="30px" left="10px" top="10px"/>
+                    <Icon.Basic family="search" onClick={() => actionOpen()} hover size="25px" left="10px" top="10px"/>
                 </Title.Basic>
                 {players.length > 0 &&
                     <TableNew.Basic margin="10px 0 0 0" borderBottom="none">

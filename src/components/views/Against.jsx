@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Table, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat } from "../../component";
+import { Input, Icon, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -116,6 +116,14 @@ const Against = () => {
     };
 
     // HANDLES ######################################################################################################################################
+    const handleExpandir = group_id => {
+        if (group_id === currentGroupId) {
+            setCurrentGroupId(0);
+        } else {
+            setCurrentGroupId(group_id);
+        };
+    };
+    
     const handleButtonPlayer = (e, group) => {
         e.stopPropagation();
         setCurrentGroupId(group.group_id);
@@ -123,8 +131,8 @@ const Against = () => {
         openModalPlayerAssigned();
     };
 
-    const handleGoToMatch = group_id => {
-        history.push('/match/' + group_id);
+    const handleGoToMatch = group => {
+        history.push('/match/' + group.group_id);
     };
 
     const handleModalCrud = (e, group) => {
@@ -172,13 +180,31 @@ const Against = () => {
     };
 
     const renderTableRows = group => {
+        var classContent = "";
+        var classActions = "";
+
+        if (group.group_id === currentGroupId) {
+            classContent = "content unhide"
+            classActions = "unhide"
+        } else {
+            classContent = "content hide"
+            classActions = "hide"
+        };
+
         return (
-            <tr key={group.group_id} onClick={() => handleGoToMatch(group.group_id)}>
-                <td data-label='Group'>{group.name}</td>
-                <td data-label=''>{renderButtonPlayer(group)}</td>
-                <td data-label='Actions'>{renderActions(group)}</td>
-            </tr>
+            <tr key={group.group_id} onClick={() => handleExpandir(group.group_id)}>
+                <td className="head">
+                    {renderAvatar(group)}
+                    {group.name}
+                </td>
+                <td className={classContent} data-label='Players'>{renderButtonPlayer(group)}</td>
+                <td className={classActions}>{renderActions(group)}</td>
+            </tr>  
         );
+    };
+
+    const renderAvatar = user => {
+        return <Avatar.Letter backColor="#76b101">{user.name[0]}</Avatar.Letter>
     };
     
     const renderButtonPlayer = group => {
@@ -207,8 +233,13 @@ const Against = () => {
                     hover
                 />
                 <Icon.Basic 
+                    onClick={e => handleGoToMatch(e, group)}
+                    family="go" 
+                    hover
+                />
+                <Icon.Basic 
                     onClick={e => handleCloseGroup(e, group)}
-                    family="edit" 
+                    family="close" 
                     hover
                 />
             </div>
@@ -228,10 +259,10 @@ const Against = () => {
             {loading 
                 ? <Loading/>
                 : <Container.Table>
-                    <Table.Primary>
+                    <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
                         <tbody>{groups.map(group => renderTableRows(group))}</tbody>
-                    </Table.Primary>
+                    </TableNew.Basic>
                 </Container.Table>
             }
 

@@ -53,7 +53,6 @@ const TableStyled = styled.table `
             display:flex;
             justify-content: flex-start;
             align-items: center; 
-            /* font-weight: 600; */
             font-size: 15px;
             color: ${PRIMARY_COLOR};
         };
