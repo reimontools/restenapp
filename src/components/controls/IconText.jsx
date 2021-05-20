@@ -1,6 +1,6 @@
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+// import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 import styled from "styled-components";
-// import { Icon } from "../../component";
+import { Icon } from "../../component";
 
 const IconTextStyled = styled.div `
     cursor: pointer;
@@ -8,20 +8,14 @@ const IconTextStyled = styled.div `
     justify-content: center;
     align-items: center;
     padding: 10px 0 10px 0;
-    /* &:hover {
-        background-color: #aaa6a6dd;
+    &:hover {
+        color: black;
     };
-
-    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        &:hover {
-            transform: none;
-        };
-    }; */
 `;
 
 const TextStyled = styled.div `
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100px;
 `;
@@ -40,6 +34,9 @@ const IconText = {
                 {/* <IconStyled>
                     <Icon.Basic family={iconProps.family} />
                 </IconStyled> */}
+
+                <Icon.Naked family={iconProps.family} color={"white"} margin="0 5px 0 0" />
+                
                 
                 <TextStyled>
                     {children}

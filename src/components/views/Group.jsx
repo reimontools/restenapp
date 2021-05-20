@@ -7,7 +7,7 @@ import { getList } from '../../helpers/listHelper';
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar, Options, IconText, DropDown } from "../../component";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar, IconText, DropDown } from "../../component";
 
 const Group = () => {
     // LIST #########################################################################################################################################
@@ -36,8 +36,6 @@ const Group = () => {
     const [isOpenModalPlayerSearch, openModalPlayerSearch, closeModalPlayerSearch] = useModal();
     const [isOpenModalPlayerAssigned, openModalPlayerAssigned, closeModalPlayerAssigned] = useModal();    
     const [isOpenModalPlayerAssignedReadOnly, openModalPlayerAssignedReadOnly, closeModalPlayerAssignedReadOnly] = useModal(); 
-    
-    const [isOpenOptions, openOptions, closeOptions] = useModal();
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
@@ -163,7 +161,6 @@ const Group = () => {
     };
 
     const handleModalCrud = (e, group) => {
-        closeOptions();
         e.stopPropagation();
         setCurrentGroup(group);
         resetCrud(group);
@@ -181,7 +178,6 @@ const Group = () => {
     };
 
     const handleSetRandomMatch = (e, group) => {
-        closeOptions();
         e.stopPropagation();
         setDialogOptions({
             family: "question", 
@@ -193,8 +189,6 @@ const Group = () => {
     };
 
     const handleInactiveGroup = (e, group) => {
-        handleMore(e, group);
-        closeOptions();
         e.stopPropagation();
         setDialogOptions({
             family: "delete", 
@@ -202,13 +196,6 @@ const Group = () => {
             text: 'Are you sure you want to delete this group?', 
             action: () => updateGroupIsActive(group.group_id)
         });
-    };
-
-    const handleMore = (e, group) => {
-        e.stopPropagation();
-        setCurrentGroup(group);
-        resetCrud(group);
-        openOptions();
     };
 
     // FILTERS ######################################################################################################################################
@@ -250,8 +237,9 @@ const Group = () => {
             <tr key={group.group_id} onClick={() => handleExpandir(group)}>
                 <td className="head">
                     {renderAvatar(group)}
-                    {/* <Icon.Basic className="more" family="more" size="30px" onClick={e => handleMore(e, group)}/> */}
-                    {/* <DropDown.Basic /> */}
+                    <div className="dropdown">
+                        {renderDropDown(group)}
+                    </div>
                 </td>
                 <td className={classContent} data-label='State'>{group.state_name}</td>
                 <td className={classContent} data-label='Players'>{renderButtonPlayer(group)}</td>
@@ -282,29 +270,24 @@ const Group = () => {
         return <Button.Basic family={family} onClick={e => handleButtonPlayer(e, group)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
-    const renderActions = group => {
+    const renderDropDown = group => {
         return (
-            <div className="td-container">
-               <DropDown.Basic>
-                    <IconText.Basic family="edit" onClick={e => handleModalCrud(e, group)}>Update</IconText.Basic>
-                    <IconText.Basic family="delete" onClick={e => handleInactiveGroup(e, group)}>Delete</IconText.Basic>
-               </DropDown.Basic>
-            </div>
+            <DropDown.Basic>
+                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, group)}>Update</IconText.Basic>
+                <IconText.Basic family="delete" onClick={e => handleInactiveGroup(e, group)}>Delete</IconText.Basic>
+                {group.count_players >= 2 && group.state_id === 3 && <IconText.Basic family="commit" onClick={e => handleSetRandomMatch(e, group)}>Commit</IconText.Basic>}
+                {group.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoMatch(e, group)}>Groups</IconText.Basic>}
+            </DropDown.Basic>
         );
     };
 
-    // const renderActions = group => {
-    //     return (
-    //         <div className="td-container2">
-    //             <Icon.Basic 
-    //                 onClick={e => handleMore(e, group)} 
-    //                 family="more"
-    //                 hover
-    //                 size="30px"
-    //             />
-    //         </div>
-    //     );
-    // };
+    const renderActions = group => {
+        return (
+            <div className="td-container">
+               {renderDropDown(group)}
+            </div>
+        );
+    };
 
     // JSX ##########################################################################################################################################
     return (
@@ -346,18 +329,6 @@ const Group = () => {
 
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
-
-            {/* OPTIONS  ############################################################################################################################ */}
-            <Options.Basic isOpen={isOpenOptions} close={closeOptions}>
-                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, currentGroup)}>Update</IconText.Basic>
-                <IconText.Basic family="delete" onClick={e => handleInactiveGroup(e, currentGroup)}>Delete</IconText.Basic>
-                {currentGroup.count_players >= 2 && currentGroup.state_id === 3 && 
-                    <IconText.Basic family="commit" onClick={e => handleSetRandomMatch(e, currentGroup)}>Commit</IconText.Basic>
-                }
-                {currentGroup.state_id === 1 && 
-                    <IconText.Basic family="go" onClick={e => handleGoMatch(e, currentGroup)}>Go</IconText.Basic>
-                }
-            </Options.Basic>
 
             {/* BUTTON BACK ######################################################################################################################### */}
             <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="75px" size="40px" />

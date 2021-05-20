@@ -22,7 +22,6 @@ export {default as TableNew} from "./components/controls/TableNew";
 export {default as Container} from "./components/controls/Container";
 export {default as Avatar} from "./components/controls/Avatar";
 export {default as ButtonFloat} from "./components/controls/ButtonFloat";
-export {default as Options} from "./components/controls/Options";
 
 export {default as ContainerScoreCrud} from "./components/controls/ContainerScoreCrud";
 export {default as ContainerScore} from "./components/controls/ContainerScore";
