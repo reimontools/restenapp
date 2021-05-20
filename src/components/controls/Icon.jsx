@@ -13,11 +13,13 @@ const DivIconStyled = styled.div `
     left: ${({ left }) => left ? left : 'none'};
     top: ${({ top }) => top ? top : 'none'};
     position: ${({ right, top, left }) => (right || top || left) ? 'absolute' : 'static'};
+
     &:hover {
         transform: ${({ hover }) => hover ? 'scale(1.5)' : 'none'};
     };
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+
         &:hover {
             transform: none;
         };

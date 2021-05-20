@@ -48,16 +48,15 @@ const ContainerStyled = styled.div `
 const ContainerBasicStyled = styled.div `
     width: ${({ width }) => width ? width : '100%'};
     padding: 10px;
-    /* @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        width: 100%;
-    }; */
 `;
 
 const ContainerFlex = styled.div `
     display: flex;
-    align-items: center;
+    align-items: ${({ alignItems }) => alignItems ? alignItems : 'center'};
     justify-content: ${({ flexJustifyContent }) => flexJustifyContent ? flexJustifyContent : 'center'};
     margin: ${({ margin }) => margin ? margin : '0'};
+    font-size: ${({ fontSize }) => fontSize ? fontSize : '16px'};
+    font-weight: ${({ black }) => black ? 700 : 100};
 `;
 
 const ContainerFlexWrap = styled.div `

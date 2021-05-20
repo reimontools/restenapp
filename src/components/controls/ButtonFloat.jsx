@@ -1,17 +1,19 @@
 import styled from "styled-components";
-import {  getIconByFamily, MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import {  getIconByFamily, getColorByFamily, MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
 
 const ButtonUpStyled = styled.div `
     position: fixed;
-    background-color: #ced922;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    background-color: ${({ family }) => getColorByFamily(family)};
+
     display: flex;
     align-items: center; 
     justify-content: center;
-    bottom: 3%;
-    right: 8%;
+    bottom: ${({ bottom }) => bottom ? bottom : '20px'};
+    right: ${({ right }) => right ? right : '20px'};
+    width: ${({ size }) => size ? size : '50px'};
+    height: ${({ size }) => size ? size : '50px'};
+    border-radius: ${({ size }) => size ? size : '50px'};
+
     color: white;
     transition: all 300ms ease;
     box-shadow: 0px 7px 20px -10px #0000007d;
@@ -22,9 +24,9 @@ const ButtonUpStyled = styled.div `
     };
 
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        width: 50px;
-        height: 50px;
-        border-radius: 50px;
+        width: ${({ size }) => size ? size : '50px'};
+        height: ${({ size }) => size ? size : '50px'};
+        border-radius: ${({ size }) => size ? size : '50px'};
         &:hover {
             transform: none;
         };
@@ -34,8 +36,8 @@ const ButtonUpStyled = styled.div `
 const ButtonFloat =  {
     Icon: ({...buttonFloatProps}) => {
         return (
-            <ButtonUpStyled {...buttonFloatProps}>
-                {getIconByFamily("add")}
+            <ButtonUpStyled  {...buttonFloatProps}>
+                {getIconByFamily(buttonFloatProps.family)}
             </ButtonUpStyled>
         );
     }

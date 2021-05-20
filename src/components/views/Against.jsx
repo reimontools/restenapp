@@ -35,6 +35,7 @@ const Against = () => {
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     const [isOpenModalPlayerSearch, openModalPlayerSearch, closeModalPlayerSearch] = useModal();
     const [isOpenModalPlayerAssigned, openModalPlayerAssigned, closeModalPlayerAssigned] = useModal();    
+    const [isOpenModalPlayerAssignedReadOnly, openModalPlayerAssignedReadOnly, closeModalPlayerAssignedReadOnly] = useModal();  
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
@@ -115,6 +116,20 @@ const Against = () => {
         };
     };
 
+    const generarJuegos = async group_id => {
+        try {
+            const res = await axios.post("match", {group_id});
+            if (res.data.result.cod === 0) return fetchGroups(prm_championship_id);
+            setDialogOptions({
+                family: "info", 
+                title: 'Alert', 
+                text : 'Error: ' + res.data.result.msg
+            });
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
     // HANDLES ######################################################################################################################################
     const handleExpandir = group_id => {
         if (group_id === currentGroupId) {
@@ -128,11 +143,21 @@ const Against = () => {
         e.stopPropagation();
         setCurrentGroupId(group.group_id);
         fetchGroupPlayers(group.group_id);
-        openModalPlayerAssigned();
+        if (group.state_id === 3) {
+            openModalPlayerAssigned();
+        } else {
+            openModalPlayerAssignedReadOnly();
+        };    
     };
 
-    const handleGoToMatch = group => {
+    const handleGoToMatch = (e, group) => {
+        e.stopPropagation();
         history.push('/match/' + group.group_id);
+    };
+
+    const handleGoBack = e => {
+        e.stopPropagation();
+        history.push('/championship');
     };
 
     const handleModalCrud = (e, group) => {
@@ -148,14 +173,30 @@ const Against = () => {
         closeModalPlayerAssigned();
     };
 
+    const handleCloseModalPlayerAssignedReadOnly = () => {
+        fetchGroups(prm_championship_id);
+        closeModalPlayerAssignedReadOnly();
+    };
+
     const handleCloseGroup = (e, group) => {
         e.stopPropagation();
-        console.log(group);
+        setDialogOptions({
+            family: "question", 
+            title: 'Starting phase', 
+            text: 'Are you sure you want to start this Fase?', 
+            subtext: 'After this you will not be able to modify the competitors.',
+            action: () => generarJuegos(group.group_id)
+        });
     };
 
     const handleInactiveGroup = (e, group) => {
         e.stopPropagation();
-        setDialogOptions({family: "delete", title: 'Delete this group?', text: 'Are you sure you want to delete this group?', action: () => updateGroupIsActive(group.group_id)});
+        setDialogOptions({
+            family: "delete", 
+            title: 'Delete this group?', 
+            text: 'Are you sure you want to delete this group?', 
+            action: () => updateGroupIsActive(group.group_id)
+        });
     };
 
     // FILTERS ######################################################################################################################################
@@ -232,16 +273,20 @@ const Against = () => {
                     family="delete" 
                     hover
                 />
-                <Icon.Basic 
-                    onClick={e => handleGoToMatch(e, group)}
-                    family="go" 
-                    hover
-                />
-                <Icon.Basic 
-                    onClick={e => handleCloseGroup(e, group)}
-                    family="close" 
-                    hover
-                />
+                {group.count_players >= 2 && group.state_id === 3 && 
+                    <Icon.Basic 
+                        onClick={e => handleCloseGroup(e, group)}
+                        family="commit" 
+                        hover
+                    />
+                }
+                {group.state_id === 1 && 
+                    <Icon.Basic 
+                        onClick={e => handleGoToMatch(e, group)}
+                        family="go" 
+                        hover
+                    />
+                }
             </div>
         );
     };
@@ -274,9 +319,12 @@ const Against = () => {
                     <Button.Basic onClick={handleSubmitCrud(updateGroup)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
+
+            {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
+            <PlayerAssigned.ReadOnly players={groupPlayers} isOpen={isOpenModalPlayerAssignedReadOnly} close={handleCloseModalPlayerAssignedReadOnly} /> 
             
             {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
-            <PlayerAssigned actionDelete={updateGroupPlayerIsActive} actionOpen={openModalPlayerSearch} players={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
+            <PlayerAssigned.Basic actionDelete={updateGroupPlayerIsActive} actionOpen={openModalPlayerSearch} players={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
             <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
@@ -284,8 +332,11 @@ const Against = () => {
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
+            {/* BACK ################################################################################################################################ */}
+            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="85px" right="35px" size="40px" />
+
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultGroupData)} />
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultGroupData)} family="add" />
         </Container.Primary>
     );
 };

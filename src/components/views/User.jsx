@@ -39,8 +39,11 @@ const User = () => {
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
-        name: Yup.string().required('Required'),
-        email: Yup.string().email("Invalid format").required('Required')
+        name: Yup.string()
+            .required('Required'),
+        email: Yup.string()
+            .email("Invalid format")
+            .required('Required')
     });
 
     const {register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud} = useForm({
@@ -328,7 +331,7 @@ const User = () => {
             </Modal.ForForm>
 
             {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
-            <PlayerAssigned actionDelete={updateUserPlayerIsActive} actionOpen={openModalPlayerSearch} players={userPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
+            <PlayerAssigned.Basic actionDelete={updateUserPlayerIsActive} actionOpen={openModalPlayerSearch} players={userPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
             <PlayerSearch action={updateUserPlayer} players={playerList.filter(filPlayersByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
@@ -337,7 +340,7 @@ const User = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultUserData)} />
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultUserData)} family="add"/>
 
         </Container.Primary>
     );

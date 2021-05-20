@@ -40,6 +40,16 @@ const TableStyled = styled.table `
         justify-content: space-evenly;
     };
 
+    .td-container2 {
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+    };
+
+    .more {
+        display: none; 
+    };
+
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         color: #222;
         /* border-collapse: separate; */
@@ -51,10 +61,20 @@ const TableStyled = styled.table `
 
         .head {
             display:flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center; 
             font-size: 15px;
             color: ${PRIMARY_COLOR};
+        };
+
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+        };
+
+        .more {
+            display: flex; 
         };
 
         .content {
@@ -74,6 +94,10 @@ const TableStyled = styled.table `
         .td-container {
             justify-content: space-around;
             width: 100%;
+        };
+
+        .td-container2 {
+            display: none;
         };
 
         tbody tr td {

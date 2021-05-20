@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useState, useEffect, useCallback } from "react";
 import { getList } from '../../helpers/listHelper';
-import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore, Icon } from "../../component";
+import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore, Icon, ButtonFloat } from "../../component";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 
@@ -14,6 +14,8 @@ const Match = () => {
     const defaultCurrentScore = [{point:0}, {point:0}, {point:0}, {point:0}, {point:0}, {point:0}];
     const [currentScore, setCurrentScore] = useState(defaultCurrentScore);
     const [currentScoreIndex, setCurrentScoreIndex] = useState(0);
+
+    const history = useHistory();
 
     /*FETCH ###########################################################################################*/
     const fetchMatches = async id => {
@@ -176,6 +178,16 @@ const Match = () => {
         return null;
     };
 
+    const handleGoBack = e => {
+        e.stopPropagation();
+        history.push('/championship/group/' + matches[0].championship_id);
+        // if (matches[0].championship_type_id === 2) {
+        //     history.push('/championship/seed/' + matches[0].championship_id);
+        // } else {
+        //     history.push('/championship/against/' + matches[0].championship_id);
+        // };
+    };
+
     /*JSX ############################################################################################*/
     return (
         <Container.Primary>
@@ -247,6 +259,9 @@ const Match = () => {
                     </ContainerNumber.Container>
                 </Container.Basic>
             </Modal.ForForm>
+            
+            {/* BACK ################################################################################################################################ */}
+            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" size="40px" />
         </Container.Primary>
     );
 };

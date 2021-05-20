@@ -5,6 +5,7 @@ import SignIn from '../components/views/SignIn';
 import Player from '../components/views/Player';
 import Against from '../components/views/Against';
 import Seed from '../components/views/Seed';
+import Group from '../components/views/Group';
 import Championship from '../components/views/Championship';
 import User from '../components/views/User';
 import PlayerResult from '../components/views/PlayerResult';
@@ -41,6 +42,14 @@ export const ROUTES = [
         title: 'Seed',
         path: '/championship/seed/:prm_championship_id',
         component: Seed, 
+        allowTo: ['Admin', 'Coach'],
+        showInBar: false,
+        auth: 'auth'
+    },
+    {
+        title: 'Group',
+        path: '/championship/group/:prm_championship_id',
+        component: Group, 
         allowTo: ['Admin', 'Coach'],
         showInBar: false,
         auth: 'auth'

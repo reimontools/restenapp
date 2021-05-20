@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Icon, Loading, Select, Dialog, Avatar, ButtonFloat } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Icon, Loading, Select, Dialog, Avatar, ButtonFloat, Option, IconText } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -27,6 +27,7 @@ const Championship = () => {
 
     // USEMODAL #####################################################################################################################################
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
+    const [isOpenOption, openOption, closeOption] = useModal();
     
     // LIST #########################################################################################################################################
     const championshipTypeList = useList("list/championship_type");
@@ -122,22 +123,49 @@ const Championship = () => {
         if (championship.state_id === 2) updateChampionshipState(championship.championship_id, 1);
     };
 
-    const handleUpdate = (e, championship) => {
+    const handleOption = (e, championship) => {
         e.stopPropagation();
         setCurrentChampionshipId(championship.championship_id);
         resetCrud(championship);
+        openOption();
+    };
+
+    const handleModalCrud = () => {
+        closeOption();
         openModalCrud();
     };
 
-    const handleGoToChampionshipDetail = (e, championship) => {
-        e.stopPropagation();
-        history.push('/championship/group/' + championship.championship_id)
+    const handleDelete = () => {
+        closeOption();
+        setDialogOptions({
+            family: "delete", 
+            title: 'Delete this championship?', 
+            text: 'Are you sure you want to delete this championship?', 
+            action: () => updateChampionshipIsActive(currentChampionshipId)
+        });
     };
 
-    const handleDelete = (e, championship) => {
-        e.stopPropagation();
-        setDialogOptions({family: "delete", title: 'Delete this championship?', text: 'Are you sure you want to delete this championship?', action: () => updateChampionshipIsActive(championship.championship_id) });
+    const handleGoToGroup = () => {
+        closeOption();
+        history.push('/championship/group/' + currentChampionshipId)
     };
+
+    // const handleModalCrudBackUp = (e, championship) => {
+    //     e.stopPropagation();
+    //     setCurrentChampionshipId(championship.championship_id);
+    //     resetCrud(championship);
+    //     openModalCrud();
+    // };
+
+    // const handleGoToChampionshipDetail = (e, championship) => {
+    //     e.stopPropagation();
+    //     history.push('/championship/group/' + championship.championship_id)
+    // };
+
+    // const handleDelete = (e, championship) => {
+    //     e.stopPropagation();
+    //     setDialogOptions({family: "delete", title: 'Delete this championship?', text: 'Are you sure you want to delete this championship?', action: () => updateChampionshipIsActive(championship.championship_id) });
+    // };
 
     // RENDERS ######################################################################################################################################
     const renderTableHead = () => {
@@ -188,21 +216,26 @@ const Championship = () => {
     const renderActions = championship => {
         return (
             <div className="td-container">
-                <Icon.Basic 
+                {/* <Icon.Basic 
                     onClick={e => handleGoToChampionshipDetail(e, championship)}
                     family="go" 
                     hover
-                />
-                <Icon.Basic 
-                    onClick={e => handleUpdate(e, championship)}
+                /> */}
+                {/* <Icon.Basic 
+                    onClick={e => handleModalCrud(e, championship)}
                     family="edit"
                     hover
-                />
+                /> */}
                 <Icon.Basic 
+                    onClick={e => handleOption(e, championship)}
+                    family="more"
+                    hover
+                />
+                {/* <Icon.Basic 
                     onClick={e => handleDelete(e, championship)}
                     family="delete" 
                     hover
-                />
+                /> */}
             </div>
         );
     };
@@ -211,6 +244,16 @@ const Championship = () => {
         var text = championship.state_name, family = "";
         championship.state_id === 1 ? family = "addPerson" : family = "check";
         return <Button.Basic family={family} onClick={e => handleChampionshipState(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+    };
+
+    const renderOptions = () => {
+        return (
+            <>
+                <IconText.Basic family="edit" onClick={() => handleModalCrud()}>Update</IconText.Basic>
+                <IconText.Basic family="delete" onClick={() => handleDelete()}>Delete</IconText.Basic>
+                <IconText.Basic family="go" onClick={() => handleGoToGroup()}>See Groups</IconText.Basic>
+            </>
+        );
     };
 
     // JSX ##########################################################################################################################################
@@ -230,6 +273,11 @@ const Championship = () => {
             }
 
             {/* MODAL CRUD ########################################################################################################################## */}
+            <Option.Basic isOpen={isOpenOption} closeModal={closeOption}>
+                {renderOptions()}
+            </Option.Basic>
+
+            {/* MODAL CRUD ########################################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
@@ -243,7 +291,7 @@ const Championship = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleUpdate(e, defaultChampionshipData)} family="add" />
+            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultChampionshipData)} family="add" />
         </Container.Primary>
     );
 };
