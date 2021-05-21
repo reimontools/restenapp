@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
+import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown, IconText } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -183,7 +183,8 @@ const Player = () => {
         if (player.gender_id === 1) {
             return (
                 <div className="avatar-container">
-                    <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
+                    {/* <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter> */}
+                    <Image.Girl />
                     {player.player_fullname}
                 </div>
             );
@@ -192,7 +193,8 @@ const Player = () => {
         if (player.gender_id === 2) {
             return (
                 <div className="avatar-container">
-                    <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+                    {/* <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter> */}
+                    <Image.Boy />
                     {player.player_fullname}
                 </div>
             );
