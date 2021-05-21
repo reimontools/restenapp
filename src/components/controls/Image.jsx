@@ -1,11 +1,10 @@
 import styled from "styled-components";
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
-import boy from '../../assets/images/boy.png';
-import girl from '../../assets/images/girl.png';
+import { MEDIUM_SCREEN_SIZE_PX, getImageByFamily, getIconByFamily } from "../../helpers/paramHelper";
 
-const ImageContainerStyled = styled.div `
+const ContainerStyled = styled.div `
     display: none;
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        position: relative;
         display: flex;
         align-items: center; 
         justify-content: center;
@@ -18,19 +17,37 @@ const ImageContainerStyled = styled.div `
     };
 `;
 
+const ButtonDeleteStyled = styled.div `
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    background-color: grey;
+    width: 12px;
+    height: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+`;
+
 const Image = {
-    Boy: ({...imageProps}) => {
+    Basic: ({...imageProps}) => {
         return ( 
-            <ImageContainerStyled {...imageProps}>
-                <img src={boy} alt='boy' />
-            </ImageContainerStyled>
+            <ContainerStyled {...imageProps}>
+                <img src={getImageByFamily(imageProps.family)} alt={imageProps.family} />
+            </ContainerStyled>
         );
     },
-    Girl: ({...imageProps}) => {
+    BasicDelete: ({...imageProps}) => { 
         return ( 
-            <ImageContainerStyled {...imageProps}>
-                <img src={girl} alt='girl' />
-            </ImageContainerStyled>
+            <ContainerStyled {...imageProps}>
+                <img src={getImageByFamily(imageProps.family)} alt={imageProps.family} />
+                <ButtonDeleteStyled>
+                    {getIconByFamily("close")}
+                </ButtonDeleteStyled>
+            </ContainerStyled>
         );
     }
 };

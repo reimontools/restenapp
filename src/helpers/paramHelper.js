@@ -10,6 +10,11 @@ import { CgGirl, CgBoy } from "react-icons/cg";
 import { GiConfirmed } from "react-icons/gi";
 import { IoChevronBack } from "react-icons/io5";
 
+import boy from '../assets/images/boy.png';
+import girl from '../assets/images/girl.png';
+import championshipSeed from '../assets/images/championshipSeed.png';
+import championshipAgainst from '../assets/images/championshipAgainst.png';
+
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
 export const SMALL_SCREEN_SIZE_PX = SMALL_SCREEN_SIZE + "px";
@@ -21,6 +26,16 @@ export const NUMERICREGEX = /(?=.*[0-9])/;
 
 export const PRIMARY_COLOR = "#0e70b8";
 export const SECONDARY_COLOR = "#fff";
+
+export const getImageByFamily = family => {
+    switch(family) {
+        case "girl": return girl;
+        case "boy": return boy;
+        case "championshipSeed": return championshipSeed;
+        case "championshipAgainst": return championshipAgainst;
+        default: return girl;
+    };
+};
 
 export const getColorByFamily = family => {
     switch(family) {

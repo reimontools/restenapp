@@ -183,8 +183,7 @@ const Player = () => {
         if (player.gender_id === 1) {
             return (
                 <div className="avatar-container">
-                    {/* <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter> */}
-                    <Image.Girl />
+                    <Image.Basic family="girl" />
                     {player.player_fullname}
                 </div>
             );
@@ -193,8 +192,7 @@ const Player = () => {
         if (player.gender_id === 2) {
             return (
                 <div className="avatar-container">
-                    {/* <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter> */}
-                    <Image.Boy />
+                    <Image.Basic family="boy" />
                     {player.player_fullname}
                 </div>
             );

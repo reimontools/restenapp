@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, IconText, Image } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -191,11 +191,10 @@ const Championship = () => {
     };
 
     const renderAvatar = championship => {
-        let backColor="#f8db27";
         if (championship.championship_type_id === 1) {
             return (
                 <div className="avatar-container">
-                    <Avatar.Letter backColor={backColor}>A</Avatar.Letter>
+                    <Image.Basic family="championshipAgainst" />
                     {championship.name}
                 </div>
             );
@@ -204,7 +203,7 @@ const Championship = () => {
         if (championship.championship_type_id === 2) {
             return (
                 <div className="avatar-container">
-                    <Avatar.Letter backColor={backColor}>S</Avatar.Letter>
+                    <Image.Basic family="championshipSeed" />
                     {championship.name}
                 </div>
             );

@@ -1,4 +1,4 @@
-import { Icon, TableNew, Container, Title, Modal, Avatar } from "../../component";
+import { Icon, TableNew, Container, Title, Modal, Image } from "../../component";
 
 const PlayerSearch = {
     Basic: ({actionDelete, actionOpen, players, isOpen, close}) => {
@@ -16,8 +16,7 @@ const PlayerSearch = {
             return (
                 <tr key={player.player_id}>
                     <td className="head">
-                        {renderAvatarByPlayer(player)}
-                        {player.player_fullname}
+                        {renderAvatar(player)}
                     </td>
                     <td className="hide">{renderActions(player)}</td>
                 </tr>  
@@ -36,9 +35,25 @@ const PlayerSearch = {
             );
         };
 
-        const renderAvatarByPlayer = player => {
-            if (player.gender_id === 1) return <Avatar.Delete onClick={() => actionDelete(player.player_id)} backColor="#f9d2df">{player.name[0]}</Avatar.Delete>
-            if (player.gender_id === 2) return <Avatar.Delete onClick={() => actionDelete(player.player_id)} backColor="#d3e5f1">{player.name[0]}</Avatar.Delete>
+        const renderAvatar = player => {
+            if (player.gender_id === 1) {
+                return (
+                    <div className="avatar-container">
+                        <Image.BasicDelete family="girl" onClick={() => actionDelete(player.player_id)} />
+                        {player.player_fullname}
+                    </div>
+                );
+            };
+    
+            if (player.gender_id === 2) {
+                return (
+                    <div className="avatar-container">
+                        <Image.BasicDelete family="boy" onClick={() => actionDelete(player.player_id)} />
+                        {player.player_fullname}
+                    </div>
+                );
+            };
+    
             return null;        
         };
 
@@ -74,16 +89,31 @@ const PlayerSearch = {
             return (
                 <tr key={player.player_id}>
                     <td className="head">
-                        {renderAvatarByPlayer(player)}
-                        {player.player_fullname}
+                        {renderAvatar(player)}
                     </td>
                 </tr>  
             );
         };
 
-        const renderAvatarByPlayer = player => {
-            if (player.gender_id === 1) return <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
-            if (player.gender_id === 2) return <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+        const renderAvatar = player => {
+            if (player.gender_id === 1) {
+                return (
+                    <div className="avatar-container">
+                        <Image.Basic family="girl" />
+                        {player.player_fullname}
+                    </div>
+                );
+            };
+    
+            if (player.gender_id === 2) {
+                return (
+                    <div className="avatar-container">
+                        <Image.Basic family="boy" />
+                        {player.player_fullname}
+                    </div>
+                );
+            };
+    
             return null;        
         };
         
