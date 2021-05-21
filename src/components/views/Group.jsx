@@ -276,7 +276,7 @@ const Group = () => {
                 <IconText.Basic family="edit" onClick={e => handleModalCrud(e, group)}>Update</IconText.Basic>
                 <IconText.Basic family="delete" onClick={e => handleInactiveGroup(e, group)}>Delete</IconText.Basic>
                 {group.count_players >= 2 && group.state_id === 3 && <IconText.Basic family="commit" onClick={e => handleSetRandomMatch(e, group)}>Commit</IconText.Basic>}
-                {group.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoMatch(e, group)}>Groups</IconText.Basic>}
+                {group.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoMatch(e, group)}>Matches</IconText.Basic>}
             </DropDown.Basic>
         );
     };
@@ -331,7 +331,7 @@ const Group = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* BUTTON BACK ######################################################################################################################### */}
-            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="75px" size="40px" />
+            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="78px" right="26px" size="40px" />
 
             {/* BUTTON NEW ########################################################################################################################## */}
             <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultGroupData)} family="add" />

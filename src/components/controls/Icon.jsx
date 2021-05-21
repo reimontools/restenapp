@@ -32,7 +32,7 @@ const NakedStyled = styled.div `
     margin: ${({ margin }) => margin ? margin : '0'};
     width: ${({ size }) => size ? size : '20px'};
     height: ${({ size }) => size ? size : '20px'};
-    font-size: ${({ size }) => size ? size : '20px'};
+    font-size: ${({ size }) => size ? size : '18px'};
     color: ${({ color }) => color ? color : PRIMARY_COLOR};
     transition: all .2s ease;
     right: ${({ right }) => right ? right : 'none'};

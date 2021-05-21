@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat } from "../../component";
+import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -149,8 +149,10 @@ const Player = () => {
         return (
             <tr key={player.player_id} onClick={() => handleExpandir(player.player_id)}>
                 <td className="head">
-                    {renderAvatarByPlayer(player)}
-                    {player.player_fullname}
+                    {renderAvatar(player)}
+                    <div className="dropdown">
+                        {renderDropDown(player)}
+                    </div>
                 </td>
                 <td className={classContent} data-label='Gender'>{player.gender_name}</td>
                 <td className={classContent} data-label='Birth Date'>{moment(player.birth_date).format('YYYY-MM-DD')}</td>
@@ -160,26 +162,42 @@ const Player = () => {
         );
     };
 
+    const renderDropDown = player => {
+        return (
+            <DropDown.Basic>
+                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, player)}>Update</IconText.Basic>
+                <IconText.Basic family="delete" onClick={e => handleDelete(e, player)}>Delete</IconText.Basic>
+            </DropDown.Basic>
+        );
+    };
+
     const renderActions = player => {
         return (
             <div className="td-container">
-                <Icon.Basic 
-                    onClick={e => handleModalCrud(e, player)}
-                    family="edit"
-                    hover
-                />
-                <Icon.Basic 
-                    onClick={e => handleDelete(e, player)}
-                    family="delete" 
-                    hover
-                />
+               {renderDropDown(player)}
             </div>
         );
     };
 
-    const renderAvatarByPlayer = player => {
-        if (player.gender_id === 1) return <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
-        if (player.gender_id === 2) return <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+    const renderAvatar = player => {
+        if (player.gender_id === 1) {
+            return (
+                <div className="avatar-container">
+                    <Avatar.Letter backColor="#f9d2df">{player.name[0]}</Avatar.Letter>
+                    {player.player_fullname}
+                </div>
+            );
+        };
+
+        if (player.gender_id === 2) {
+            return (
+                <div className="avatar-container">
+                    <Avatar.Letter backColor="#d3e5f1">{player.name[0]}</Avatar.Letter>
+                    {player.player_fullname}
+                </div>
+            );
+        };
+
         return null;        
     };
 

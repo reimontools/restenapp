@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat } from "../../component";
+import { Input, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -240,7 +240,9 @@ const User = () => {
             <tr key={user.user_id} onClick={() => handleExpandir(user.user_id)}>
                 <td className="head">
                     {renderAvatar(user)}
-                    {user.name}
+                    <div className="dropdown">
+                        {renderDropDown(user)}
+                    </div>
                 </td>
                 <td className={classContent} data-label='Email'>{user.email}</td>
                 <td className={classContent} data-label='Rol'>{user.rol_name}</td>
@@ -254,27 +256,29 @@ const User = () => {
     };
 
     const renderAvatar = user => {
-        return <Avatar.Letter>{user.name[0]}</Avatar.Letter>
+        return (
+            <div className="avatar-container">
+                <Avatar.Letter>{user.name[0]}</Avatar.Letter>
+                {user.name}
+            </div>
+        );
+          
+    };
+
+    const renderDropDown = user => {
+        return (
+            <DropDown.Basic>
+                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, user)}>Update</IconText.Basic>
+                <IconText.Basic family="delete" onClick={e => handleUpdateUserIsActive(e, user)}>Delete</IconText.Basic>
+                <IconText.Basic family="password" onClick={e => handleModalPassword(e, user)}>Password</IconText.Basic>
+            </DropDown.Basic>
+        );
     };
 
     const renderActions = user => {
         return (
             <div className="td-container">
-                <Icon.Basic 
-                    onClick={e => handleModalCrud(e, user)} 
-                    family="edit"
-                    hover
-                />
-                <Icon.Basic
-                    onClick={e => handleUpdateUserIsActive(e, user)} 
-                    family="delete" 
-                    hover
-                />
-                <Icon.Basic
-                    onClick={e => handleModalPassword(e, user)} 
-                    family="password" 
-                    hover
-                />
+               {renderDropDown(user)}
             </div>
         );
     };

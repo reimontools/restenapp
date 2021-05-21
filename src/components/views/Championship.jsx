@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Icon, Loading, Select, Dialog, Avatar, ButtonFloat } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -129,7 +129,7 @@ const Championship = () => {
         openModalCrud();
     };
 
-    const handleGoToChampionshipDetail = (e, championship) => {
+    const handleGoGroup = (e, championship) => {
         e.stopPropagation();
         history.push('/championship/group/' + championship.championship_id)
     };
@@ -167,8 +167,10 @@ const Championship = () => {
         return (
             <tr key={championship.championship_id} onClick={() => handleExpandir(championship.championship_id)}>
                 <td className="head">
-                    {renderAvatarByChampionchipTypeId(championship.championship_type_id)}
-                    {championship.name}
+                    {renderAvatar(championship)}
+                    <div className="dropdown">
+                        {renderDropDown(championship)}
+                    </div>
                 </td>
                 <td className={classContent} data-label='Type'>{championship.championship_type_name}</td>
                 <td className={classContent} data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
@@ -178,31 +180,43 @@ const Championship = () => {
         );
     };
 
-    const renderAvatarByChampionchipTypeId = championship_type_id => {
+    const renderDropDown = championship => {
+        return (
+            <DropDown.Basic>
+                <IconText.Basic family="edit" onClick={e => handleUpdate(e, championship)}>Update</IconText.Basic>
+                <IconText.Basic family="delete" onClick={e => handleDelete(e, championship)}>Delete</IconText.Basic>
+                {championship.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoGroup(e, championship)}>Groups</IconText.Basic>}
+            </DropDown.Basic>
+        );
+    };
+
+    const renderAvatar = championship => {
         let backColor="#f8db27";
-        if (championship_type_id === 1) return <Avatar.Letter backColor={backColor}>A</Avatar.Letter>
-        if (championship_type_id === 2) return <Avatar.Letter backColor={backColor}>S</Avatar.Letter>
+        if (championship.championship_type_id === 1) {
+            return (
+                <div className="avatar-container">
+                    <Avatar.Letter backColor={backColor}>A</Avatar.Letter>
+                    {championship.name}
+                </div>
+            );
+        };
+
+        if (championship.championship_type_id === 2) {
+            return (
+                <div className="avatar-container">
+                    <Avatar.Letter backColor={backColor}>S</Avatar.Letter>
+                    {championship.name}
+                </div>
+            );
+        };
+
         return null;        
     };
-    
+
     const renderActions = championship => {
         return (
             <div className="td-container">
-                <Icon.Basic 
-                    onClick={e => handleGoToChampionshipDetail(e, championship)}
-                    family="go" 
-                    hover
-                />
-                <Icon.Basic 
-                    onClick={e => handleUpdate(e, championship)}
-                    family="edit"
-                    hover
-                />
-                <Icon.Basic 
-                    onClick={e => handleDelete(e, championship)}
-                    family="delete" 
-                    hover
-                />
+               {renderDropDown(championship)}
             </div>
         );
     };
