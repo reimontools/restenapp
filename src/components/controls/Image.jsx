@@ -10,6 +10,8 @@ const ImageContainerStyled = styled.div `
         align-items: center; 
         justify-content: center;
         margin-right: 5px;
+        width: 30px;
+        height: 30px;
         img {
             height: 30px;
         };
