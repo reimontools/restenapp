@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, IconText, Image } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -147,6 +147,7 @@ const Championship = () => {
                 <th>Type</th>
                 <th>Created</th>
                 <th>State</th>
+                <th>Groups/Phases</th>
                 <th>Actions</th>
             </tr>
         );
@@ -175,6 +176,7 @@ const Championship = () => {
                 <td className={classContent} data-label='Type'>{championship.championship_type_name}</td>
                 <td className={classContent} data-label='Created'>{ moment(championship.created_date).format('YYYY-MM-DD') }</td>
                 <td className={classContent} data-label='Status'>{renderButtonState(championship)}</td>
+                <td className={classContent} data-label='Groups'>{renderButtonGroups(championship)}</td>
                 <td className={classActions}>{renderActions(championship)}</td>
             </tr>  
         );
@@ -182,10 +184,10 @@ const Championship = () => {
 
     const renderDropDown = championship => {
         return (
-            <DropDown.Basic>
-                <IconText.Basic family="edit" onClick={e => handleUpdate(e, championship)}>Update</IconText.Basic>
-                <IconText.Basic family="delete" onClick={e => handleDelete(e, championship)}>Delete</IconText.Basic>
-                {championship.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoGroup(e, championship)}>Groups</IconText.Basic>}
+            <DropDown.Basic family="more">
+                <div className="menu-content" onClick={e => handleUpdate(e, championship)}>Update</div>
+                <div className="menu-content" onClick={e => handleDelete(e, championship)}>Delete</div>
+                {championship.state_id === 1 &&<div className="menu-content" onClick={e => handleGoGroup(e, championship)}>Groups</div>}
             </DropDown.Basic>
         );
     };
@@ -226,6 +228,21 @@ const Championship = () => {
         return <Button.Basic family={family} onClick={e => handleChampionshipState(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
+    const renderButtonGroups = championship => {
+        var text = "", family = "", type = "Groups";
+        
+        if (championship.championship_type_id !== 1) type = "Phases";
+
+        if (championship.count_groups > 0) {
+            text = championship.count_groups + " " + type;
+            family = "addPerson";
+        } else {
+            text = "No Groups";
+            family = "remove";
+        };
+        return <Button.Basic family={family} onClick={e => handleGoGroup(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+    };
+
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
@@ -256,7 +273,7 @@ const Championship = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleUpdate(e, defaultChampionshipData)} family="add" />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultChampionshipData)} family="add" hover />
         </Container.Primary>
     );
 };

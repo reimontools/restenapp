@@ -32,3 +32,4 @@ export {default as PlayerSearch} from "./components/otros/PlayerSearch";
 export {default as PlayerAssigned} from "./components/otros/PlayerAssigned";
 export {default as IconText} from "./components/controls/IconText";
 export {default as DropDown} from "./components/controls/DropDown";
+export {default as DropDownButtonFloat} from "./components/controls/DropDownButtonFloat";

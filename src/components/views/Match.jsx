@@ -1,7 +1,7 @@
 import { useParams, useHistory } from 'react-router-dom';
 import { useState, useEffect, useCallback } from "react";
 import { getList } from '../../helpers/listHelper';
-import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore, Icon, ButtonFloat } from "../../component";
+import { Input, Container, Loading, Title, Modal, Button, Line, ContainerScoreCrud, Simbol, ContainerNumber, ContainerScore, Icon, ButtonFloat, DropDownButtonFloat } from "../../component";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 
@@ -181,18 +181,25 @@ const Match = () => {
     const handleGoBack = e => {
         e.stopPropagation();
         history.push('/championship/group/' + matches[0].championship_id);
-        // if (matches[0].championship_type_id === 2) {
-        //     history.push('/championship/seed/' + matches[0].championship_id);
-        // } else {
-        //     history.push('/championship/against/' + matches[0].championship_id);
-        // };
+    };
+
+    const renderDropDownButtonFloat = () => {
+        return (
+            <DropDownButtonFloat.Basic family="options" bottom="65px">
+                <div className="content">Redo randomly</div>
+                <div className="content">Redo according to order</div>
+                <div className="content">Redo according to winner</div>
+                <div className="content">Redo manual</div>
+            </DropDownButtonFloat.Basic>
+        );
     };
 
     /*JSX ############################################################################################*/
     return (
         <Container.Primary>
-            <Title.Basic fontSize="20px">{matches[0]?.championship_name}</Title.Basic>
-            <Title.Basic>{matches[0]?.group_name}</Title.Basic>
+            {/* <Title.Basic fontSize="20px">{matches[0]?.championship_name}</Title.Basic>
+            <Title.Basic>{matches[0]?.group_name}</Title.Basic> */}
+            <Title.Basic fontSize="20px">Matches</Title.Basic> 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
             </div>
@@ -254,14 +261,17 @@ const Match = () => {
                         <ContainerNumber.Number id={"62"} onClick={e => handleScore(e)}>6/2</ContainerNumber.Number>
                         <ContainerNumber.Number id={"63"} onClick={e => handleScore(e)}>6/3</ContainerNumber.Number>
                         <ContainerNumber.Number id={"64"} onClick={e => handleScore(e)}>6/4</ContainerNumber.Number>
-                        <ContainerNumber.Number id={"65"} onClick={e => handleScore(e)}>6/5</ContainerNumber.Number>
-                        <ContainerNumber.Number id={"76"} onClick={e => handleScore(e)}>7/6</ContainerNumber.Number>
+                        <ContainerNumber.Number id={"75"} onClick={e => handleScore(e)}>7/5</ContainerNumber.Number>
                     </ContainerNumber.Container>
                 </Container.Basic>
             </Modal.ForForm>
             
             {/* BACK ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" size="40px" />
+            {renderDropDownButtonFloat()}
+
+            {/* BUTTON BACK ######################################################################################################################### */}
+            <ButtonFloat.Icon onClick={e => handleGoBack(e)} hover family="back" />
+
         </Container.Primary>
     );
 };

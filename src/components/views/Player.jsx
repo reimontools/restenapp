@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown, IconText } from "../../component";
+import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -109,7 +109,7 @@ const Player = () => {
         };
     };
 
-    const handleModalCrud = (e, player) => {
+    const handleUpdate = (e, player) => {
         e.stopPropagation();
         setCurrentPlayerId(player.player_id);
         resetCrud(player);
@@ -164,9 +164,9 @@ const Player = () => {
 
     const renderDropDown = player => {
         return (
-            <DropDown.Basic>
-                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, player)}>Update</IconText.Basic>
-                <IconText.Basic family="delete" onClick={e => handleDelete(e, player)}>Delete</IconText.Basic>
+            <DropDown.Basic family="more">
+                <div className="menu-content" onClick={e => handleUpdate(e, player)}>Update</div>
+                <div className="menu-content" onClick={e => handleDelete(e, player)}>Delete</div>
             </DropDown.Basic>
         );
     };
@@ -233,7 +233,7 @@ const Player = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultPlayerData)} family="add" />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultPlayerData)} family="add" hover />
         </Container.Primary>
     );
 };

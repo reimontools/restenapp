@@ -1,14 +1,13 @@
 import { BiTrash, BiEdit, BiFilterAlt } from "react-icons/bi";
-import { GoPlus } from "react-icons/go";
+// import { GoPlus } from "react-icons/go";
 import { MdClose, MdMoreVert } from "react-icons/md";
-import { IoMdPersonAdd , IoMdSearch} from "react-icons/io";
+import { IoMdPersonAdd , IoMdSearch, IoIosAdd, IoIosArrowRoundBack, IoIosMore} from "react-icons/io";
 import { FiArrowRightCircle } from "react-icons/fi";
 import { FaCheck, FaCheckDouble, FaRegUser } from "react-icons/fa";
 import { AiOutlineClear, AiOutlineTrophy } from "react-icons/ai";
 import { RiAliensLine, RiLockPasswordLine, RiSeedlingLine } from "react-icons/ri";
 import { CgGirl, CgBoy } from "react-icons/cg";
 import { GiConfirmed } from "react-icons/gi";
-import { IoChevronBack } from "react-icons/io5";
 
 import boy from '../assets/images/boy.png';
 import girl from '../assets/images/girl.png';
@@ -60,6 +59,7 @@ export const getColorByFamily = family => {
         case "male": return PRIMARY_COLOR;
         case "commit": return PRIMARY_COLOR;
         case "more": return PRIMARY_COLOR;
+        case "options": return PRIMARY_COLOR;
         case "back": return "#959595";
         default: return "#0e70b8"
     };
@@ -68,7 +68,7 @@ export const getColorByFamily = family => {
 export const getIconByFamily = family => {
     switch(family) {
         case "close": return <MdClose />;
-        case "add": return <GoPlus />;
+        case "add": return <IoIosAdd />;
         case "addPerson": return <IoMdPersonAdd />;
         case "check": return <FaCheck />;
         case "dobleCheck": return <FaCheckDouble />;
@@ -88,7 +88,8 @@ export const getIconByFamily = family => {
         case "male": return <CgBoy />;
         case "commit": return <GiConfirmed />;
         case "more": return <MdMoreVert />;
-        case "back": return <IoChevronBack />;
+        case "options": return <IoIosMore />;
+        case "back": return <IoIosArrowRoundBack />;
         default: return <RiAliensLine />
     };
 };

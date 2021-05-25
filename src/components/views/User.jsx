@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat, DropDown, IconText } from "../../component";
+import { Input, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat, DropDown } from "../../component";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -161,7 +161,7 @@ const User = () => {
         };
     };
     
-    const handleModalCrud = (e, user) => {
+    const handleUpdate = (e, user) => {
         e.stopPropagation();
         setCurrentUserId(user.user_id);
         resetCrud(user);
@@ -187,7 +187,7 @@ const User = () => {
         closeModalPlayerAssigned();
     };
 
-    const handleUpdateUserIsActive = (e, user) => {
+    const handleDelete = (e, user) => {
         e.stopPropagation();
         setDialogOptions({family: "delete", title: 'Delete this user?', text: 'Are you sure you want to delete this user?', action: () => updateUserIsActive(user.user_id) });
     };
@@ -267,10 +267,10 @@ const User = () => {
 
     const renderDropDown = user => {
         return (
-            <DropDown.Basic>
-                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, user)}>Update</IconText.Basic>
-                <IconText.Basic family="delete" onClick={e => handleUpdateUserIsActive(e, user)}>Delete</IconText.Basic>
-                <IconText.Basic family="password" onClick={e => handleModalPassword(e, user)}>Password</IconText.Basic>
+            <DropDown.Basic family="more">
+                <div className="menu-content" onClick={e => handleUpdate(e, user)}>Update</div>
+                <div className="menu-content" onClick={e => handleDelete(e, user)}>Delete</div>
+                <div className="menu-content" onClick={e => handleModalPassword(e, user)}>Password</div>
             </DropDown.Basic>
         );
     };
@@ -344,7 +344,7 @@ const User = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultUserData)} family="add"/>
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultUserData)} hover family="add"/>
 
         </Container.Primary>
     );

@@ -7,7 +7,7 @@ import { getList } from '../../helpers/listHelper';
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar, IconText, DropDown } from "../../component";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar, DropDown } from "../../component";
 
 const Group = () => {
     // LIST #########################################################################################################################################
@@ -152,7 +152,14 @@ const Group = () => {
 
     const handleGoMatch = (e, group) => {
         e.stopPropagation();
-        history.push('/match/' + group.group_id);
+        if (group.count_matches <= 0) {
+            return setDialogOptions({
+                family: "info", 
+                title: 'Info', 
+                text: 'There is not matches availables yet'
+            });
+        } 
+        return history.push('/match/' + group.group_id); 
     };
 
     const handleGoBack = e => {
@@ -160,7 +167,7 @@ const Group = () => {
         history.push('/championship');
     };
 
-    const handleModalCrud = (e, group) => {
+    const handleUpdate = (e, group) => {
         e.stopPropagation();
         setCurrentGroup(group);
         resetCrud(group);
@@ -188,7 +195,7 @@ const Group = () => {
         });
     };
 
-    const handleInactiveGroup = (e, group) => {
+    const handleDelete = (e, group) => {
         e.stopPropagation();
         setDialogOptions({
             family: "delete", 
@@ -243,7 +250,7 @@ const Group = () => {
                 </td>
                 <td className={classContent} data-label='State'>{group.state_name}</td>
                 <td className={classContent} data-label='Players'>{renderButtonPlayer(group)}</td>
-                <td className={classContent} data-label='Matches'>2 Matches</td>
+                <td className={classContent} data-label='Matches'>{renderButtonMatches(group)}</td>
                 <td className={classActions}>{renderActions(group)}</td>
             </tr>  
         );
@@ -270,13 +277,25 @@ const Group = () => {
         return <Button.Basic family={family} onClick={e => handleButtonPlayer(e, group)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
+    const renderButtonMatches = group => {
+        var text = "", family = "";
+        if (group.count_matches > 0) {
+            text = group.count_finished_matches + "/" + group.count_matches + " Matches";
+            family = "addPerson";
+        } else {
+            text = "No Matches";
+            family = "remove";
+        };
+        return <Button.Basic family={family} onClick={e => handleGoMatch(e, group)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
+    };
+
     const renderDropDown = group => {
         return (
-            <DropDown.Basic>
-                <IconText.Basic family="edit" onClick={e => handleModalCrud(e, group)}>Update</IconText.Basic>
-                <IconText.Basic family="delete" onClick={e => handleInactiveGroup(e, group)}>Delete</IconText.Basic>
-                {group.count_players >= 2 && group.state_id === 3 && <IconText.Basic family="commit" onClick={e => handleSetRandomMatch(e, group)}>Commit</IconText.Basic>}
-                {group.state_id === 1 && <IconText.Basic family="go" onClick={e => handleGoMatch(e, group)}>Matches</IconText.Basic>}
+            <DropDown.Basic family="more">
+                <div className="menu-content" onClick={e => handleUpdate(e, group)}>Update</div>
+                <div className="menu-content" onClick={e => handleDelete(e, group)}>Delete</div>
+                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleSetRandomMatch(e, group)}>Start phase</div>}
+                {group.state_id === 1 && <div className="menu-content" onClick={e => handleGoMatch(e, group)}>Matches</div>}
             </DropDown.Basic>
         );
     };
@@ -292,8 +311,9 @@ const Group = () => {
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
-            <Title.Basic fontSize="20px">{groups[0]?.championship_name}</Title.Basic> 
-            <Title.Basic>{groups[0]?.championship_type_name}</Title.Basic>
+            {/* <Title.Basic fontSize="20px">{groups[0]?.championship_name}</Title.Basic> 
+            <Title.Basic>{groups[0]?.championship_type_name}</Title.Basic> */}
+            <Title.Basic fontSize="20px">Groups</Title.Basic> 
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 
@@ -330,11 +350,12 @@ const Group = () => {
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
-            {/* BUTTON BACK ######################################################################################################################### */}
-            <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="78px" right="26px" size="40px" />
-
             {/* BUTTON NEW ########################################################################################################################## */}
-            <ButtonFloat.Icon hover onClick={e => handleModalCrud(e, defaultGroupData)} family="add" />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultGroupData)} family="add" bottom="65px" hover />
+
+            {/* BUTTON BACK ######################################################################################################################### */}
+            <ButtonFloat.Icon onClick={e => handleGoBack(e)} family="back" hover />
+
         </Container.Primary>
     );
 };

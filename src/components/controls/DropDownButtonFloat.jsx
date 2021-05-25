@@ -4,9 +4,9 @@ import { PRIMARY_COLOR, MEDIUM_SCREEN_SIZE_PX, getColorByFamily, getIconByFamily
 const MenuStyled = styled.div `
     z-index: 10000;
     position: absolute;
-    top: 5px;
-    right: 43px;
-    width: 150px;
+    bottom: 40px;
+    right: 70px;
+    width: 200px;
     background-color: ${PRIMARY_COLOR};
     border-radius: 10px;
     transition: 0.5s;
@@ -18,34 +18,37 @@ const MenuStyled = styled.div `
         z-index: -1;
         content: '';
         position: absolute;
-        top: 14px;
+        bottom: 13px;
         right: -4px;
         width: 15px;
         height: 15px;
         background: ${PRIMARY_COLOR};
         transform: rotate(45deg);
     };
-    /* @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        right: 43px;
-    }; */
+    @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
+        right: 65px;
+    };
 `;
 
 const ContainerStyled = styled.div `
-    position: relative;
+    position: fixed;
     display: flex;
     align-items: center; 
     justify-content: center;
-    /* transition: all 300ms ease; */
+    bottom: ${({ bottom }) => bottom ? bottom : '10px'};
+    right: 1px;
+    width: 60px;
+    height: 60px;
+    transition: all 300ms ease;
     &:hover ${MenuStyled} {
-        top: -5px;
+        bottom: 9px;
         visibility: visible;
         opacity: 1;
     };
-    .menu-content {
+    .content {
         color: white;
         width: 100%;
         padding: 10px 0 10px 10px;
-        text-align: left;
         &:hover {
             background-color: #0665ab;
         };
@@ -56,18 +59,17 @@ const ButtonStyled = styled.div `
     display: flex;
     align-items: center; 
     justify-content: center;
-    width: 33px;
-    height: 33px;
+    width: 50px;
+    height: 50px;
     border-radius: 100%;
-    /* background-color: white; */
-    font-size: 23px;
-    color: ${({ family }) => getColorByFamily(family)};
+    background-color: ${({ family }) => getColorByFamily(family)};
+    font-size: 25px;
+    color: white;
     transition: all 300ms ease;
+    box-shadow: 0px 7px 20px -10px #0000007d;
     cursor: pointer;
     &:hover {
-        background-color: ${({ family }) => getColorByFamily(family)};
-        color: white;
-        /* transform: scale(1.1); */
+        transform: scale(1.2);
     };
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
         &:hover {
@@ -76,11 +78,11 @@ const ButtonStyled = styled.div `
     };
 `;
 
-const DropDown = {
+const DropDownButtonFloat = {
     Basic: ({children, ...dropDownProps}) => {
         return ( 
             <ContainerStyled {...dropDownProps}>
-                <ButtonStyled onClick={e => e.stopPropagation()}>
+                <ButtonStyled>
                     {getIconByFamily(dropDownProps.family)}
                 </ButtonStyled>
                 <MenuStyled>{children}</MenuStyled>
@@ -89,4 +91,4 @@ const DropDown = {
     }
 };
 
-export default DropDown;
+export default DropDownButtonFloat;
