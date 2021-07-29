@@ -15,9 +15,10 @@ const DivSelectStyled = styled.div `
         outline: none;
         border: 2px solid ${PRIMARY_COLOR};
         font-size: 15px;
-        &:not(:valid) {
+        background-color: #fff;
+        /* &:not(:valid) {
             color: #757575;
-        };
+        }; */
     };
     option { 
         color: #222;
