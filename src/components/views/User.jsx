@@ -295,7 +295,7 @@ const User = () => {
         return <Button.Basic family={family} onClick={e => handleButtonPlayer(e, user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
-    // SX ########################################################################################################################################### 
+    // JSX ########################################################################################################################################### 
     return (
         <Container.Primary>
 
@@ -344,7 +344,7 @@ const User = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultUserData)} hover family="add"/>
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultUserData)} hover family="newFloat"/>
 
         </Container.Primary>
     );

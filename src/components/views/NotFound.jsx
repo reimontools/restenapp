@@ -1,5 +1,9 @@
+import { Container, Title } from "../../component";
+
 export default function NotFound() {
     return (
-        <h1>404 Not found...</h1>
+        <Container.Primary>
+            <Title.Basic fontSize="20px">404 Not found...</Title.Basic> 
+        </Container.Primary>
     );
 };

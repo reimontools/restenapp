@@ -14,6 +14,7 @@ const MenuStyled = styled.div `
     opacity: 0;
     padding:5px;
     cursor: pointer;
+    box-shadow: 0 50px 100px rgb(50 50 93 / 10%), 0 15px 35px rgb(50 50 93 / 15%), 0 5px 15px rgb(0 0 0 / 10%);
     &:before {
         z-index: -1;
         content: '';
@@ -82,7 +83,7 @@ const DropDownButtonFloat = {
     Basic: ({children, ...dropDownProps}) => {
         return ( 
             <ContainerStyled {...dropDownProps}>
-                <ButtonStyled>
+                <ButtonStyled {...dropDownProps}>
                     {getIconByFamily(dropDownProps.family)}
                 </ButtonStyled>
                 <MenuStyled>{children}</MenuStyled>

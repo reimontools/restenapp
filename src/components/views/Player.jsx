@@ -233,7 +233,7 @@ const Player = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultPlayerData)} family="add" hover />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultPlayerData)} family="newFloat" hover />
         </Container.Primary>
     );
 };

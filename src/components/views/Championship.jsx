@@ -15,7 +15,7 @@ const Championship = () => {
     useEffect(() => fetchChampionships(), []);
 
     // CONST ########################################################################################################################################
-    const defaultChampionshipData = {championship_id: 0, name: '', state: 0, championship_type_id: ""};
+    const defaultChampionshipData = {championship_id: 0, championship_name: '', state: 0, championship_type_id: ""};
     const history = useHistory();
     
     // STATE ########################################################################################################################################
@@ -33,7 +33,7 @@ const Championship = () => {
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
-        name: Yup.string()
+        championship_name: Yup.string()
             .required('Required'),
         championship_type_id: Yup.string()
             .required('Required')
@@ -101,7 +101,7 @@ const Championship = () => {
     function filChampionshipByText(championship) {
         if(searchTerm === "") {
             return championship;
-        } else if (championship.name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        } else if (championship.championship_name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
             return championship;
         };
         return null;
@@ -131,7 +131,7 @@ const Championship = () => {
 
     const handleGoGroup = (e, championship) => {
         e.stopPropagation();
-        history.push('/championship/group/' + championship.championship_id)
+        history.push('/championship/group/' + championship.championship_id + '/' + championship.championship_type_id)
     };
 
     const handleDelete = (e, championship) => {
@@ -197,7 +197,7 @@ const Championship = () => {
             return (
                 <div className="avatar-container">
                     <Image.Basic family="championshipAgainst" />
-                    {championship.name}
+                    {championship.championship_name}
                 </div>
             );
         };
@@ -206,7 +206,7 @@ const Championship = () => {
             return (
                 <div className="avatar-container">
                     <Image.Basic family="championshipSeed" />
-                    {championship.name}
+                    {championship.championship_name}
                 </div>
             );
         };
@@ -263,7 +263,7 @@ const Championship = () => {
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Championship name" register={registerCrud} error={errorsCrud.name} />
+                    <Input.TextValidation name="championship_name" placeholder="Championship name" register={registerCrud} error={errorsCrud.championship_name} />
                     <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={registerCrud} error={errorsCrud.championship_type_id} content={championshipTypeList} />
                     <Button.Basic onClick={handleSubmitCrud(updateChampionship)} width="100%">Save</Button.Basic>
                 </Container.Basic>
@@ -273,7 +273,7 @@ const Championship = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultChampionshipData)} family="add" hover />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultChampionshipData)} family="newFloat" hover />
         </Container.Primary>
     );
 };

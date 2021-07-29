@@ -74,14 +74,14 @@ const Select = {
             </DivSelectStyled>
         );
     },
-    OnChange: ({register, label, content, action, ...inputTextProps}) => {
+    OnChange: ({register, label, content, action, ...Props}) => {
         return (
             <DivSelectStyled>
                 {label && <label>{label}</label>}
                 <select
                     ref={register}
                     onChange={e => action(e.target.value)}
-                    {...inputTextProps}>
+                    {...Props}>
                         {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
                 </select>
             </DivSelectStyled>

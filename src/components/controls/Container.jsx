@@ -101,6 +101,14 @@ const ContainerTableStyled = styled.div `
     width: 90%;
 `;
 
+const ContainerNoRowsStyled = styled.div `
+    display: flex;
+    justify-content: flex-start;
+    height: auto;
+    margin: 15px 10px 15px 10px;
+    font-size: 14px;
+`;
+
 const Container = { 
     Basic: ({children, ...props}) => {
         return (
@@ -157,7 +165,14 @@ const Container = {
                 {children}
             </ContainerTableStyled>
         );
-    }
+    },
+    NoRows: ({children}) => {
+        return (
+            <ContainerNoRowsStyled>
+                {children}
+            </ContainerNoRowsStyled>
+        );
+    },
 };
 
 export default Container;

@@ -1,70 +1,124 @@
-import { useState, useEffect } from "react";
-import { Input, Icon, Table, Container, Loading } from "../../component";
+import { useState, useEffect, useCallback } from "react";
+import { Container, Select2, Loading, ButtonCircleIcon } from "../../component";
+import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores, ContainerScore } from "../styled/PlayerResult.styled";
 import { getList } from '../../helpers/listHelper'; 
 import useAppContext from '../../hooks/useAppContext';
 
 const PlayerResult = () => {
+    /*CONTEXT #######################################################################################################################################*/ 
     const { user } = useAppContext();
-    useEffect(() => fetchPlayersByUser(user.id), [user]);
-    const [players, setPlayers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(true);
-    
 
-    /*CRUD ###########################################################################################*/ 
-    const fetchPlayersByUser = async id => {
-        setLoading(true);
-        const res = await getList("player/" + id);
-        setPlayers(res);
-        setLoading(false);
+    /*STATE #########################################################################################################################################*/ 
+    const [players, setPlayers] = useState("");
+    const [championships, setChampionships] = useState("");
+    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    const [matches, setMatches] = useState([]);
+    // const [scores, setScores] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    /*FETCHS ########################################################################################################################################*/ 
+    const fetchChampionshipsByPlayerId = async player_id => {
+        const championships = await getList("player-result/championships/" + player_id);
+        setChampionships(championships);
     };
 
-    function filPlayer(player) {
-        if(searchTerm === "") {
-            return player;
-        } else if (player.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return player;
+    // const fetchScoresByPlayerId = async player_id => {
+    //     const scores = await getList("player-result/scores/" + player_id);
+    //     setScores(scores);
+    // };
+
+    const fetchMatchesByPlayerId = async player_id => {
+        const matches = await getList("player-result/matches/" + player_id);
+        setMatches(matches);
+    };
+
+    const fetchPlayerResultByPlayerId = useCallback(async player_id => {
+        setLoading(true);
+        setCurrentChampionshipId(0);
+        await fetchChampionshipsByPlayerId(player_id);
+        await fetchMatchesByPlayerId(player_id);
+        // await fetchScoresByPlayerId(player_id);
+        setLoading(false);
+    }, []);
+
+    const fetchPlayersByUserId = useCallback(async () => {
+        const players = await getList("list/user_player/" + user.id);
+        setPlayers(players);
+        return players[0]?.player_id;
+    }, [user]);
+
+    /*INIT ##########################################################################################################################################*/ 
+    const init = useCallback(async () => {
+        const first_player_id = await fetchPlayersByUserId();
+        if (first_player_id) {
+            await fetchPlayerResultByPlayerId(first_player_id);
         };
+    }, [fetchPlayersByUserId, fetchPlayerResultByPlayerId]);
+
+    /*EFFECT ########################################################################################################################################*/
+    useEffect(() => init(), [init]);
+
+    /*FILTER #########################################################################################*/
+    const filterMatchesByChampionshipId = championship_id => e => {
+        return e.championship_id === championship_id;
+    };
+
+    // RENDERS ######################################################################################################################################
+    const renderSelectPlayers = players => {
+        if (players === "") return null;
+        if (players.length === 0) return <Container.NoRows>Sorry! you have no players assigned yet, please contact the administrator.</Container.NoRows>
+        return <Select2.OnChange label="My players" content={players} action={fetchPlayerResultByPlayerId}/>
+    };
+
+    const renderDivChampionships = championships => {
+        if (championships === "") return null;
+        if (championships.length === 0) return <Container.NoRows>Sorry! this player have no championships assigned yet, please contact the administrator.</Container.NoRows>
+        return (
+            <ContainerChampionships>
+                {championships.map(championship => {
+                    const matchesFilteredByChampionshipId = matches.filter(filterMatchesByChampionshipId(championship.championship_id));
+                    return (
+                        <ContainerChampionship key={championship.championship_id} id={championship.championship_id}>
+                            <ContainerChampionshipHeader onClick={() => handleExpand(championship.championship_id)}>
+                                <ButtonCircleIcon.Basic family={"add"} margin="0 5px 0 0"/>
+                                {championship.championship_name}
+                            </ContainerChampionshipHeader>
+                            {renderDivMatches(matchesFilteredByChampionshipId)}
+                        </ContainerChampionship>
+                    );
+                })}
+            </ContainerChampionships>
+        );
+    };
+
+    const renderDivMatches = matches => {
+        const show = matches[0]?.championship_id === currentChampionshipId ? "show" : "hide";
+        return (
+            <ContainerScores className={show}>
+                {matches.map(match => {
+                    return <ContainerScore key={match.match_id}>{match.match_name}</ContainerScore>;
+                })}
+            </ContainerScores>
+        );
+    };
+
+    const renderLoading = loading => {
+        if (loading) return <Loading/>
         return null;
     };
 
-    /*JSX ############################################################################################*/ 
+    // HANDLES ######################################################################################################################################
+    const handleExpand = championship_id => {
+        championship_id === currentChampionshipId ? setCurrentChampionshipId(0) : setCurrentChampionshipId(championship_id);
+    };
+
+    /*JSX ###########################################################################################################################################*/ 
     return (
-        <Container.Primary>
-            <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-            </div>
-            {loading 
-                ? <Loading/>
-                : <Container.Table>
-                    <Table.Primary>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {players.filter(filPlayer).map(player => (
-                                <tr key={player.player_id}>
-                                    <td data-label='Name'>{player.player_fullname}</td>
-                                    <td data-label='Gender'>{player.gender_name}</td>
-                                    <td data-label='Age'>{player.player_age}</td>
-                                    <td data-label='Actions'>
-                                        <div className="td-container">
-                                            <Icon.Basic onClick={() => console.log("En desarrollo")} family="edit" hover/>
-                                            <Icon.Basic onClick={() => console.log("En desarrollo")} family="delete" hover/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table.Primary>
-                </Container.Table>
-            }
-        </Container.Primary>
+        <Container.Basic>
+            {renderLoading(loading)}
+            {renderSelectPlayers(players)}
+            {renderDivChampionships(championships)}
+        </Container.Basic>
     );
 };
 

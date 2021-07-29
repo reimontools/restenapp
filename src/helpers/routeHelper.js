@@ -48,7 +48,7 @@ export const ROUTES = [
     },
     {
         title: 'Group',
-        path: '/championship/group/:prm_championship_id',
+        path: '/championship/group/:prm_championship_id/:prm_championship_type_id',
         component: Group, 
         allowTo: ['Admin', 'Coach'],
         showInBar: false,
@@ -88,7 +88,7 @@ export const ROUTES = [
     },
     {
         title: 'Match',
-        path: '/match/:prm_group_id',
+        path: '/match/:prm_championship_id/:prm_championship_type_id/:prm_group_id',
         component: Match, 
         allowTo: ['Admin', 'Coach'],
         showInBar: false,

@@ -7,16 +7,16 @@ import { getList } from '../../helpers/listHelper';
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar, DropDown } from "../../component";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerSearch, ButtonFloat, Avatar, DropDown, PlayerAssignedDragAndDrop } from "../../component";
 
 const Group = () => {
     // LIST #########################################################################################################################################
     const playerList = useList('player');
 
     // CONST ########################################################################################################################################
-    const { prm_championship_id } = useParams();
+    const { prm_championship_id, prm_championship_type_id } = useParams();
     const history = useHistory();
-    const defaultGroupData = {group_id: 0, name: ''};
+    const defaultGroupData = {group_id: 0, group_name: ''};
     
     // EFFECT #######################################################################################################################################
     useEffect(() => {
@@ -25,21 +25,22 @@ const Group = () => {
 
     // STATE ########################################################################################################################################
     const [loading, setLoading] = useState(true);
-    const [dialogOptions, setDialogOptions] = useState({});
     const [groups, setGroups] = useState([]);
     const [currentGroup, setCurrentGroup] = useState({});
     const [groupPlayers, setGroupPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    
+    // DIALOG #######################################################################################################################################
+    const [dialogOptions, setDialogOptions] = useState({});
 
     // USEMODAL #####################################################################################################################################
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
     const [isOpenModalPlayerSearch, openModalPlayerSearch, closeModalPlayerSearch] = useModal();
     const [isOpenModalPlayerAssigned, openModalPlayerAssigned, closeModalPlayerAssigned] = useModal();    
-    const [isOpenModalPlayerAssignedReadOnly, openModalPlayerAssignedReadOnly, closeModalPlayerAssignedReadOnly] = useModal(); 
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
-        name: Yup.string()
+        group_name: Yup.string()
             .required('Required')
     });
 
@@ -95,6 +96,16 @@ const Group = () => {
         };
     };
 
+    const updateGroupPlayersLocation = async (group_player_id_source, group_player_id_destination) => {
+        try {
+            const res = await axios.post("group-player/location", {group_player_id_source, group_player_id_destination});
+            if (res.data.result.cod !== 0) return setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg});
+            fetchGroupPlayers(currentGroup.group_id);
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
     const updateGroupPlayerIsActive = async player_id => {
         try {
             const res = await axios.put("group-player" , {group_id: currentGroup.group_id, player_id});
@@ -116,9 +127,9 @@ const Group = () => {
         };
     };
 
-    const setRandomMatchByGroupId = async group_id => {
+    const resetRandomMatchesByGroupId = async group_id => {
         try {
-            const res = await axios.post("match", {group_id});
+            const res = await axios.post("match/random/", {group_id});
             if (res.data.result.cod === 0) return fetchGroups(prm_championship_id);
             setDialogOptions({
                 family: "info", 
@@ -138,28 +149,24 @@ const Group = () => {
             setCurrentGroup(group);
         };
     };
+
+    const [options, setOptions] = useState({dragDrop: false, readOnly: false});
     
     const handleButtonPlayer = (e, group) => {
         e.stopPropagation();
         setCurrentGroup(group);
         fetchGroupPlayers(group.group_id);
-        if (group.state_id === 3) {
-            openModalPlayerAssigned();
+        if (group.location === 1) {
+            setOptions({dragDrop: true, readOnly: false});
         } else {
-            openModalPlayerAssignedReadOnly();
-        };    
+            setOptions({dragDrop: true, readOnly: true});
+        };
+        openModalPlayerAssigned();
     };
 
     const handleGoMatch = (e, group) => {
         e.stopPropagation();
-        if (group.count_matches <= 0) {
-            return setDialogOptions({
-                family: "info", 
-                title: 'Info', 
-                text: 'There is not matches availables yet'
-            });
-        } 
-        return history.push('/match/' + group.group_id); 
+        return history.push('/match/' + prm_championship_id + '/' + prm_championship_type_id + '/' + group.group_id); 
     };
 
     const handleGoBack = e => {
@@ -179,19 +186,14 @@ const Group = () => {
         closeModalPlayerAssigned();
     };
 
-    const handleCloseModalPlayerAssignedReadOnly = () => {
-        fetchGroups(prm_championship_id);
-        closeModalPlayerAssignedReadOnly();
-    };
-
-    const handleSetRandomMatch = (e, group) => {
+    const handleResetRandomMatches = (e, group) => {
         e.stopPropagation();
         setDialogOptions({
             family: "question", 
             title: 'Starting phase', 
             text: 'Are you sure you want to start this Fase?', 
             subtext: 'After this you will not be able to modify the competitors.',
-            action: () => setRandomMatchByGroupId(group.group_id)
+            action: () => resetRandomMatchesByGroupId(group.group_id)
         });
     };
 
@@ -219,7 +221,7 @@ const Group = () => {
     const renderTableHead = () => {
         return (
             <tr>
-                <th>Group</th>
+                <th>{prm_championship_type_id === 1 ? "Group" : "Phase"}</th>
                 <th>State</th>
                 <th>Players</th>
                 <th>Matches</th>
@@ -259,8 +261,8 @@ const Group = () => {
     const renderAvatar = group => {
         return (
             <div className="avatar-container">
-                <Avatar.Letter backColor="#76b101">{group.name[0]}</Avatar.Letter>
-                {group.name}
+                <Avatar.Letter backColor="#76b101">{group.group_name[0]}</Avatar.Letter>
+                {group.group_name}
             </div>
         );
     };
@@ -294,7 +296,7 @@ const Group = () => {
             <DropDown.Basic family="more">
                 <div className="menu-content" onClick={e => handleUpdate(e, group)}>Update</div>
                 <div className="menu-content" onClick={e => handleDelete(e, group)}>Delete</div>
-                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleSetRandomMatch(e, group)}>Start phase</div>}
+                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleResetRandomMatches(e, group)}>Start phase</div>}
                 {group.state_id === 1 && <div className="menu-content" onClick={e => handleGoMatch(e, group)}>Matches</div>}
             </DropDown.Basic>
         );
@@ -311,9 +313,7 @@ const Group = () => {
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
-            {/* <Title.Basic fontSize="20px">{groups[0]?.championship_name}</Title.Basic> 
-            <Title.Basic>{groups[0]?.championship_type_name}</Title.Basic> */}
-            <Title.Basic fontSize="20px">Groups</Title.Basic> 
+            <Title.Basic fontSize="20px">{prm_championship_type_id === 1 ? "Groups" : "Phases"}</Title.Basic>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 
@@ -333,16 +333,21 @@ const Group = () => {
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
                 <Container.Basic>
                     <Title.Basic>{currentGroup.group_id === 0 ? 'New Group' : 'Update Group'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Name" register={registerCrud} error={errorsCrud.name} />
+                    <Input.TextValidation name="group_name" placeholder="Name" register={registerCrud} error={errorsCrud.group_name} />
                     <Button.Basic onClick={handleSubmitCrud(updateGroup)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>
 
             {/* PLAYER ASSIGN MODAL - READ ONLY ##################################################################################################### */}
-            <PlayerAssigned.ReadOnly players={groupPlayers} isOpen={isOpenModalPlayerAssignedReadOnly} close={handleCloseModalPlayerAssignedReadOnly} /> 
-            
-            {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
-            <PlayerAssigned.Basic actionDelete={updateGroupPlayerIsActive} actionOpen={openModalPlayerSearch} players={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
+            <PlayerAssignedDragAndDrop.Basic 
+                dragDrop={options.dragDrop} 
+                readOnly={options.readOnly} 
+                actionLocation={updateGroupPlayersLocation} 
+                actionOpen={openModalPlayerSearch} 
+                actionDelete={updateGroupPlayerIsActive} 
+                players={groupPlayers} 
+                isOpen={isOpenModalPlayerAssigned} 
+                close={handleCloseModalPlayerAssigned} />
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
             <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
@@ -351,10 +356,10 @@ const Group = () => {
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* BUTTON NEW ########################################################################################################################## */}
-            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultGroupData)} family="add" bottom="65px" hover />
+            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultGroupData)} family="newFloat" bottom="65px" hover />
 
             {/* BUTTON BACK ######################################################################################################################### */}
-            <ButtonFloat.Icon onClick={e => handleGoBack(e)} family="back" hover />
+            <ButtonFloat.Icon onClick={e => handleGoBack(e)} family="backFloat" hover />
 
         </Container.Primary>
     );

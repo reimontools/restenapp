@@ -61,6 +61,9 @@ export const getColorByFamily = family => {
         case "more": return PRIMARY_COLOR;
         case "options": return PRIMARY_COLOR;
         case "back": return "#959595";
+        case "newFloat": return "#ced922";
+        case "backFloat": return "#959595";
+        case "moreFloat": return "#0e70b8";
         default: return "#0e70b8"
     };
 };
@@ -90,6 +93,11 @@ export const getIconByFamily = family => {
         case "more": return <MdMoreVert />;
         case "options": return <IoIosMore />;
         case "back": return <IoIosArrowRoundBack />;
+
+        case "newFloat": return  <IoIosAdd />;
+        case "backFloat": return <IoIosArrowRoundBack />;
+        case "moreFloat": return <IoIosMore />;
+
         default: return <RiAliensLine />
     };
 };

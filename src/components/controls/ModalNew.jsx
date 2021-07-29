@@ -7,14 +7,11 @@ const ModalStyled = styled.div `
     display: flex;
     justify-content: center;
     align-items: center;
-
     position: fixed;
     width: 100vw;
     height: 100%;
     bottom: 100%;
-
     z-index: ${({ zindex }) => zindex ? zindex : 10000};
-
     transition: all .5s ease-in-out;
     overflow: auto;
     
@@ -23,13 +20,13 @@ const ModalStyled = styled.div `
     };
     
     &.form {
-        background-color: rgb(0, 0, 0, .85);
+        background-color: #000000d9;
     };
 
     .dialog {
         width: 500px;
         position: relative;
-        background: #dddd;
+        background: #fff;
         border-radius: 5px;
     };
 
@@ -43,22 +40,12 @@ const ModalStyled = styled.div `
     };
 `;
 
-const Modal = {
+const ModalNew = {
     ForForm: ({isOpen, closeModal, children, ...props}) => {
         return ReactDOM.createPortal(
             <ModalStyled className={isOpen && 'open form'} {...props}>
                 <div className="dialog ">
-                    <Icon.Basic family="close" onClick={closeModal} right="10px" top="10px" size="30px"/>
-                    {children}
-                </div>
-            </ModalStyled>, document.getElementById("root-modal")
-        );
-    },
-    ForMessage: ({isOpen, closeModal, children}) => {
-        return ReactDOM.createPortal(
-            <ModalStyled className={isOpen && 'open'}>
-                <div className="dialog">
-                <Icon.Basic family="close" onClick={closeModal} right="10px" top="10px" size="30px" hover/>
+                    <Icon.Basic family="close" onClick={closeModal} right="5px" top="5px" size="30px"/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")
@@ -66,5 +53,5 @@ const Modal = {
     }
 };
 
-export default Modal;
+export default ModalNew;
 

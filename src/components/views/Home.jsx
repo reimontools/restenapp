@@ -1,5 +1,9 @@
+import { Container, Title } from "../../component";
+
 export default function Home() {
     return (
-        <h1>Home</h1>
+        <Container.Primary>
+            <Title.Basic fontSize="20px">Home</Title.Basic> 
+        </Container.Primary>
     );
 };
