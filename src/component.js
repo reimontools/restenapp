@@ -21,6 +21,7 @@ export {default as Icon} from "./components/controls/Icon";
 export {default as Table} from "./components/controls/Table";
 export {default as Table2} from "./components/controls/Table2";
 export {default as TableNew} from "./components/controls/TableNew";
+export {default as Score} from "./components/views/Score";
 export {default as Container} from "./components/controls/Container";
 export {default as Avatar} from "./components/controls/Avatar";
 export {default as Image} from "./components/controls/Image";

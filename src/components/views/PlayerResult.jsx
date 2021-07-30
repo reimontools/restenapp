@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Container, Select2, Loading, ButtonCircleIcon } from "../../component";
-import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores, ContainerScore } from "../styled/PlayerResult.styled";
+import { Container, Select2, Loading, ButtonCircleIcon, Score } from "../../component";
+import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
 import { getList } from '../../helpers/listHelper'; 
 import useAppContext from '../../hooks/useAppContext';
 
@@ -13,7 +13,7 @@ const PlayerResult = () => {
     const [championships, setChampionships] = useState("");
     const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
     const [matches, setMatches] = useState([]);
-    // const [scores, setScores] = useState([]);
+    const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(false);
 
     /*FETCHS ########################################################################################################################################*/ 
@@ -22,10 +22,10 @@ const PlayerResult = () => {
         setChampionships(championships);
     };
 
-    // const fetchScoresByPlayerId = async player_id => {
-    //     const scores = await getList("player-result/scores/" + player_id);
-    //     setScores(scores);
-    // };
+    const fetchScoresByPlayerId = async player_id => {
+        const scores = await getList("player-result/scores/" + player_id);
+        setScores(scores);
+    };
 
     const fetchMatchesByPlayerId = async player_id => {
         const matches = await getList("player-result/matches/" + player_id);
@@ -37,7 +37,7 @@ const PlayerResult = () => {
         setCurrentChampionshipId(0);
         await fetchChampionshipsByPlayerId(player_id);
         await fetchMatchesByPlayerId(player_id);
-        // await fetchScoresByPlayerId(player_id);
+        await fetchScoresByPlayerId(player_id);
         setLoading(false);
     }, []);
 
@@ -63,6 +63,10 @@ const PlayerResult = () => {
         return e.championship_id === championship_id;
     };
 
+    const filterScoresByMatchId = match_id => e => {
+        return e.match_id === match_id;
+    };
+
     // RENDERS ######################################################################################################################################
     const renderSelectPlayers = players => {
         if (players === "") return null;
@@ -83,7 +87,7 @@ const PlayerResult = () => {
                                 <ButtonCircleIcon.Basic family={"add"} margin="0 5px 0 0"/>
                                 {championship.championship_name}
                             </ContainerChampionshipHeader>
-                            {renderDivMatches(matchesFilteredByChampionshipId)}
+                            {renderScoresByMatches(matchesFilteredByChampionshipId)}
                         </ContainerChampionship>
                     );
                 })}
@@ -91,13 +95,13 @@ const PlayerResult = () => {
         );
     };
 
-    const renderDivMatches = matches => {
+    const renderScoresByMatches = matches => {
         const show = matches[0]?.championship_id === currentChampionshipId ? "show" : "hide";
         return (
             <ContainerScores className={show}>
-                {matches.map(match => {
-                    return <ContainerScore key={match.match_id}>{match.match_name}</ContainerScore>;
-                })}
+                {matches.map(
+                    match => <Score key={match.match_id} score={scores.filter(filterScoresByMatchId(match.match_id))}></Score>
+                )}
             </ContainerScores>
         );
     };

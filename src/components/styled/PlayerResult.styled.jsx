@@ -22,15 +22,11 @@ export const ContainerChampionshipHeader = styled.div `
 
 export const ContainerScores = styled.div `
     overflow: hidden;
-    transition: max-height 0.8s;
+    transition: max-height 0.9s;
     &.show {
-        max-height: 10em;
+        max-height: 50em;
     };
     &.hide {
         max-height: 0;
     };
-`;
-
-export const ContainerScore= styled.div `
-    
 `;
