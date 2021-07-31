@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { Container, Select2, Loading, ButtonCircleIcon, Score } from "../../component";
+import { Container, Select2, Loading, ButtonCircleIcon, Score, Message } from "../../component";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
 import { getList } from '../../helpers/listHelper'; 
 import useAppContext from '../../hooks/useAppContext';
+import { MSG_NO_CHAMPIONSHIP, MSG_NO_PLAYERS } from "../../helpers/paramHelper";
 
 const PlayerResult = () => {
     /*CONTEXT #######################################################################################################################################*/ 
@@ -11,7 +12,7 @@ const PlayerResult = () => {
     /*STATE #########################################################################################################################################*/ 
     const [players, setPlayers] = useState("");
     const [championships, setChampionships] = useState("");
-    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    const [showedChampionshipsId, setShowedChampionshipsId] = useState([]);
     const [matches, setMatches] = useState([]);
     const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ const PlayerResult = () => {
 
     const fetchPlayerResultByPlayerId = useCallback(async player_id => {
         setLoading(true);
-        setCurrentChampionshipId(0);
+        setShowedChampionshipsId([]);
         await fetchChampionshipsByPlayerId(player_id);
         await fetchMatchesByPlayerId(player_id);
         await fetchScoresByPlayerId(player_id);
@@ -70,20 +71,20 @@ const PlayerResult = () => {
     // RENDERS ######################################################################################################################################
     const renderSelectPlayers = players => {
         if (players === "") return null;
-        if (players.length === 0) return <Container.NoRows>Sorry! you have no players assigned yet, please contact the administrator.</Container.NoRows>
+        if (players.length === 0) return <Message text={MSG_NO_PLAYERS} />
         return <Select2.OnChange label="My players" content={players} action={fetchPlayerResultByPlayerId}/>
     };
 
     const renderDivChampionships = championships => {
         if (championships === "") return null;
-        if (championships.length === 0) return <Container.NoRows>Sorry! this player have no championships assigned yet, please contact the administrator.</Container.NoRows>
+        if (championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
         return (
             <ContainerChampionships>
                 {championships.map(championship => {
                     const matchesFilteredByChampionshipId = matches.filter(filterMatchesByChampionshipId(championship.championship_id));
                     return (
                         <ContainerChampionship key={championship.championship_id} id={championship.championship_id}>
-                            <ContainerChampionshipHeader onClick={() => handleExpand(championship.championship_id)}>
+                            <ContainerChampionshipHeader onClick={() => handleShowedChampionshipsId(championship.championship_id)}>
                                 <ButtonCircleIcon.Basic family={"add"} margin="0 5px 0 0"/>
                                 {championship.championship_name}
                             </ContainerChampionshipHeader>
@@ -96,7 +97,7 @@ const PlayerResult = () => {
     };
 
     const renderScoresByMatches = matches => {
-        const show = matches[0]?.championship_id === currentChampionshipId ? "show" : "hide";
+        const show = showedChampionshipsId.includes(matches[0]?.championship_id) ? "show" : "hide";
         return (
             <ContainerScores className={show}>
                 {matches.map(
@@ -112,8 +113,12 @@ const PlayerResult = () => {
     };
 
     // HANDLES ######################################################################################################################################
-    const handleExpand = championship_id => {
-        championship_id === currentChampionshipId ? setCurrentChampionshipId(0) : setCurrentChampionshipId(championship_id);
+    const handleShowedChampionshipsId = championship_id => {
+        if (showedChampionshipsId.indexOf(championship_id) > -1) { // OBTIENE EL INDICE DEL ELEMENTO, SI NO ENCUENTRA EL ELEMENTO RETORNA -1 ########
+            setShowedChampionshipsId(showedChampionshipsId.filter(e => e !== championship_id)) // ELIMINA EL ELEMENTO DEL STATE #####################
+        } else {
+            setShowedChampionshipsId([...showedChampionshipsId, championship_id]); // AGREGA EL ELEMENTO AL STATE ###################################
+        };
     };
 
     /*JSX ###########################################################################################################################################*/ 

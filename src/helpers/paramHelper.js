@@ -1,5 +1,5 @@
+// ICONS ############################################################################################################################################
 import { BiTrash, BiEdit, BiFilterAlt } from "react-icons/bi";
-// import { GoPlus } from "react-icons/go";
 import { MdClose, MdMoreVert } from "react-icons/md";
 import { IoMdPersonAdd , IoMdSearch, IoIosAdd, IoIosArrowRoundBack, IoIosMore} from "react-icons/io";
 import { FiArrowRightCircle } from "react-icons/fi";
@@ -9,16 +9,23 @@ import { RiAliensLine, RiLockPasswordLine, RiSeedlingLine } from "react-icons/ri
 import { CgGirl, CgBoy } from "react-icons/cg";
 import { GiConfirmed } from "react-icons/gi";
 
+// IMAGES ###########################################################################################################################################
 import boy from '../assets/images/boy.png';
 import girl from '../assets/images/girl.png';
 import championshipSeed from '../assets/images/championshipSeed.png';
 import championshipAgainst from '../assets/images/championshipAgainst.png';
 
+// MESSAGES #########################################################################################################################################
+export const MSG_NO_PLAYERS = "Sorry! you have no players assigned yet, please contact the administrator.";
+export const MSG_NO_CHAMPIONSHIP = "Sorry! this player have no championships assigned yet, please contact the administrator.";
+
+// SCREEN ###########################################################################################################################################
 export const SMALL_SCREEN_SIZE = 500;
 export const MEDIUM_SCREEN_SIZE = 768;
 export const SMALL_SCREEN_SIZE_PX = SMALL_SCREEN_SIZE + "px";
 export const MEDIUM_SCREEN_SIZE_PX = MEDIUM_SCREEN_SIZE + "px";
 
+// REGEX ############################################################################################################################################
 export const LOWERCASEREGEX = /(?=.*[a-z])/;
 export const UPPERCASEREGEX = /(?=.*[A-Z])/;
 export const NUMERICREGEX = /(?=.*[0-9])/;

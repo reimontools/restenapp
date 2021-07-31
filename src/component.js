@@ -17,6 +17,7 @@ export {default as Input} from "./components/controls/Input";
 export {default as Select} from "./components/controls/Select";
 export {default as Select2} from "./components/controls/Select2";
 export {default as Button} from "./components/controls/Button";
+export {default as Message} from "./components/controls/Message";
 export {default as Icon} from "./components/controls/Icon";
 export {default as Table} from "./components/controls/Table";
 export {default as Table2} from "./components/controls/Table2";
