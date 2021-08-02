@@ -1,4 +1,4 @@
-import { ModalNew, ImageCircle, Title, Icon } from "../../component";
+import { ModalNew, ImageCircle, Title, Icon } from "../../component.controls";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import styled from "styled-components";
 

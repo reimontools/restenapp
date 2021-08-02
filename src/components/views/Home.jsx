@@ -1,4 +1,4 @@
-import { Container, Title } from "../../component";
+import { Container, Title } from "../../component.controls";
 
 export default function Home() {
     return (

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { getImageByFamily, getIconByFamily } from "../../helpers/paramHelper";
+import { getImageByFamily, getIconByFamily } from "../../helpers/parameters.helper";
 
 const ContainerStyled = styled.div `
     position: relative;

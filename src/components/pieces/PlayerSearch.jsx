@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Input, Icon, Button, Select, Table, Container, Title, Modal } from "../../component";
+import { Input, Icon, Button, Select, Table, Container, Title, Modal } from "../../component.controls";
 import useList from '../../hooks/useList';
+import { filterPlayerGenderIdByText, filterPlayerAgeByText, filterPlayerFullnameByText, filterPlayerObjectByPlayerArray } from "../../helpers/filter.helper";
 
 const PlayerSearch = ({action, players, isOpen, close}) => {
     // LIST #########################################################################################################################################
@@ -13,7 +14,11 @@ const PlayerSearch = ({action, players, isOpen, close}) => {
     // CONST ########################################################################################################################################
     const defaultSearchOptions = {filter_gender: "", filter_age: "", filter_fullname: ""};
     const [searchOptions, setSearchOptions] = useState(defaultSearchOptions);
-    const playerListFiltered = players.filter(filByGender).filter(filByAge).filter(filByFullName).filter(filBySelected);
+    const playerListFiltered = players
+        .filter(filterPlayerGenderIdByText(searchOptions.filter_gender))
+        .filter(filterPlayerAgeByText(searchOptions.filter_age))
+        .filter(filterPlayerFullnameByText(searchOptions.filter_fullname))
+        .filter(filterPlayerObjectByPlayerArray(playerSelected));
 
     // HANDLES ######################################################################################################################################
     const handleAddAllPlayer = () => {
@@ -50,44 +55,6 @@ const PlayerSearch = ({action, players, isOpen, close}) => {
         close();
     };
 
-    // FILTERS ######################################################################################################################################
-    function filByGender(player) { 
-        if(searchOptions.filter_gender === "") {
-            return player;
-        } else if (player.gender_id === parseInt(searchOptions.filter_gender)) {
-            return player;
-        };
-        return null;
-    };
-
-    function filByAge(player) { 
-        const ages = searchOptions.filter_age.split(',').map(Number);
-        if(searchOptions.filter_age === "") {
-            return player;
-        } else if (ages.includes(player.player_age)) {
-            return player;
-        };
-        return null;
-    };
-
-    function filByFullName(player) { 
-        if(searchOptions.filter_fullname === "") {
-            return player;
-        } else if (player.player_fullname.toLowerCase().includes(searchOptions.filter_fullname.toLowerCase())) {
-            return player;
-        };
-        return null;
-    };
-
-    function filBySelected(player) { 
-        if(playerSelected.length === 0) {
-            return player;
-        } else if (!playerSelected.includes(player)) {
-            return player;
-        };
-        return null;
-    };  
-    
     // RENDERS ######################################################################################################################################
     const renderFilterOptions = () => {
         return (

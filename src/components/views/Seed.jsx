@@ -1,13 +1,15 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerSearch, PlayerAssigned, Avatar, ButtonFloat } from "../../component";
+import { Input, Icon, Modal, Button, TableNew, Container, Loading, Title, Dialog, Avatar, ButtonFloat } from "../../component.controls";
+import { PlayerAssigned, PlayerSearch } from "../../component.pieces";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
+import { filterPlayerPropertyByPlayerArray } from "../../helpers/filter.helper";
 
 const Seed = () => {
     // LIST #########################################################################################################################################
@@ -173,28 +175,18 @@ const Seed = () => {
         e.stopPropagation();
         setDialogOptions({
             family: "question", 
-            title: 'Starting phase', 
+            title: 'Starting round', 
             text: 'Are you sure you want to start this Fase?', 
             subtext: 'After this you will not be able to modify the competitors.',
             action: () => generarJuegos(group.group_id)
         });
     };
 
-    // FILTERS ######################################################################################################################################
-    function filByAlreadyOnGroup(player) {
-        if(groupPlayers.length === 0) {
-            return player;
-        } else if (!groupPlayers.some(value => value.player_id === player.player_id)) {
-            return player;
-        };
-        return null;
-    };
-
     // RENDERS ######################################################################################################################################
     const renderTableHead = () => {
         return (
             <tr>
-                <th>Phase</th>
+                <th>Round</th>
                 <th>Players</th>
                 <th>Actions</th>
             </tr>
@@ -274,8 +266,6 @@ const Seed = () => {
                 {groups[0]?.championship_name}{"  >>  "}{groups[0]?.championship_type_name}
             </Container.Flex>
 
-            
-
             {loading 
                 ? <Loading/>
                 : <Container.Table>
@@ -302,7 +292,7 @@ const Seed = () => {
             <PlayerAssigned.Basic actionDelete={updateGroupPlayerIsActive} actionOpen={openModalPlayerSearch} players={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
-            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filterPlayerPropertyByPlayerArray(playerList))} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
 
             {/* BACK ################################################################################################################################ */}
             <ButtonFloat.Icon hover onClick={e => handleGoBack(e)} family="back" bottom="85px" right="35px" size="40px" />

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {  getIconByFamily, getColorByFamily, MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import {  getIconByFamily, getColorByFamily, MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 
 const ContainerStyled = styled.div `
     position: fixed;

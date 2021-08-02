@@ -1,13 +1,15 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Select, TableNew, Container, Loading, Title, PlayerSearch, Dialog, PlayerAssigned, Avatar, ButtonFloat, DropDown } from "../../component";
+import { Input, Modal, Button, Select, TableNew, Container, Loading, Title, Dialog, Avatar, ButtonFloat, DropDown } from "../../component.controls";
+import { PlayerSearch, PlayerAssigned } from "../../component.pieces";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios'
 import useList from '../../hooks/useList';
-import { LOWERCASEREGEX, UPPERCASEREGEX, NUMERICREGEX } from "../../helpers/paramHelper";
+import { LOWERCASEREGEX, UPPERCASEREGEX, NUMERICREGEX } from "../../helpers/parameters.helper";
+import { filterUserNameByText, filterPlayerPropertyByPlayerArray} from "../../helpers/filter.helper";
 
 const User = () => {
     // LIST #########################################################################################################################################
@@ -192,25 +194,6 @@ const User = () => {
         setDialogOptions({family: "delete", title: 'Delete this user?', text: 'Are you sure you want to delete this user?', action: () => updateUserIsActive(user.user_id) });
     };
 
-    // FILTERS ######################################################################################################################################
-    function filPlayersByAlreadyOnGroup(player) {
-        if(userPlayers.length === 0) {
-            return player;
-        } else if (!userPlayers.some(value => value.player_id === player.player_id)) {
-            return player;
-        };
-        return null;
-    };
-
-    function filUserByText(user) {
-        if(searchTerm === "") {
-            return user;
-        } else if (user.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return user;
-        };
-        return null;
-    };
-
     // RENDERS ######################################################################################################################################
     const renderTableHead = () => {
         return (
@@ -308,7 +291,7 @@ const User = () => {
                 : <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
-                        <tbody>{users.filter(filUserByText).map(user => renderTableRows(user))}</tbody>
+                        <tbody>{users.filter(filterUserNameByText(searchTerm)).map(user => renderTableRows(user))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
             }
@@ -338,7 +321,7 @@ const User = () => {
             <PlayerAssigned.Basic actionDelete={updateUserPlayerIsActive} actionOpen={openModalPlayerSearch} players={userPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
-            <PlayerSearch action={updateUserPlayer} players={playerList.filter(filPlayersByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            <PlayerSearch action={updateUserPlayer} players={playerList.filter(filterPlayerPropertyByPlayerArray(userPlayers))} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
             
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />

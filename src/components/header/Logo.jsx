@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import logo from '../../assets/images/logo_v1.png';
 import { useHistory } from 'react-router-dom'
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 import useAppContext from "../../hooks/useAppContext";
 
 export const LogoStyled = styled.div `

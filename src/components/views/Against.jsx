@@ -1,13 +1,15 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Icon, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerAssigned, PlayerSearch, ButtonFloat, Avatar } from "../../component";
+import { Input, Icon, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar } from "../../component.controls";
+import { PlayerAssigned, PlayerSearch } from "../../component.pieces";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
+import { filterPlayerPropertyByPlayerArray } from "../../helpers/filter.helper";
 
 const Against = () => {
     // LIST #########################################################################################################################################
@@ -182,7 +184,7 @@ const Against = () => {
         e.stopPropagation();
         setDialogOptions({
             family: "question", 
-            title: 'Starting phase', 
+            title: 'Starting round', 
             text: 'Are you sure you want to start this Fase?', 
             subtext: 'After this you will not be able to modify the competitors.',
             action: () => generarJuegos(group.group_id)
@@ -197,16 +199,6 @@ const Against = () => {
             text: 'Are you sure you want to delete this group?', 
             action: () => updateGroupIsActive(group.group_id)
         });
-    };
-
-    // FILTERS ######################################################################################################################################
-    function filByAlreadyOnGroup(player) {
-        if(groupPlayers.length === 0) {
-            return player;
-        } else if (!groupPlayers.some(value => value.player_id === player.player_id)) {
-            return player;
-        };
-        return null;
     };
 
     // RENDERS ######################################################################################################################################
@@ -327,7 +319,7 @@ const Against = () => {
             <PlayerAssigned.Basic actionDelete={updateGroupPlayerIsActive} actionOpen={openModalPlayerSearch} players={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} /> 
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
-            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filterPlayerPropertyByPlayerArray(groupPlayers))} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
 
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />

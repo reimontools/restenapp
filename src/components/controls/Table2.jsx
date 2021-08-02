@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 
 const TableStyled = styled.table `
     width: 100%;

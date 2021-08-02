@@ -1,7 +1,7 @@
-import { ROUTES } from "../../helpers/routeHelper";
+import { ROUTES } from "../../helpers/route.helper";
 import styled from "styled-components";
 import { NavLink, Link } from "react-router-dom";
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 import useAppContext from "../../hooks/useAppContext.js";
 
 export const NavStyled = styled.nav `

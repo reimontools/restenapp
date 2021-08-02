@@ -1,4 +1,4 @@
-import { Icon, TableNew, Container, Title, Modal, Image } from "../../component";
+import { Icon, TableNew, Container, Title, Modal, Image } from "../../component.controls";
 
 const PlayerSearch = {
     Basic: ({actionDelete, actionOpen, players, isOpen, close}) => {

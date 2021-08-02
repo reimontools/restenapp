@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, Input, Title, Container, Button } from "../../component";
+import { Dialog, Input, Title, Container, Button } from "../../component.controls";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from '../../config/axios';

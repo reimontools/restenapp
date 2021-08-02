@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getList } from '../helpers/listHelper'; 
+import { getList } from '../helpers/list.helper'; 
 
 const useList = ruta => {
     const [list, setList] = useState([]);

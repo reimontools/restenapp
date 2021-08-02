@@ -1,7 +1,7 @@
 import {BrowserRouter as Router, Switch} from "react-router-dom";
-import { Header } from "../component";
+import { Header } from "../component.header";
 import styled from "styled-components";
-import { ROUTES, ProtectedRoute } from "../helpers/routeHelper";
+import { ROUTES, ProtectedRoute } from "../helpers/route.helper";
 
 export const ContentStyled = styled.div `
     position: absolute;

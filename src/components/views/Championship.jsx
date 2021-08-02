@@ -1,14 +1,15 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../../component";
+import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../../component.controls";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios'
 import moment from 'moment';
 import useList from '../../hooks/useList';
 import { useHistory } from 'react-router-dom';
+import { filterChampionshipNameStateByText } from "../../helpers/filter.helper";
 
 const Championship = () => {
     // EFFECT #######################################################################################################################################
@@ -98,14 +99,14 @@ const Championship = () => {
     };
 
     // FILTERS ######################################################################################################################################
-    function filChampionshipByText(championship) {
-        if(searchTerm === "") {
-            return championship;
-        } else if (championship.championship_name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return championship;
-        };
-        return null;
-    };
+    // function filChampionshipByText(championship) {
+    //     if(searchTerm === "") {
+    //         return championship;
+    //     } else if (championship.championship_name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+    //         return championship;
+    //     };
+    //     return null;
+    // };
 
     // HANDLES ######################################################################################################################################
     const handleExpandir = championship_id => {
@@ -147,7 +148,7 @@ const Championship = () => {
                 <th>Type</th>
                 <th>Created</th>
                 <th>State</th>
-                <th>Groups/Phases</th>
+                <th>Groups/Rounds</th>
                 <th>Actions</th>
             </tr>
         );
@@ -231,7 +232,7 @@ const Championship = () => {
     const renderButtonGroups = championship => {
         var text = "", family = "", type = "Groups";
         
-        if (championship.championship_type_id !== 1) type = "Phases";
+        if (championship.championship_type_id !== 1) type = "Rounds";
 
         if (championship.count_groups > 0) {
             text = championship.count_groups + " " + type;
@@ -254,7 +255,8 @@ const Championship = () => {
                 : <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
-                        <tbody>{championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}</tbody>
+                        {/* <tbody>{championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}</tbody> */}
+                        <tbody>{championships.filter(filterChampionshipNameStateByText(searchTerm)).map(championship => renderTableRows(championship))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
             }

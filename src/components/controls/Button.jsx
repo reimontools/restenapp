@@ -1,4 +1,4 @@
-import { MEDIUM_SCREEN_SIZE_PX, getColorByFamily } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX, getColorByFamily } from "../../helpers/parameters.helper";
 import styled from "styled-components";
 
 const ButtonButtonStyled = styled.button `

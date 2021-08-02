@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 const StarStyled = styled.span ` 
     color: #FFD90F;
+    margin: ${({ margin }) => margin ? margin : '0'};
     &:before {
         content: "★";
     };
@@ -9,6 +10,7 @@ const StarStyled = styled.span `
 
 const PointStyled = styled.span ` 
     color: #0e70b8;
+    margin: ${({ margin }) => margin ? margin : '0'};
     &:before {
         content: "●";
     };
@@ -16,6 +18,7 @@ const PointStyled = styled.span `
 
 const CheckStyled = styled.span ` 
     color: #008000;
+    margin: ${({ margin }) => margin ? margin : '0'};
     &:before {
         content: "✔";
     };
@@ -23,19 +26,19 @@ const CheckStyled = styled.span `
 
 
 const Simbol = {
-    Star: () => {
+    Star: ({...props}) => {
         return ( 
-            <StarStyled />
+            <StarStyled {...props}/>
         );
     },
-    Point: () => {
+    Point: ({...props}) => {
         return ( 
-            <PointStyled />
+            <PointStyled {...props}/>
         );
     },
-    Check: () => {
+    Check: ({...props}) => {
         return ( 
-            <CheckStyled />
+            <CheckStyled {...props}/>
         );
     }
 };

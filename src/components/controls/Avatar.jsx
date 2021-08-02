@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { MEDIUM_SCREEN_SIZE_PX, getIconByFamily, PRIMARY_COLOR } from "../../helpers/paramHelper";
+import { MEDIUM_SCREEN_SIZE_PX, getIconByFamily, PRIMARY_COLOR } from "../../helpers/parameters.helper";
 
 const AvatarIconStyled = styled.div `
     display: none;

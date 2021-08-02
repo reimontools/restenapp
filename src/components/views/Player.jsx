@@ -1,13 +1,14 @@
 import { useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
-import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../../component";
+import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../../component.controls";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios'
 import moment from 'moment';
 import useList from '../../hooks/useList';
+import { filterPlayerFullnameByText } from "../../helpers/filter.helper";
 
 const Player = () => {
     // EFFECT #######################################################################################################################################
@@ -88,16 +89,6 @@ const Player = () => {
         } catch (err) {
             console.log(err);
         };
-    };
-
-    // FILTERS ######################################################################################################################################
-    function filPlayersByText(player) {
-        if(searchTerm === "") {
-            return player;
-        } else if (player.player_fullname.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return player;
-        };
-        return null;
     };
 
     // HANDLES ######################################################################################################################################
@@ -212,7 +203,7 @@ const Player = () => {
                 : <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
-                        <tbody>{players.filter(filPlayersByText).map(player => renderTableRows(player))}</tbody>
+                        <tbody>{players.filter(filterPlayerFullnameByText(searchTerm)).map(player => renderTableRows(player))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
             }

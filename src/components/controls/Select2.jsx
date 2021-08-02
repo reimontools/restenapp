@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PRIMARY_COLOR } from "../../helpers/paramHelper";
+import { PRIMARY_COLOR } from "../../helpers/parameters.helper";
 
 const DivSelectStyled = styled.div `
     position: relative;

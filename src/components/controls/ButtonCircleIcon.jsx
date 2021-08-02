@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PRIMARY_COLOR, MEDIUM_SCREEN_SIZE_PX, getIconByFamily } from "../../helpers/paramHelper";
+import { PRIMARY_COLOR, MEDIUM_SCREEN_SIZE_PX, getIconByFamily } from "../../helpers/parameters.helper";
 
 const ButtonStyled = styled.div `
     display: flex;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PRIMARY_COLOR, MEDIUM_SCREEN_SIZE_PX, getColorByFamily, getIconByFamily } from "../../helpers/paramHelper";
+import { PRIMARY_COLOR, MEDIUM_SCREEN_SIZE_PX, getColorByFamily, getIconByFamily } from "../../helpers/parameters.helper";
 
 const MenuStyled = styled.div `
     z-index: 10000;

@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/listHelper'; 
+import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios';
 import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, PlayerSearch, ButtonFloat, Avatar, DropDown, PlayerAssignedDragAndDrop } from "../../component";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar, DropDown } from "../../component.controls";
+import { PlayerSearch, PlayerAssignedDragAndDrop } from "../../component.pieces";
+import { filterPlayerPropertyByPlayerArray } from "../../helpers/filter.helper";
 
 const Group = () => {
     // LIST #########################################################################################################################################
@@ -190,7 +192,7 @@ const Group = () => {
         e.stopPropagation();
         setDialogOptions({
             family: "question", 
-            title: 'Starting phase', 
+            title: 'Starting round', 
             text: 'Are you sure you want to start this Fase?', 
             subtext: 'After this you will not be able to modify the competitors.',
             action: () => resetRandomMatchesByGroupId(group.group_id)
@@ -205,23 +207,13 @@ const Group = () => {
             text: 'Are you sure you want to delete this group?', 
             action: () => updateGroupIsActive(group.group_id)
         });
-    };
-
-    // FILTERS ######################################################################################################################################
-    function filByAlreadyOnGroup(player) {
-        if(groupPlayers.length === 0) {
-            return player;
-        } else if (!groupPlayers.some(value => value.player_id === player.player_id)) {
-            return player;
-        };
-        return null;
-    };
+    }; 
 
     // RENDERS ######################################################################################################################################
     const renderTableHead = () => {
         return (
             <tr>
-                <th>{prm_championship_type_id === 1 ? "Group" : "Phase"}</th>
+                <th>{prm_championship_type_id === 1 ? "Group" : "Round"}</th>
                 <th>State</th>
                 <th>Players</th>
                 <th>Matches</th>
@@ -296,7 +288,7 @@ const Group = () => {
             <DropDown.Basic family="more">
                 <div className="menu-content" onClick={e => handleUpdate(e, group)}>Update</div>
                 <div className="menu-content" onClick={e => handleDelete(e, group)}>Delete</div>
-                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleResetRandomMatches(e, group)}>Start phase</div>}
+                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleResetRandomMatches(e, group)}>Start round</div>}
                 {group.state_id === 1 && <div className="menu-content" onClick={e => handleGoMatch(e, group)}>Matches</div>}
             </DropDown.Basic>
         );
@@ -313,7 +305,7 @@ const Group = () => {
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
-            <Title.Basic fontSize="20px">{prm_championship_type_id === 1 ? "Groups" : "Phases"}</Title.Basic>
+            <Title.Basic fontSize="20px">{prm_championship_type_id === 1 ? "Groups" : "Rounds"}</Title.Basic>
             <div className="search-container">
                 <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 
@@ -350,7 +342,7 @@ const Group = () => {
                 close={handleCloseModalPlayerAssigned} />
             
             {/* PLAYER SELECTION MODAL ############################################################################################################## */}
-            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filByAlreadyOnGroup)} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filterPlayerPropertyByPlayerArray(groupPlayers))} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
 
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />

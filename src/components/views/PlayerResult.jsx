@@ -1,21 +1,33 @@
 import { useState, useEffect, useCallback } from "react";
-import { Container, Select2, Loading, ButtonCircleIcon, Score, Message } from "../../component";
+import { Container, Select2, Loading, ButtonCircleIcon, Message } from "../../component.controls";
+import { ScoreToShow, ScoreToUpdate } from "../../component.pieces";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
-import { getList } from '../../helpers/listHelper'; 
 import useAppContext from '../../hooks/useAppContext';
-import { MSG_NO_CHAMPIONSHIP, MSG_NO_PLAYERS } from "../../helpers/paramHelper";
+import useModal from "../../hooks/useModal";
+import { getList } from '../../helpers/list.helper'; 
+import { MSG_NO_CHAMPIONSHIP, MSG_NO_PLAYERS } from "../../helpers/parameters.helper";
+import { filterMatchesByChampionshipId, filterScoresByMatchId } from "../../helpers/filter.helper";
 
 const PlayerResult = () => {
     /*CONTEXT #######################################################################################################################################*/ 
     const { user } = useAppContext();
 
-    /*STATE #########################################################################################################################################*/ 
+    // STATE ########################################################################################################################################
     const [players, setPlayers] = useState("");
     const [championships, setChampionships] = useState("");
     const [showedChampionshipsId, setShowedChampionshipsId] = useState([]);
     const [matches, setMatches] = useState([]);
     const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [currentScore, setCurrentScore] = useState([]);
+    const [currentPlayerId, setCurrentPlayerId] = useState(0);
+
+    // MODAL ########################################################################################################################################
+    const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
+    const showModalScoreToUpdate = score => {
+        setCurrentScore(score);
+        openModalScoreToUpdate();
+    };
 
     /*FETCHS ########################################################################################################################################*/ 
     const fetchChampionshipsByPlayerId = async player_id => {
@@ -28,6 +40,11 @@ const PlayerResult = () => {
         setScores(scores);
     };
 
+    const fetchScores = async () => {
+        const scores = await getList("player-result/scores/" + currentPlayerId);
+        setScores(scores);
+    };
+
     const fetchMatchesByPlayerId = async player_id => {
         const matches = await getList("player-result/matches/" + player_id);
         setMatches(matches);
@@ -35,6 +52,7 @@ const PlayerResult = () => {
 
     const fetchPlayerResultByPlayerId = useCallback(async player_id => {
         setLoading(true);
+        setCurrentPlayerId(player_id);
         setShowedChampionshipsId([]);
         await fetchChampionshipsByPlayerId(player_id);
         await fetchMatchesByPlayerId(player_id);
@@ -58,15 +76,6 @@ const PlayerResult = () => {
 
     /*EFFECT ########################################################################################################################################*/
     useEffect(() => init(), [init]);
-
-    /*FILTER #########################################################################################*/
-    const filterMatchesByChampionshipId = championship_id => e => {
-        return e.championship_id === championship_id;
-    };
-
-    const filterScoresByMatchId = match_id => e => {
-        return e.match_id === match_id;
-    };
 
     // RENDERS ######################################################################################################################################
     const renderSelectPlayers = players => {
@@ -101,15 +110,10 @@ const PlayerResult = () => {
         return (
             <ContainerScores className={show}>
                 {matches.map(
-                    match => <Score key={match.match_id} score={scores.filter(filterScoresByMatchId(match.match_id))}></Score>
+                    match => <ScoreToShow key={match.match_id} score={scores.filter(filterScoresByMatchId(match.match_id))} action={showModalScoreToUpdate}></ScoreToShow>
                 )}
             </ContainerScores>
         );
-    };
-
-    const renderLoading = loading => {
-        if (loading) return <Loading/>
-        return null;
     };
 
     // HANDLES ######################################################################################################################################
@@ -121,13 +125,18 @@ const PlayerResult = () => {
         };
     };
 
-    /*JSX ###########################################################################################################################################*/ 
+    // ]JSX #########################################################################################################################################
     return (
-        <Container.Basic>
-            {renderLoading(loading)}
-            {renderSelectPlayers(players)}
-            {renderDivChampionships(championships)}
-        </Container.Basic>
+        <>
+            <Container.Basic>
+                {renderSelectPlayers(players)}
+                {loading ?<Loading/> :renderDivChampionships(championships)}
+            </Container.Basic>
+
+            {/* SCORE TO UPDATE ##################################################################################################################### */}
+            <ScoreToUpdate score={currentScore} setScore={setCurrentScore} fetch={fetchScores} isOpen={isOpenModalScoreToUpdate} close={closeModalScoreToUpdate} />
+        </>
+        
     );
 };
 
