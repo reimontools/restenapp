@@ -1,17 +1,18 @@
 import { ContainerScoreToUpdate, ContainerPlayer, ContainerPlayerName, ContainerPlayerScore, ContainerPlayerPoint } from "../styled/ScoreToUpdate.styled";
-import { Container, Title, Modal, Button, Line, Icon } from "../../component.controls";
+import { Container, Title, ModalNew, Button, Line, Icon } from "../component.controls";
 import { useState } from "react";
-import { ScoreToSelect } from "../../component.pieces";
+import { ScoreToSelect } from "../component.pieces";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 
-const ScoreToUpdate = ({score, setScore, fetch, isOpen, close}) => {
+const ScoreToUpdate = ({score, setScore, fetch, isOpen, close, title="", isCleanable = false, isEditable = false, isSaveable = false, isAcceptable = false}) => {
     // STATE ########################################################################################################################################
     const [currentIndexSetNumber, setCurrentIndexSetNumber] = useState(0);
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToSelect, openModalScoreToSelect, closeModalScoreToSelect] = useModal();
     const showModalScoreToSelect = currentIndexSetNumber => {
+        if(!isEditable) return null;
         setCurrentIndexSetNumber(currentIndexSetNumber);
         openModalScoreToSelect();
     };
@@ -41,6 +42,7 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close}) => {
 
     // HANDLE #######################################################################################################################################
     const reverseScoreByIndex = index => {
+        if(!isEditable) return null;
         let new_score = [...score];
         const point = new_score[index].point;
         switch(index) {
@@ -63,11 +65,11 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close}) => {
     };
 
     // RENDER #######################################################################################################################################
-    const renderTitle = match_id => {
+    const renderTitle = (match_id, title) => {
         return (
-            <Title.Basic>
-                Score To Update
-                <Icon.Basic family="clear" onClick={() => cleanScoreByMatchId(match_id)} hover size="30px" left="10px" top="10px" />
+            <Title.Basic fontSize="13px">
+                {title}
+                {isCleanable && <Icon.Basic family="clear" onClick={() => cleanScoreByMatchId(match_id)} hover size="20px" left="10px" top="12px" />}
             </Title.Basic>       
         );
     };
@@ -76,13 +78,26 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close}) => {
         return <ContainerPlayerName>{playerName}</ContainerPlayerName>;
     };
 
+    const renderButtons = () => {
+        if (isSaveable) return <Button.Basic onClick={() => saveScore()} width="100%">Save</Button.Basic>
+        if (isAcceptable) {
+            return (
+                <>
+                    <Button.Basic onClick={() => saveScore()} width="100%" margin="0 0 10px 0" family="agree">👍 I agree</Button.Basic>
+                    <Button.Basic onClick={() => saveScore()} width="100%" family="disagree">👎 I don't agree</Button.Basic>
+                </>
+            );
+        };
+        return null;
+    };
+
     const renderScoreToUpdate = ({score}) => {
         if(!score[0]?.player_id) return null;
         return (
             <>
-                <Modal.ForForm isOpen={isOpen} closeModal={close}>
+                <ModalNew.ForForm isOpen={isOpen} closeModal={close}>
                     <Container.Basic>
-                        {renderTitle(score[0].match_id)}
+                        {renderTitle(score[0].match_id, title)}
                         <ContainerScoreToUpdate>
                                 <ContainerPlayer>
                                     {renderPlayerName("Set")}
@@ -110,9 +125,9 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close}) => {
                                     </ContainerPlayerScore>
                                 </ContainerPlayer>
                         </ContainerScoreToUpdate>
-                        <Button.Basic onClick={() => saveScore()} width="100%">Save</Button.Basic>
+                        {renderButtons()}
                     </Container.Basic>
-                </Modal.ForForm>
+                </ModalNew.ForForm>
 
                 {/* SCORE TO SELECT ################################################################################################################# */}
                 <ScoreToSelect score={score} setScore={setScore} indexSetNumber={currentIndexSetNumber} isOpen={isOpenModalScoreToSelect} close={closeModalScoreToSelect} />

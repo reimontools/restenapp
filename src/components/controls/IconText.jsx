@@ -1,6 +1,6 @@
 // import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 import styled from "styled-components";
-import { Icon } from "../../component.controls";
+import { Icon } from "../component.controls";
 
 const IconTextStyled = styled.div `
     cursor: pointer;

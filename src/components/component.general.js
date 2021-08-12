@@ -1,3 +1,3 @@
 // GENERAL ##########################################################################################################################################
-export {default as App} from "./components/App";
-export {default as Routes} from "./components/Routes";
+export {default as App} from "./general/App";
+export {default as Routes} from "./general/Routes";

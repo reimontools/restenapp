@@ -1,34 +1,30 @@
-import { useState, useEffect} from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../../component.controls";
+import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../component.controls";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios'
 import moment from 'moment';
-import useList from '../../hooks/useList';
 import { filterPlayerFullnameByText } from "../../helpers/filter.helper";
+import { usePlayer } from "../../custom-hooks/usePlayer";
+import { useGender } from "../../custom-hooks/useGender";
+import { Search } from "../component.pieces";
 
 const Player = () => {
-    // EFFECT #######################################################################################################################################
-    useEffect(() => fetchPlayers(), []);
+    // CUSTOM HOOKS #################################################################################################################################
+    const { players, fetchPlayers, loading } = usePlayer("fetchPlayers");
+    const { genders } = useGender("fetchGenders");
+
+    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
 
     // CONST ########################################################################################################################################
     const defaultPlayerData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
     
     // STATE ########################################################################################################################################
-    const [players, setPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPlayerId, setCurrentPlayerId] = useState(0);   
-    const [loading, setLoading] = useState(true);
     const [dialogOptions, setDialogOptions] = useState({});
-
-    // USEMODAL #####################################################################################################################################
-    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
-    
-    // LIST #########################################################################################################################################
-    const genderList = useList("list/gender");
     
     /*VALIDATIONS ####################################################################################*/ 
     const schemaCrud = Yup.object().shape({
@@ -47,14 +43,6 @@ const Player = () => {
         mode: 'onSubmit',
         resolver: yupResolver(schemaCrud)
     });
-
-    // FETCHS #######################################################################################################################################
-    const fetchPlayers = async () => {
-        setLoading(true);
-        const res = await getList("player");
-        setPlayers(res);
-        setLoading(false);
-    };
 
     // CRUD #########################################################################################################################################
     const updatePlayer = async data => {
@@ -171,33 +159,19 @@ const Player = () => {
     };
 
     const renderAvatar = player => {
-        if (player.gender_id === 1) {
-            return (
-                <div className="avatar-container">
-                    <Image.Basic family="girl" />
-                    {player.player_fullname}
-                </div>
-            );
-        };
-
-        if (player.gender_id === 2) {
-            return (
-                <div className="avatar-container">
-                    <Image.Basic family="boy" />
-                    {player.player_fullname}
-                </div>
-            );
-        };
-
-        return null;        
+        const family = player.gender_id === 1 ? "girl" : "boy";
+        return (
+            <div className="avatar-container">
+                <Image.Basic family={family} />
+                {player.player_fullname}
+            </div>
+        );
     };
 
     /*JSX ###########################################################################################################################################*/ 
     return (
         <Container.Primary>
-            <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-            </div>
+            <Search value={searchTerm} action={setSearchTerm} />
             {loading 
                 ? <Loading/> 
                 : <Container.Table>
@@ -214,7 +188,7 @@ const Player = () => {
                     <Title.Basic>{currentPlayerId === 0 ? 'New Player' : 'Update Player'}</Title.Basic>
                     <Input.TextValidation name="name" placeholder="Name" register={registerCrud} error={errorsCrud.name} />
                     <Input.TextValidation name="surname" placeholder="Surname" register={registerCrud} error={errorsCrud.surname} />
-                    <Select.Validation name="gender_id" type="select" register={registerCrud} content={genderList} />
+                    <Select.Validation name="gender_id" type="select" register={registerCrud} content={genders} />
                     <Input.DateValidation name="birth_date" register={registerCrud} error={errorsCrud.birth_date}/>
                     <Button.Basic onClick={handleSubmitCrud(updatePlayer)} width="100%">Save</Button.Basic>
                 </Container.Basic>

@@ -70,6 +70,22 @@ const Select2 = {
                 {label && <span className="label">{label}</span>}
             </DivSelectStyled>
         );
+    },
+    Validation: ({register, label, error, placeholder, content, ...selectProps}) => {
+        return (
+            <DivSelectStyled {...selectProps}>
+                <select 
+                    required
+                    ref={register}
+                    name={selectProps.name}>
+                        {placeholder && <option value="" hidden>{placeholder}</option>}
+                        {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
+                </select>
+                <label className="arrow">{"▼"}</label>
+                {label && <span className="label">{label}</span>}
+                {error && <span className="error">{error.message}</span>}
+            </DivSelectStyled>
+        );
     }
 };
 

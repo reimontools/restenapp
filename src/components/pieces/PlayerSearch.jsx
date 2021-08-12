@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Icon, Button, Select, Table, Container, Title, Modal } from "../../component.controls";
+import { Input, Icon, Button, Select, Table, Container, Title, Modal } from "../component.controls";
 import useList from '../../hooks/useList';
 import { filterPlayerGenderIdByText, filterPlayerAgeByText, filterPlayerFullnameByText, filterPlayerObjectByPlayerArray } from "../../helpers/filter.helper";
 

@@ -1,4 +1,4 @@
-import { Container, Title } from "../../component.controls";
+import { Container, Title } from "../component.controls";
 
 export default function NotFound() {
     return (

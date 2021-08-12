@@ -6,6 +6,7 @@
 /others
 /.pnp
 .pnp.js
+/trasher
 
 # testing
 /coverage

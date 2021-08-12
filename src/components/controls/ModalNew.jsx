@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Icon} from "../../component.controls";
+import { Icon } from "../component.controls";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 
 const ModalStyled = styled.div `
@@ -45,7 +45,7 @@ const ModalNew = {
         return ReactDOM.createPortal(
             <ModalStyled className={isOpen && 'open form'} {...props}>
                 <div className="dialog ">
-                    <Icon.Basic family="close" onClick={closeModal} right="5px" top="5px" size="30px"/>
+                    <Icon.Basic family="close" onClick={closeModal} hover right="10px" top="10px" size="20px"/>
                     {children}
                 </div>
             </ModalStyled>, document.getElementById("root-modal")

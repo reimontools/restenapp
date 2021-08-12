@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { NavBar, Logo, Burger } from "../../component.header";
+import { NavBar, Logo, Burger } from "../component.header";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 
 export const HeaderStyled = styled.div `

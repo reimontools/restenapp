@@ -29,8 +29,8 @@ const ButtonButtonStyled = styled.button `
 `;
 
 const Button = {
-    Basic: ({...buttonProps}) => {
-        return <ButtonButtonStyled {...buttonProps} type='button'/>;
+    Basic: ({...props}) => {
+        return <ButtonButtonStyled {...props} type='button'/>;
     }
 };
 

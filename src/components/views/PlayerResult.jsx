@@ -1,92 +1,89 @@
-import { useState, useEffect, useCallback } from "react";
-import { Container, Select2, Loading, ButtonCircleIcon, Message } from "../../component.controls";
-import { ScoreToShow, ScoreToUpdate } from "../../component.pieces";
+import { useState } from "react";
+import { Container, Select2, Loading, ButtonCircleIcon, Message } from "../component.controls";
+import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
 import useAppContext from '../../hooks/useAppContext';
-import useModal from "../../hooks/useModal";
-import { getList } from '../../helpers/list.helper'; 
 import { MSG_NO_CHAMPIONSHIP, MSG_NO_PLAYERS } from "../../helpers/parameters.helper";
 import { filterMatchesByChampionshipId, filterScoresByMatchId } from "../../helpers/filter.helper";
 
+// CUSTOM HOOKS #####################################################################################################################################
+import { useUserPlayer } from "../../custom-hooks/useUserPlayer";
+import { useChampionship } from "../../custom-hooks/useChampionship";
+import { useMatch } from "../../custom-hooks/useMatch";
+import { useScore } from "../../custom-hooks/useScore";
+import useModal from "../../hooks/useModal";
+
 const PlayerResult = () => {
-    /*CONTEXT #######################################################################################################################################*/ 
+    // CONTEXT ######################################################################################################################################
     const { user } = useAppContext();
 
+    // CUSTOM HOOKS #################################################################################################################################
+    const { userPlayers, loading: loadingUserPlayers } = useUserPlayer("fetchUserPlayersByUserId", user.user_id);
+    const { championships, fetchChampionshipsByPlayerId, loading: loadingChampionships } = useChampionship("fetchChampionshipsByPlayerId", user.player_id);
+    const { matches, fetchMatchesByPlayerId, loading: loadingMatches } = useMatch("fetchMatchesByPlayerId",  user.player_id);
+    const { scores, fetchScoresByPlayerId, loading: loadingScores } = useScore("fetchScoresByPlayerId", user.player_id);
+    const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
+    
+    // FETCH ########################################################################################################################################
+    const fetchPlayerResultByPlayerId = async player_id => {
+        await fetchChampionshipsByPlayerId(player_id);
+        await fetchMatchesByPlayerId(player_id);
+        await fetchScoresByPlayerId(player_id);
+    };
+
     // STATE ########################################################################################################################################
-    const [players, setPlayers] = useState("");
-    const [championships, setChampionships] = useState("");
     const [showedChampionshipsId, setShowedChampionshipsId] = useState([]);
-    const [matches, setMatches] = useState([]);
-    const [scores, setScores] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [currentScore, setCurrentScore] = useState([]);
-    const [currentPlayerId, setCurrentPlayerId] = useState(0);
+    const [currentPlayerId, setCurrentPlayerId] = useState(user.player_id);
+    const [scoreToUpdateOptions, setScoreToUpdateOptions] = useState({title:"", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false});
 
     // MODAL ########################################################################################################################################
-    const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
     const showModalScoreToUpdate = score => {
+        // console.log("score", score[0].user_id, user.user_id);
+        getScoreToUpdateOptions(score[0].match_state_id, score[0].user_id);
         setCurrentScore(score);
         openModalScoreToUpdate();
     };
 
-    /*FETCHS ########################################################################################################################################*/ 
-    const fetchChampionshipsByPlayerId = async player_id => {
-        const championships = await getList("player-result/championships/" + player_id);
-        setChampionships(championships);
+    const getScoreToUpdateOptions = (state_id, user_id) => {
+        // WAITING
+        if (state_id === 4) { 
+            if (user_id === user.user_id) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
+            return setScoreToUpdateOptions({title:"Confirming Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: true}); // SOLO ACEPTABLE
+        };
+        // PENDING
+        if (state_id === 3) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
+        // FINISH
+        if (state_id === 2) return setScoreToUpdateOptions({title:"Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false}); // READ-ONLY
     };
-
-    const fetchScoresByPlayerId = async player_id => {
-        const scores = await getList("player-result/scores/" + player_id);
-        setScores(scores);
-    };
-
-    const fetchScores = async () => {
-        const scores = await getList("player-result/scores/" + currentPlayerId);
-        setScores(scores);
-    };
-
-    const fetchMatchesByPlayerId = async player_id => {
-        const matches = await getList("player-result/matches/" + player_id);
-        setMatches(matches);
-    };
-
-    const fetchPlayerResultByPlayerId = useCallback(async player_id => {
-        setLoading(true);
+    
+    // HANDLE #######################################################################################################################################
+    const handleSelectPlayers = async player_id => {
         setCurrentPlayerId(player_id);
         setShowedChampionshipsId([]);
-        await fetchChampionshipsByPlayerId(player_id);
-        await fetchMatchesByPlayerId(player_id);
-        await fetchScoresByPlayerId(player_id);
-        setLoading(false);
-    }, []);
-
-    const fetchPlayersByUserId = useCallback(async () => {
-        const players = await getList("list/user_player/" + user.id);
-        setPlayers(players);
-        return players[0]?.player_id;
-    }, [user]);
-
-    /*INIT ##########################################################################################################################################*/ 
-    const init = useCallback(async () => {
-        const first_player_id = await fetchPlayersByUserId();
-        if (first_player_id) {
-            await fetchPlayerResultByPlayerId(first_player_id);
-        };
-    }, [fetchPlayersByUserId, fetchPlayerResultByPlayerId]);
-
-    /*EFFECT ########################################################################################################################################*/
-    useEffect(() => init(), [init]);
-
-    // RENDERS ######################################################################################################################################
-    const renderSelectPlayers = players => {
-        if (players === "") return null;
-        if (players.length === 0) return <Message text={MSG_NO_PLAYERS} />
-        return <Select2.OnChange label="My players" content={players} action={fetchPlayerResultByPlayerId}/>
+        await fetchPlayerResultByPlayerId(player_id);
     };
 
-    const renderDivChampionships = championships => {
-        if (championships === "") return null;
-        if (championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
+    const handleShowedChampionshipsId = championship_id => {
+        if (showedChampionshipsId.indexOf(championship_id) > -1) { // OBTIENE EL INDICE DEL ELEMENTO, SI NO ENCUENTRA EL ELEMENTO RETORNA -1 ########
+            setShowedChampionshipsId(showedChampionshipsId.filter(e => e !== championship_id)) // ELIMINA EL ELEMENTO DEL STATE #####################
+        } else {
+            setShowedChampionshipsId([...showedChampionshipsId, championship_id]); // AGREGA EL ELEMENTO AL STATE ###################################
+        };
+    };
+
+    // RENDERS ######################################################################################################################################
+    const renderSelectUserPlayers = userPlayers => {
+        if (!userPlayers || userPlayers.length === 0) return null;
+        return <Select2.OnChange label="My players" content={userPlayers} action={handleSelectPlayers}/>
+    };
+
+    const renderChampionships = championships => {
+        if (!championships) { 
+            return null;
+        } else {
+            if (championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
+        };
         return (
             <ContainerChampionships>
                 {championships.map(championship => {
@@ -116,27 +113,39 @@ const PlayerResult = () => {
         );
     };
 
-    // HANDLES ######################################################################################################################################
-    const handleShowedChampionshipsId = championship_id => {
-        if (showedChampionshipsId.indexOf(championship_id) > -1) { // OBTIENE EL INDICE DEL ELEMENTO, SI NO ENCUENTRA EL ELEMENTO RETORNA -1 ########
-            setShowedChampionshipsId(showedChampionshipsId.filter(e => e !== championship_id)) // ELIMINA EL ELEMENTO DEL STATE #####################
-        } else {
-            setShowedChampionshipsId([...showedChampionshipsId, championship_id]); // AGREGA EL ELEMENTO AL STATE ###################################
-        };
-    };
-
     // ]JSX #########################################################################################################################################
+    if (user.player_id === 0) return <Message text={MSG_NO_PLAYERS} />
     return (
         <>
             <Container.Basic>
-                {renderSelectPlayers(players)}
-                {loading ?<Loading/> :renderDivChampionships(championships)}
+                
+                {loadingUserPlayers 
+                    ?<Loading/> 
+                    :renderSelectUserPlayers(userPlayers)
+                }
+
+                {loadingChampionships || loadingMatches || loadingScores 
+                    ?<Loading/> 
+                    :renderChampionships(championships)
+                }
+
             </Container.Basic>
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
-            <ScoreToUpdate score={currentScore} setScore={setCurrentScore} fetch={fetchScores} isOpen={isOpenModalScoreToUpdate} close={closeModalScoreToUpdate} />
+            <ScoreToUpdate 
+                score={currentScore} 
+                setScore={setCurrentScore} 
+                fetch={() => fetchScoresByPlayerId(currentPlayerId)} 
+                isOpen={isOpenModalScoreToUpdate} 
+                close={closeModalScoreToUpdate}
+                title={scoreToUpdateOptions.title}
+                isCleanable={scoreToUpdateOptions.isCleanable}
+                isEditable={scoreToUpdateOptions.isEditable}
+                isSaveable={scoreToUpdateOptions.isSaveable}
+                isAcceptable={scoreToUpdateOptions.isAcceptable}
+             />
         </>
-        
+
     );
 };
 

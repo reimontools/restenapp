@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import { Container, Title, Button } from "../../component.controls";
+import { Container, Title, Button } from "../component.controls";
 
 const Dialog = {
     Action: ({ options, close  }) => {

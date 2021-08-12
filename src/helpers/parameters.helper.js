@@ -25,10 +25,40 @@ export const MEDIUM_SCREEN_SIZE = 768;
 export const SMALL_SCREEN_SIZE_PX = SMALL_SCREEN_SIZE + "px";
 export const MEDIUM_SCREEN_SIZE_PX = MEDIUM_SCREEN_SIZE + "px";
 
+// OBJECT CONDITIONS ################################################################################################################################
+export const COLOR_BY_STATE_ID = {
+    2: "#008000",
+    3: "#0E70B8",
+    4: "#FFD90F",
+};
+
+export const SIMBOL_TYPE_BY_STATE_ID = {
+    2: "check",
+    3: "point",
+    4: "right",
+};
+
+export const SIMBOLS_BY_SIMBOL_TYPE = {
+    star: "★",
+    point: '●',
+    check: '✔',
+    right: '🡲'
+};
+
+export const COLOR_BY_SIMBOL_TYPE = {
+    star: '#FFD90F',
+    point: '#0e70b8',
+    check: '#008000',
+    right: '#FFD90F'
+};
+
 // REGEX ############################################################################################################################################
 export const LOWERCASEREGEX = /(?=.*[a-z])/;
 export const UPPERCASEREGEX = /(?=.*[A-Z])/;
 export const NUMERICREGEX = /(?=.*[0-9])/;
+export const getCapitalInSentence = sentence => {
+    return sentence.replace(/\b\w/g, l => l.toUpperCase());
+};
 
 export const PRIMARY_COLOR = "#0e70b8";
 export const SECONDARY_COLOR = "#fff";
@@ -71,6 +101,8 @@ export const getColorByFamily = family => {
         case "newFloat": return "#ced922";
         case "backFloat": return "#959595";
         case "moreFloat": return "#0e70b8";
+        case "agree": return "#21a40a";
+        case "disagree": return "#e35205";
         default: return "#0e70b8"
     };
 };

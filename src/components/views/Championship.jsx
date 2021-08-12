@@ -1,36 +1,34 @@
-import { useState, useEffect} from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../../component.controls";
+import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../component.controls";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios'
 import moment from 'moment';
-import useList from '../../hooks/useList';
 import { useHistory } from 'react-router-dom';
 import { filterChampionshipNameStateByText } from "../../helpers/filter.helper";
+import { useChampionship } from "../../custom-hooks/useChampionship";
+import { useChampionshipType } from "../../custom-hooks/useChampionshipType";
+import { Search } from "../component.pieces";
 
 const Championship = () => {
-    // EFFECT #######################################################################################################################################
-    useEffect(() => fetchChampionships(), []);
-
-    // CONST ########################################################################################################################################
-    const defaultChampionshipData = {championship_id: 0, championship_name: '', state: 0, championship_type_id: ""};
+    // HISTORY ######################################################################################################################################
     const history = useHistory();
+
+    // CUSTOM HOOKS ###############################################################################################################################
+    const {championships, fetchChampionships, loading} = useChampionship("fetchChampionships");
+    const {championshipTypes} = useChampionshipType("fetchChampionshipTypes");
+    
+    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
+
+    // DEFAULT DATA ########################################################################################################################################
+    const defaultChampionshipData = {championship_id: 0, championship_name: '', state: 0, championship_type_id: ""};
     
     // STATE ########################################################################################################################################
-    const [championships, setChampionships] = useState([]);
     const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(true);
     const [dialogOptions, setDialogOptions] = useState({});
-
-    // USEMODAL #####################################################################################################################################
-    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
-    
-    // LIST #########################################################################################################################################
-    const championshipTypeList = useList("list/championship_type");
 
     // CRUD VALIDATIONS ############################################################################################################################# 
     const schemaCrud = Yup.object().shape({
@@ -44,14 +42,6 @@ const Championship = () => {
         mode: 'onBlur',
         resolver: yupResolver(schemaCrud)
     });
-
-    // FETCHS #######################################################################################################################################
-    const fetchChampionships = async () => {
-        setLoading(true);
-        const championships = await getList("championship");
-        setChampionships(championships);
-        setLoading(false);
-    };
 
     // CRUD #########################################################################################################################################
     const updateChampionship = async data => {
@@ -97,16 +87,6 @@ const Championship = () => {
             console.log(err);
         };
     };
-
-    // FILTERS ######################################################################################################################################
-    // function filChampionshipByText(championship) {
-    //     if(searchTerm === "") {
-    //         return championship;
-    //     } else if (championship.championship_name.toLowerCase().includes(searchTerm.toLowerCase()) || championship.state_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-    //         return championship;
-    //     };
-    //     return null;
-    // };
 
     // HANDLES ######################################################################################################################################
     const handleExpandir = championship_id => {
@@ -247,15 +227,12 @@ const Championship = () => {
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
-            <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-            </div>
+            <Search value={searchTerm} action={setSearchTerm} />
             {loading 
                 ? <Loading/>
                 : <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
-                        {/* <tbody>{championships.filter(filChampionshipByText).map(championship => renderTableRows(championship))}</tbody> */}
                         <tbody>{championships.filter(filterChampionshipNameStateByText(searchTerm)).map(championship => renderTableRows(championship))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
@@ -266,7 +243,7 @@ const Championship = () => {
                 <Container.Basic>
                     <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
                     <Input.TextValidation name="championship_name" placeholder="Championship name" register={registerCrud} error={errorsCrud.championship_name} />
-                    <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={registerCrud} error={errorsCrud.championship_type_id} content={championshipTypeList} />
+                    <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={registerCrud} error={errorsCrud.championship_type_id} content={championshipTypes} />
                     <Button.Basic onClick={handleSubmitCrud(updateChampionship)} width="100%">Save</Button.Basic>
                 </Container.Basic>
             </Modal.ForForm>

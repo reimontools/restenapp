@@ -1,46 +1,17 @@
 import styled from "styled-components";
+import { COLOR_BY_SIMBOL_TYPE, SIMBOLS_BY_SIMBOL_TYPE } from "../../helpers/parameters.helper";
 
-const StarStyled = styled.span ` 
-    color: #FFD90F;
-    margin: ${({ margin }) => margin ? margin : '0'};
-    &:before {
-        content: "★";
-    };
+const SpanStyled = styled.span ` 
+    color: ${({ type }) => COLOR_BY_SIMBOL_TYPE[type]};
+    margin: ${({ margin }) => margin ? margin : '0 0 0 2px'};
 `;
 
-const PointStyled = styled.span ` 
-    color: #0e70b8;
-    margin: ${({ margin }) => margin ? margin : '0'};
-    &:before {
-        content: "●";
-    };
-`;
-
-const CheckStyled = styled.span ` 
-    color: #008000;
-    margin: ${({ margin }) => margin ? margin : '0'};
-    &:before {
-        content: "✔";
-    };
-`;
-
-
-const Simbol = {
-    Star: ({...props}) => {
-        return ( 
-            <StarStyled {...props}/>
-        );
-    },
-    Point: ({...props}) => {
-        return ( 
-            <PointStyled {...props}/>
-        );
-    },
-    Check: ({...props}) => {
-        return ( 
-            <CheckStyled {...props}/>
-        );
-    }
+const Simbol = ({...props}) => {
+    return ( 
+        <SpanStyled {...props}>
+            {SIMBOLS_BY_SIMBOL_TYPE[props.type]}
+        </SpanStyled>
+    );
 };
 
-export default Simbol;
+export default Simbol

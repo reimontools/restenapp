@@ -1,43 +1,38 @@
-import { useState, useEffect} from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useModal from "../../hooks/useModal";
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getList } from '../../helpers/list.helper'; 
 import axios from '../../config/axios';
-import useList from '../../hooks/useList';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar, DropDown } from "../../component.controls";
-import { PlayerSearch, PlayerAssignedDragAndDrop } from "../../component.pieces";
-import { filterPlayerPropertyByPlayerArray } from "../../helpers/filter.helper";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar, DropDown } from "../component.controls";
+import { PlayersAssigned } from "../component.pieces";
+import { useGroup } from "../../custom-hooks/useGroup";
+import { useGroupPlayer } from "../../custom-hooks/useGroupPlayer";
 
 const Group = () => {
-    // LIST #########################################################################################################################################
-    const playerList = useList('player');
-
-    // CONST ########################################################################################################################################
-    const { prm_championship_id, prm_championship_type_id } = useParams();
+    // HISTORY ######################################################################################################################################
     const history = useHistory();
+
+    // USE PARAMS ###################################################################################################################################
+    const { prm_championship_id, prm_championship_type_id } = useParams();
+
+    // CUSTOM HOOKS #################################################################################################################################
+    const { groups, fetchGroupsByChampionshipId, loading } = useGroup("fetchGroupsByChampionshipId", prm_championship_id);
+    const { groupPlayers, fetchGroupPlayersByGroupId } = useGroupPlayer();
+
+    // DEFAULT DATA #################################################################################################################################
     const defaultGroupData = {group_id: 0, group_name: ''};
     
-    // EFFECT #######################################################################################################################################
-    useEffect(() => {
-        fetchGroups(prm_championship_id);
-    }, [prm_championship_id]);
-
     // STATE ########################################################################################################################################
-    const [loading, setLoading] = useState(true);
-    const [groups, setGroups] = useState([]);
     const [currentGroup, setCurrentGroup] = useState({});
-    const [groupPlayers, setGroupPlayers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [playersAssignedOptions, setPlayersAssignedOptions] = useState({isSearchable: false, isRemovable: false, isDropable: false});
     
     // DIALOG #######################################################################################################################################
     const [dialogOptions, setDialogOptions] = useState({});
 
     // USEMODAL #####################################################################################################################################
     const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
-    const [isOpenModalPlayerSearch, openModalPlayerSearch, closeModalPlayerSearch] = useModal();
     const [isOpenModalPlayerAssigned, openModalPlayerAssigned, closeModalPlayerAssigned] = useModal();    
 
     // CRUD VALIDATIONS ############################################################################################################################# 
@@ -51,26 +46,13 @@ const Group = () => {
         resolver: yupResolver(schemaCrud)
     });
 
-    // FETCHS #######################################################################################################################################
-    const fetchGroups = async championship_id => {
-        setLoading(true);
-        const res = await getList("group/" + championship_id);
-        setGroups(res);
-        setLoading(false);
-    };
-
-    const fetchGroupPlayers = async group_id => {
-        const res = await getList("group-player/" + group_id);
-        setGroupPlayers(res);
-    };
-
     // CRUD #########################################################################################################################################
     const updateGroup = async data => {
         try {
             const res = await axios.post("group", {group_id: currentGroup.group_id, championship_id: prm_championship_id, ...data});
             switch(res.data.result.cod) {
                 case 0:
-                    fetchGroups(prm_championship_id);
+                    fetchGroupsByChampionshipId(prm_championship_id);
                     closeModalCrud();
                     break;
                 case 1:
@@ -92,7 +74,7 @@ const Group = () => {
         try {
             const res = await axios.post("group-player", {group_id: currentGroup.group_id, players});
             if (res.data.result.cod !== 0) return setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg});
-            fetchGroupPlayers(currentGroup.group_id);
+            fetchGroupPlayersByGroupId(currentGroup.group_id);
         } catch(err) {
             console.log('Err: ' + err);
         };
@@ -102,7 +84,7 @@ const Group = () => {
         try {
             const res = await axios.post("group-player/location", {group_player_id_source, group_player_id_destination});
             if (res.data.result.cod !== 0) return setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg});
-            fetchGroupPlayers(currentGroup.group_id);
+            fetchGroupPlayersByGroupId(currentGroup.group_id);
         } catch(err) {
             console.log('Err: ' + err);
         };
@@ -111,7 +93,7 @@ const Group = () => {
     const updateGroupPlayerIsActive = async player_id => {
         try {
             const res = await axios.put("group-player" , {group_id: currentGroup.group_id, player_id});
-            if (res.data.result.cod === 0) return fetchGroupPlayers(currentGroup.group_id);
+            if (res.data.result.cod === 0) return fetchGroupPlayersByGroupId(currentGroup.group_id);
             setDialogOptions({family: "info", title: 'Alert', text : 'Error: ' + res.data.result.msg})
         } catch(err) {
             console.log('Err: ' + err);
@@ -122,7 +104,7 @@ const Group = () => {
         try {
             const res = await axios.put("group/" + group_id);
             if (!res.data.error) {
-                fetchGroups(prm_championship_id);
+                fetchGroupsByChampionshipId(prm_championship_id);
             };
         } catch (err) {
             console.log(err);
@@ -132,7 +114,7 @@ const Group = () => {
     const resetRandomMatchesByGroupId = async group_id => {
         try {
             const res = await axios.post("match/random/", {group_id});
-            if (res.data.result.cod === 0) return fetchGroups(prm_championship_id);
+            if (res.data.result.cod === 0) return fetchGroupsByChampionshipId(prm_championship_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -151,17 +133,24 @@ const Group = () => {
             setCurrentGroup(group);
         };
     };
-
-    const [options, setOptions] = useState({dragDrop: false, readOnly: false});
     
     const handleButtonPlayer = (e, group) => {
+        console.log("group", group);
         e.stopPropagation();
         setCurrentGroup(group);
-        fetchGroupPlayers(group.group_id);
+        fetchGroupPlayersByGroupId(group.group_id);
         if (group.location === 1) {
-            setOptions({dragDrop: true, readOnly: false});
+            if(group.state_name === "Pending") {
+                setPlayersAssignedOptions({isSearchable: true, isRemovable: true, isDropable: true});
+            } else {
+                setPlayersAssignedOptions({isSearchable: false, isRemovable: false, isDropable: false});
+            };
         } else {
-            setOptions({dragDrop: true, readOnly: true});
+            if(group.state_name === "Pending") {
+                setPlayersAssignedOptions({isSearchable: false, isRemovable: false, isDropable: true});
+            } else {
+                setPlayersAssignedOptions({isSearchable: false, isRemovable: false, isDropable: false});
+            };
         };
         openModalPlayerAssigned();
     };
@@ -184,7 +173,7 @@ const Group = () => {
     };
 
     const handleCloseModalPlayerAssigned = () => {
-        fetchGroups(prm_championship_id);
+        fetchGroupsByChampionshipId(prm_championship_id);
         closeModalPlayerAssigned();
     };
 
@@ -302,15 +291,14 @@ const Group = () => {
         );
     };
 
+    const renderTitle = championship_type_id => {
+        return <Title.Basic fontSize="20px">{championship_type_id === 1 ? "Groups" : "Rounds"}</Title.Basic>;
+    };
+
     // JSX ##########################################################################################################################################
     return (
         <Container.Primary>
-            <Title.Basic fontSize="20px">{prm_championship_type_id === 1 ? "Groups" : "Rounds"}</Title.Basic>
-            <div className="search-container">
-                <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                
-            </div>
-
+            {renderTitle(prm_championship_id)}
             {loading 
                 ? <Loading/>
                 : <Container.Table>
@@ -330,19 +318,8 @@ const Group = () => {
                 </Container.Basic>
             </Modal.ForForm>
 
-            {/* PLAYER ASSIGN MODAL - READ ONLY ##################################################################################################### */}
-            <PlayerAssignedDragAndDrop.Basic 
-                dragDrop={options.dragDrop} 
-                readOnly={options.readOnly} 
-                actionLocation={updateGroupPlayersLocation} 
-                actionOpen={openModalPlayerSearch} 
-                actionDelete={updateGroupPlayerIsActive} 
-                players={groupPlayers} 
-                isOpen={isOpenModalPlayerAssigned} 
-                close={handleCloseModalPlayerAssigned} />
-            
-            {/* PLAYER SELECTION MODAL ############################################################################################################## */}
-            <PlayerSearch action={updateGroupPlayers} players={playerList.filter(filterPlayerPropertyByPlayerArray(groupPlayers))} isOpen={isOpenModalPlayerSearch} close={closeModalPlayerSearch} />
+            {/* PLAYER ASSIGN MODAL ################################################################################################################# */}
+            <PlayersAssigned actionRemove={updateGroupPlayerIsActive} actionAdd={updateGroupPlayers} actionReorder={updateGroupPlayersLocation} playersAssigned={groupPlayers} isOpen={isOpenModalPlayerAssigned} close={handleCloseModalPlayerAssigned} isSearchable={playersAssignedOptions.isSearchable} isRemovable={playersAssignedOptions.isRemovable} isDropable={playersAssignedOptions.isDropable} /> 
 
             {/* DIALOG  ############################################################################################################################# */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />

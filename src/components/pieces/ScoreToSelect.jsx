@@ -1,5 +1,5 @@
 import { ContainerScores, ContainerScore } from "../styled/ScoreToSelect.styled";
-import { Container, Title, Modal } from "../../component.controls";
+import { Container, Title, ModalNew } from "../component.controls";
 
 const ScoreToSelect = ({score, setScore, indexSetNumber, isOpen, close}) => {
 
@@ -33,7 +33,7 @@ const ScoreToSelect = ({score, setScore, indexSetNumber, isOpen, close}) => {
 
     // JSX ##########################################################################################################################################
     return (
-        <Modal.ForForm isOpen={isOpen} closeModal={close}>
+        <ModalNew.ForForm isOpen={isOpen} closeModal={close}>
             <Container.Basic>
                 {renderTitle()}
                 <ContainerScores>
@@ -45,7 +45,7 @@ const ScoreToSelect = ({score, setScore, indexSetNumber, isOpen, close}) => {
                     <ContainerScore onClick={() => setScoreSelected("75")}>7/5</ContainerScore>
                 </ContainerScores>
             </Container.Basic>
-        </Modal.ForForm>
+        </ModalNew.ForForm>
     );
 };
 

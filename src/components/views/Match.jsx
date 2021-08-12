@@ -1,45 +1,34 @@
 import { useParams, useHistory } from 'react-router-dom';
-import { useState, useEffect, useCallback } from "react";
-import { getList } from '../../helpers/list.helper';
+import { useState } from "react";
 import { filterScoresByMatchId } from "../../helpers/filter.helper";
-import { Input, Container, Loading, Title, ButtonFloat, DropDownButtonFloat, Dialog } from "../../component.controls";
-import { ScoreToShow, ScoreToUpdate } from "../../component.pieces";
+import { Input, Container, Loading, Title, ButtonFloat, DropDownButtonFloat, Dialog } from "../component.controls";
+import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
+import { useMatch } from '../../custom-hooks/useMatch';
+import { useScore } from '../../custom-hooks/useScore';
 
 const Match = () => {
-    const { prm_championship_id, prm_championship_type_id, prm_group_id } = useParams();
-    const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [matches, setMatches] = useState([]);
-    const [scores, setScores] = useState([]);
-    const [currentScore, setCurrentScore] = useState([]);
-
     const history = useHistory();
+
+    // USE PARAM ####################################################################################################################################
+    const { prm_championship_id, prm_championship_type_id, prm_group_id } = useParams();
+
+    // CUSTOM HOOKS #################################################################################################################################
+    const {matches, fetchMatchesByGroupId, loading: loadingMatches} = useMatch("fetchMatchesByGroupId", prm_group_id);
+    const {scores, fetchScoresByGroupId, loading: loadingScores} = useScore("fetchScoresByGroupId", prm_group_id);
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentScore, setCurrentScore] = useState([]);
 
     // DIALOG #######################################################################################################################################
     const [dialogOptions, setDialogOptions] = useState({});
 
     /*FETCH ###########################################################################################*/
-    const fetchMatchesByGroupId = async group_id => {
-        const res = await getList("match/" + group_id);
-        setMatches(res);
+    const fetchMatchesScores = async () => {
+        await fetchMatchesByGroupId(prm_group_id);
+        await fetchScoresByGroupId(prm_group_id);
     };
-    const fetchScoresByGroupId = async group_id => {
-        const res = await getList("score/" + group_id);
-        setScores(res);
-    };
-    const fetchMatchesScores = useCallback(() => {
-        setLoading(true);
-        fetchMatchesByGroupId(prm_group_id);
-        fetchScoresByGroupId(prm_group_id);
-        setLoading(false);
-    }, [prm_group_id])
-
-    /*EFFECT #########################################################################################*/
-    useEffect(() => {
-        fetchMatchesScores();
-    }, [fetchMatchesScores]);
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
@@ -150,7 +139,7 @@ const Match = () => {
                 <div className="search-container">
                     <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
                 </div>
-                {loading
+                {loadingMatches || loadingScores
                     ? <Loading/>
                     : <Container.FlexWrap>
                         {matches.map(match => {
@@ -162,7 +151,18 @@ const Match = () => {
             </Container.Primary>
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
-            <ScoreToUpdate score={currentScore} setScore={setCurrentScore} fetch={fetchMatchesScores} isOpen={isOpenModalScoreToUpdate} close={closeModalScoreToUpdate} />
+            <ScoreToUpdate 
+                score={currentScore} 
+                setScore={setCurrentScore} 
+                fetch={fetchMatchesScores} 
+                isOpen={isOpenModalScoreToUpdate} 
+                close={closeModalScoreToUpdate}
+                title="Updating Score"
+                isCleanable={true}
+                isEditable={true}
+                isSaveable={true}
+                isAcceptable={false}     
+            />
                 
             {/* BUTTON BACK ######################################################################################################################### */}
             <ButtonFloat.Icon onClick={e => handleGoBack(e)} hover family="backFloat" />

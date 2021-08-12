@@ -44,6 +44,12 @@ export const ContainerMatchState = styled.div `
 export const ContainerMatchGroupName = styled.div `
 `;
 
+const getSecundaryColorByPrimaryColor = primaryColor => {
+    if (primaryColor === "#008000") return "#BBE4BB"; // FINISH  
+    if (primaryColor === "#0E70B8") return "#C8E1F3"; // PENDING
+    if (primaryColor === "#FFD90F") return "#FFF7CD"; // WAITING
+};
+
 const ContainerScoreStyled = styled.div `
     cursor: pointer;
     padding: 10px;
@@ -57,12 +63,10 @@ const ContainerScoreStyled = styled.div `
     flex-direction: column;
     justify-content: flex-start;
     transition: all .2s ease;
-    &:hover {
-        background-color: ${({ color }) => color === "#0e70b8" ? "#c8e1f3" : "#bbe4bb"};
-    };
+    background-color: ${({ color }) => getSecundaryColorByPrimaryColor(color)};
     @media screen and (max-width: ${MEDIUM_SCREEN_SIZE_PX}) {
-        min-width: 100%; 
-        background-color: ${({ color }) => color === "#0e70b8" ? "#c8e1f3" : "#bbe4bb"};
+        min-width: 100%;
+        /* background-color: ${({ color }) => getSecundaryColorByPrimaryColor(color)}; */
         &:hover {
             transform: none;
         };

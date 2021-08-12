@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Icon} from "../../component.controls";
+import { Icon } from "../component.controls";
 import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
 
 const ModalStyled = styled.div `
