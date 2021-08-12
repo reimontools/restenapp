@@ -14,6 +14,7 @@ import { useScore } from "../../custom-hooks/useScore";
 import useModal from "../../hooks/useModal";
 
 const PlayerResult = () => {
+    
     // CONTEXT ######################################################################################################################################
     const { user } = useAppContext();
 

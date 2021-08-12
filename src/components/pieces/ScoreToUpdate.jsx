@@ -1,13 +1,29 @@
 import { ContainerScoreToUpdate, ContainerPlayer, ContainerPlayerName, ContainerPlayerScore, ContainerPlayerPoint } from "../styled/ScoreToUpdate.styled";
 import { Container, Title, ModalNew, Button, Line, Icon } from "../component.controls";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScoreToSelect } from "../component.pieces";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
+import socket from "../../config/socket.io";
 
 const ScoreToUpdate = ({score, setScore, fetch, isOpen, close, title="", isCleanable = false, isEditable = false, isSaveable = false, isAcceptable = false}) => {
+
+    // SOCKET.IO ####################################################################################################################################
+    const [toggle, setToggle] = useState(true)
+    
+    useEffect(() => {
+        socket.on('server:score', () => setToggle(!toggle));
+        return () => socket.off();
+    }, [toggle]);
+
+    useEffect(() => {
+        fetch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [toggle]);
+
     // STATE ########################################################################################################################################
     const [currentIndexSetNumber, setCurrentIndexSetNumber] = useState(0);
+    
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToSelect, openModalScoreToSelect, closeModalScoreToSelect] = useModal();
@@ -22,6 +38,7 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close, title="", isClean
         try {
             const res = await axios.put("score/clean/" + match_id);
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
+                socket.emit('client:score');
                 fetch();
                 close();
         } catch(err) {
@@ -33,6 +50,7 @@ const ScoreToUpdate = ({score, setScore, fetch, isOpen, close, title="", isClean
         try {
             const res = await axios.post("score", {score});
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
+                socket.emit('client:score');
                 fetch();
                 close();
         } catch(err) {
