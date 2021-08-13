@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Container, Select2, Loading, ButtonCircleIcon, Message } from "../component.controls";
 import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
@@ -13,6 +13,8 @@ import { useMatch } from "../../custom-hooks/useMatch";
 import { useScore } from "../../custom-hooks/useScore";
 import useModal from "../../hooks/useModal";
 
+import { useSocket } from "../../custom-hooks/useSocket";
+
 const PlayerResult = () => {
     
     // CONTEXT ######################################################################################################################################
@@ -24,7 +26,9 @@ const PlayerResult = () => {
     const { matches, fetchMatchesByPlayerId, loading: loadingMatches } = useMatch("fetchMatchesByPlayerId",  user.player_id);
     const { scores, fetchScoresByPlayerId, loading: loadingScores } = useScore("fetchScoresByPlayerId", user.player_id);
     const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
-    
+
+    const { socketToggle, socketEmit } = useSocket('server:score');
+
     // FETCH ########################################################################################################################################
     const fetchPlayerResultByPlayerId = async player_id => {
         await fetchChampionshipsByPlayerId(player_id);
@@ -38,9 +42,13 @@ const PlayerResult = () => {
     const [currentPlayerId, setCurrentPlayerId] = useState(user.player_id);
     const [scoreToUpdateOptions, setScoreToUpdateOptions] = useState({title:"", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false});
 
+    useEffect(() => {
+        fetchScoresByPlayerId(currentPlayerId);
+        // eslint-disable-next-line
+    }, [socketToggle]);
+
     // MODAL ########################################################################################################################################
     const showModalScoreToUpdate = score => {
-        // console.log("score", score[0].user_id, user.user_id);
         getScoreToUpdateOptions(score[0].match_state_id, score[0].user_id);
         setCurrentScore(score);
         openModalScoreToUpdate();
@@ -135,8 +143,8 @@ const PlayerResult = () => {
             {/* SCORE TO UPDATE ##################################################################################################################### */}
             <ScoreToUpdate 
                 score={currentScore} 
-                setScore={setCurrentScore} 
-                fetch={() => fetchScoresByPlayerId(currentPlayerId)} 
+                setScore={setCurrentScore}
+                socketEmit={socketEmit}
                 isOpen={isOpenModalScoreToUpdate} 
                 close={closeModalScoreToUpdate}
                 title={scoreToUpdateOptions.title}
