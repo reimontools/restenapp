@@ -1,5 +1,5 @@
 import { useParams, useHistory } from 'react-router-dom';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { filterScoresByMatchId } from "../../helpers/filter.helper";
 import { Input, Container, Loading, Title, ButtonFloat, DropDownButtonFloat, Dialog } from "../component.controls";
 import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
@@ -7,6 +7,7 @@ import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 import { useMatch } from '../../custom-hooks/useMatch';
 import { useScore } from '../../custom-hooks/useScore';
+import { useSocket } from "../../custom-hooks/useSocket";
 
 const Match = () => {
     const history = useHistory();
@@ -17,6 +18,7 @@ const Match = () => {
     // CUSTOM HOOKS #################################################################################################################################
     const {matches, fetchMatchesByGroupId, loading: loadingMatches} = useMatch("fetchMatchesByGroupId", prm_group_id);
     const {scores, fetchScoresByGroupId, loading: loadingScores} = useScore("fetchScoresByGroupId", prm_group_id);
+    const {socketToggle, socketEmit} = useSocket('server:score');
 
     const [searchTerm, setSearchTerm] = useState("");
     const [currentScore, setCurrentScore] = useState([]);
@@ -36,6 +38,12 @@ const Match = () => {
         setCurrentScore(score);
         openModalScoreToUpdate();
     };
+
+    // USE EFFECT ###################################################################################################################################
+    useEffect(() => {
+        fetchMatchesScores();
+        // eslint-disable-next-line
+    }, [socketToggle]);
 
     // CRUD #########################################################################################################################################
     const initMatchRandomByGroupId = async group_id => {
@@ -153,8 +161,8 @@ const Match = () => {
             {/* SCORE TO UPDATE ##################################################################################################################### */}
             <ScoreToUpdate 
                 score={currentScore} 
-                setScore={setCurrentScore} 
-                fetch={fetchMatchesScores} 
+                setScore={setCurrentScore}
+                socketEmit={socketEmit}
                 isOpen={isOpenModalScoreToUpdate} 
                 close={closeModalScoreToUpdate}
                 title="Updating Score"

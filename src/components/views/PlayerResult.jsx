@@ -11,9 +11,8 @@ import { useUserPlayer } from "../../custom-hooks/useUserPlayer";
 import { useChampionship } from "../../custom-hooks/useChampionship";
 import { useMatch } from "../../custom-hooks/useMatch";
 import { useScore } from "../../custom-hooks/useScore";
-import useModal from "../../hooks/useModal";
-
 import { useSocket } from "../../custom-hooks/useSocket";
+import useModal from "../../hooks/useModal";
 
 const PlayerResult = () => {
     
@@ -25,9 +24,8 @@ const PlayerResult = () => {
     const { championships, fetchChampionshipsByPlayerId, loading: loadingChampionships } = useChampionship("fetchChampionshipsByPlayerId", user.player_id);
     const { matches, fetchMatchesByPlayerId, loading: loadingMatches } = useMatch("fetchMatchesByPlayerId",  user.player_id);
     const { scores, fetchScoresByPlayerId, loading: loadingScores } = useScore("fetchScoresByPlayerId", user.player_id);
-    const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
-
     const { socketToggle, socketEmit } = useSocket('server:score');
+    const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
 
     // FETCH ########################################################################################################################################
     const fetchPlayerResultByPlayerId = async player_id => {
