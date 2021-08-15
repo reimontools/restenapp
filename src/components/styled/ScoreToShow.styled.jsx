@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { MEDIUM_SCREEN_SIZE_PX } from "../../helpers/parameters.helper";
+import { MEDIUM_SCREEN_SIZE_PX, getSecundaryColorByPrimaryColor } from "../../helpers/parameters.helper";
 
 export const ContainerPlayerScore = styled.div `
     width:100%;
@@ -43,12 +43,6 @@ export const ContainerMatchState = styled.div `
 
 export const ContainerMatchGroupName = styled.div `
 `;
-
-const getSecundaryColorByPrimaryColor = primaryColor => {
-    if (primaryColor === "#008000") return "#BBE4BB"; // FINISH  
-    if (primaryColor === "#0E70B8") return "#C8E1F3"; // PENDING
-    if (primaryColor === "#FFD90F") return "#FFF7CD"; // WAITING
-};
 
 const ContainerScoreStyled = styled.div `
     cursor: pointer;

@@ -9,17 +9,20 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
 
     // STATE ########################################################################################################################################
     const [currentIndexSetNumber, setCurrentIndexSetNumber] = useState(0);
+    // const [hasChange, setHasChange] = useState(false);
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToSelect, openModalScoreToSelect, closeModalScoreToSelect] = useModal();
     const showModalScoreToSelect = currentIndexSetNumber => {
         if(!isEditable) return null;
+        // setHasChange(true);
         setCurrentIndexSetNumber(currentIndexSetNumber);
         openModalScoreToSelect();
     };
 
     // API CALLS ####################################################################################################################################
     const cleanScoreByMatchId = async match_id => {
+        // if (!hasChange) return close();
         try {
             const res = await axios.put("score/clean/" + match_id);
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
@@ -30,7 +33,19 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
         };
     };
 
+    const rejectScoreByMatchId = async match_id => {
+        try {
+            const res = await axios.put("score/reject/" + match_id);
+            if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
+                socketEmit('client:score');
+                close();
+        } catch(err) {
+            console.log('Err: ' + err);
+        };
+    };
+
     const saveScore = async () => {
+        // if (!hasChange) return close();
         try {
             const res = await axios.post("score", {score});
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
@@ -44,6 +59,7 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
     // HANDLE #######################################################################################################################################
     const reverseScoreByIndex = index => {
         if(!isEditable) return null;
+        // setHasChange(true);
         let new_score = [...score];
         const point = new_score[index].point;
         switch(index) {
@@ -79,13 +95,13 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
         return <ContainerPlayerName>{playerName}</ContainerPlayerName>;
     };
 
-    const renderButtons = () => {
+    const renderButtons = match_id => {
         if (isSaveable) return <Button.Basic onClick={() => saveScore()} width="100%">Save</Button.Basic>
         if (isAcceptable) {
             return (
                 <>
                     <Button.Basic onClick={() => saveScore()} width="100%" margin="0 0 10px 0" family="agree">👍 I agree</Button.Basic>
-                    <Button.Basic onClick={() => saveScore()} width="100%" family="disagree">👎 I don't agree</Button.Basic>
+                    <Button.Basic onClick={() => rejectScoreByMatchId(match_id)} width="100%" family="disagree">👎 I don't agree</Button.Basic>
                 </>
             );
         };
@@ -126,7 +142,7 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
                                     </ContainerPlayerScore>
                                 </ContainerPlayer>
                         </ContainerScoreToUpdate>
-                        {renderButtons()}
+                        {renderButtons(score[0].match_id)}
                     </Container.Basic>
                 </ModalNew.ForForm>
 

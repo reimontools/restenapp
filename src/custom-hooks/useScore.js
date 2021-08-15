@@ -17,6 +17,7 @@ export const useScore = (type, payload) => {
                 fetchScoresByGroupId(payload);
                 break;
             default: 
+                setLoading(false);
                 break;
         };
     }, [type, payload]); 

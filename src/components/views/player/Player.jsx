@@ -1,73 +1,28 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Input, Title, Modal, Button, Select, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../component.controls";
-import useModal from "../../hooks/useModal";
-import * as Yup from "yup";
-import { yupResolver } from '@hookform/resolvers/yup';
-import axios from '../../config/axios'
+import { Message, Title, TableNew, Container, Loading, Dialog, Image, ButtonFloat, DropDown } from "../../component.controls";
+import useModal from "../../../hooks/useModal";
+import axios from '../../../config/axios'
 import moment from 'moment';
-import { filterPlayerFullnameByText } from "../../helpers/filter.helper";
-import { usePlayer } from "../../custom-hooks/usePlayer";
-import { useGender } from "../../custom-hooks/useGender";
-import { Search } from "../component.pieces";
+import { filterPlayerFullnameByText } from "../../../helpers/filter.helper";
+import { usePlayer } from "../../../custom-hooks/usePlayer";
+import { Search } from "../../component.pieces";
+import { MSG_NO_MATCH } from "../../../helpers/parameters.helper";
+import PlayerCrud from "./PlayerCrud";
 
 const Player = () => {
     // CUSTOM HOOKS #################################################################################################################################
     const { players, fetchPlayers, loading } = usePlayer("fetchPlayers");
-    const { genders } = useGender("fetchGenders");
-
-    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
+    const [isOpenModalPlayerCrud, openModalPlayerCrud, closeModalPlayerCrud] = useModal();
 
     // CONST ########################################################################################################################################
-    const defaultPlayerData = {player_id: 0, name: '', surname: '', gender_id: 1, birth_date: ''};
+    const defaultPlayerData = {player_id: 0, name: '', surname: '', gender_id: '', birth_date: ''};
     
     // STATE ########################################################################################################################################
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPlayerId, setCurrentPlayerId] = useState(0);   
+    const [currentPlayer, setCurrentPlayer] = useState(0);   
     const [dialogOptions, setDialogOptions] = useState({});
-    
-    /*VALIDATIONS ####################################################################################*/ 
-    const schemaCrud = Yup.object().shape({
-        name: Yup.string().required('Required'),
-        surname: Yup.string().required('Required'),
-        birth_date: Yup
-            .date()
-            .nullable()
-            .transform((curr, orig) => orig === '' ? null : curr)
-            .max(moment().subtract(2, 'years').calendar(), "Too young")
-            .min(moment().subtract(70, 'years').calendar(), "Too old")
-            .required('Required')
-    });
-
-    const { register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud } = useForm({
-        mode: 'onSubmit',
-        resolver: yupResolver(schemaCrud)
-    });
 
     // CRUD #########################################################################################################################################
-    const updatePlayer = async data => {
-        try {
-            const res = await axios.post("player", {player_id: currentPlayerId, ...data});
-            switch(res.data.result.cod) {
-                case 0:
-                    fetchPlayers();
-                    closeModalCrud();
-                    break;
-                case 1:
-                    setDialogOptions({family: "info", title: 'Alert', text : 'player already exists!'})
-                    break;
-                case 2:
-                    setDialogOptions({family: "info", title: 'Alert', text : 'player already exists! (nonActive)'})
-                    break;
-                default:
-                    setDialogOptions({family: "info", title: 'Error', text : 'Error: ' + res.data.result.msg})
-                    break;
-            };
-        } catch(err) {
-            console.log('Err: ' + err);
-        };
-    };
-    
     const updatePlayerIsActive = async player_id => {
         try {
             const res = await axios.put("player/" + player_id);
@@ -80,19 +35,18 @@ const Player = () => {
     };
 
     // HANDLES ######################################################################################################################################
-    const handleExpandir = player_id => {
-        if (player_id === currentPlayerId) {
-            setCurrentPlayerId(0);
+    const handleExpandir = player => {
+        if (player.player_id === currentPlayer.player_id) {
+            setCurrentPlayer({});
         } else {
-            setCurrentPlayerId(player_id);
+            setCurrentPlayer(player);
         };
     };
 
     const handleUpdate = (e, player) => {
         e.stopPropagation();
-        setCurrentPlayerId(player.player_id);
-        resetCrud(player);
-        openModalCrud();
+        setCurrentPlayer(player);
+        openModalPlayerCrud();
     };
 
     const handleDelete = (e, player) => {
@@ -117,7 +71,7 @@ const Player = () => {
         var classContent = "";
         var classActions = "";
 
-        if (player.player_id === currentPlayerId) {
+        if (player.player_id === currentPlayer.player_id) {
             classContent = "content unhide"
             classActions = "unhide"
         } else {
@@ -126,7 +80,7 @@ const Player = () => {
         };
 
         return (
-            <tr key={player.player_id} onClick={() => handleExpandir(player.player_id)}>
+            <tr key={player.player_id} onClick={() => handleExpandir(player)}>
                 <td className="head">
                     {renderAvatar(player)}
                     <div className="dropdown">
@@ -168,38 +122,43 @@ const Player = () => {
         );
     };
 
-    /*JSX ###########################################################################################################################################*/ 
-    return (
-        <Container.Primary>
-            <Search value={searchTerm} action={setSearchTerm} />
-            {loading 
-                ? <Loading/> 
-                : <Container.Table>
+    const renderTitle = () => {
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">Players</Title.Basic>;
+    };
+
+    const renderPlayers = players => {
+        if (!players) return null;
+        if (players.length === 0) return <Message text={MSG_NO_MATCH} />
+        return (
+            <>
+                <Search value={searchTerm} action={setSearchTerm} placeholder="By Name or Surname" />
+                <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
                         <tbody>{players.filter(filterPlayerFullnameByText(searchTerm)).map(player => renderTableRows(player))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
-            }
+            </>
+        );
+    };
 
-            {/* MODAL CRUD ########################################################################################################################## */}
-            <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
-                <Container.Basic>
-                    <Title.Basic>{currentPlayerId === 0 ? 'New Player' : 'Update Player'}</Title.Basic>
-                    <Input.TextValidation name="name" placeholder="Name" register={registerCrud} error={errorsCrud.name} />
-                    <Input.TextValidation name="surname" placeholder="Surname" register={registerCrud} error={errorsCrud.surname} />
-                    <Select.Validation name="gender_id" type="select" register={registerCrud} content={genders} />
-                    <Input.DateValidation name="birth_date" register={registerCrud} error={errorsCrud.birth_date}/>
-                    <Button.Basic onClick={handleSubmitCrud(updatePlayer)} width="100%">Save</Button.Basic>
-                </Container.Basic>
-            </Modal.ForForm>
+    /*JSX ###########################################################################################################################################*/ 
+    return (
+        <>
+            <Container.Primary>
+                {renderTitle()}
+                {loading ?<Loading/> :renderPlayers(players)}
+            </Container.Primary>
+            
+            {/* CRUD CHAMPIONSHIP ################################################################################################################### */}
+            <PlayerCrud fetch={fetchPlayers} player={currentPlayer} isOpen={isOpenModalPlayerCrud} close={closeModalPlayerCrud} />
             
             {/* DIALOG ############################################################################################################################## */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
             <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultPlayerData)} family="newFloat" hover />
-        </Container.Primary>
+        </>
     );
 };
 

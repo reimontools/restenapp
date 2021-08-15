@@ -5,10 +5,11 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from '../../config/axios';
 import { useHistory, useParams } from 'react-router-dom';
-import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar, DropDown } from "../component.controls";
-import { PlayersAssigned } from "../component.pieces";
+import { Input, Modal, Button, TableNew, Container, Loading, Title, Dialog, ButtonFloat, Avatar, DropDown, Message } from "../component.controls";
+import { PlayersAssigned, Search } from "../component.pieces";
 import { useGroup } from "../../custom-hooks/useGroup";
 import { useGroupPlayer } from "../../custom-hooks/useGroupPlayer";
+import { MSG_NO_MATCH } from "../../helpers/parameters.helper";
 
 const Group = () => {
     // HISTORY ######################################################################################################################################
@@ -26,6 +27,7 @@ const Group = () => {
     
     // STATE ########################################################################################################################################
     const [currentGroup, setCurrentGroup] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
     const [playersAssignedOptions, setPlayersAssignedOptions] = useState({isSearchable: false, isRemovable: false, isDropable: false});
     
     // DIALOG #######################################################################################################################################
@@ -291,23 +293,33 @@ const Group = () => {
         );
     };
 
-    const renderTitle = championship_type_id => {
-        return <Title.Basic fontSize="20px">{championship_type_id === 1 ? "Groups" : "Rounds"}</Title.Basic>;
+    const renderTitle = firtGroup => {
+        const type = firtGroup.championship_type_name === "Seed" ? "Rounds" :"Groups";
+        const titleText = firtGroup.championship_name + " > " + type;
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">{titleText}</Title.Basic>;
     };
 
-    // JSX ##########################################################################################################################################
-    return (
-        <Container.Primary>
-            {renderTitle(prm_championship_id)}
-            {loading 
-                ? <Loading/>
-                : <Container.Table>
+    const renderGroup = groups => {
+        if (!groups) return null;
+        if (groups.length === 0) return <Message text={MSG_NO_MATCH} />
+        return (
+            <Container.Primary>
+                {renderTitle(groups[0])}
+                <Search value={searchTerm} action={setSearchTerm} placeholder="By Round*"/>
+                <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
                         <tbody>{groups.map(group => renderTableRows(group))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
-            }
+            </Container.Primary>
+        );
+    };
+
+    // JSX ##########################################################################################################################################
+    return (
+        <>
+            {loading ?<Loading/> :renderGroup(groups)}
 
             {/* MODAL CRUD ########################################################################################################################## */}
             <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
@@ -329,8 +341,9 @@ const Group = () => {
 
             {/* BUTTON BACK ######################################################################################################################### */}
             <ButtonFloat.Icon onClick={e => handleGoBack(e)} family="backFloat" hover />
-
-        </Container.Primary>
+            
+        </>
+        
     );
 };
 

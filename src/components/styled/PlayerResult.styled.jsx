@@ -3,6 +3,7 @@ import styled from "styled-components";
 // CONTAINERS ####################################################################################################################################### 
 export const ContainerChampionships = styled.div `
     margin-bottom: 10px; 
+    width: 90%;
 `;
 
 export const ContainerChampionship = styled.div `

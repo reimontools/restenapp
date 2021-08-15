@@ -1,13 +1,13 @@
 import { useParams, useHistory } from 'react-router-dom';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { filterScoresByMatchId } from "../../helpers/filter.helper";
-import { Input, Container, Loading, Title, ButtonFloat, DropDownButtonFloat, Dialog } from "../component.controls";
-import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
+import { Container, Message, Loading, Title, ButtonFloat, DropDownButtonFloat, Dialog } from "../component.controls";
+import { ScoreToShow, ScoreToUpdate, Search } from "../component.pieces";
 import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
-import { useMatch } from '../../custom-hooks/useMatch';
-import { useScore } from '../../custom-hooks/useScore';
 import { useSocket } from "../../custom-hooks/useSocket";
+import { useResultByGroupId } from '../../custom-hooks/useResultByGroupId';
+import { MSG_NO_MATCH } from "../../helpers/parameters.helper";
 
 const Match = () => {
     const history = useHistory();
@@ -16,21 +16,15 @@ const Match = () => {
     const { prm_championship_id, prm_championship_type_id, prm_group_id } = useParams();
 
     // CUSTOM HOOKS #################################################################################################################################
-    const {matches, fetchMatchesByGroupId, loading: loadingMatches} = useMatch("fetchMatchesByGroupId", prm_group_id);
-    const {scores, fetchScoresByGroupId, loading: loadingScores} = useScore("fetchScoresByGroupId", prm_group_id);
     const {socketToggle, socketEmit} = useSocket('server:score');
-
+    const [result, fetchResultByGroupId, loadingResult] = useResultByGroupId(prm_group_id, socketToggle);
+    
+    // USE STATE ####################################################################################################################################
     const [searchTerm, setSearchTerm] = useState("");
     const [currentScore, setCurrentScore] = useState([]);
 
     // DIALOG #######################################################################################################################################
     const [dialogOptions, setDialogOptions] = useState({});
-
-    /*FETCH ###########################################################################################*/
-    const fetchMatchesScores = async () => {
-        await fetchMatchesByGroupId(prm_group_id);
-        await fetchScoresByGroupId(prm_group_id);
-    };
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
@@ -39,17 +33,11 @@ const Match = () => {
         openModalScoreToUpdate();
     };
 
-    // USE EFFECT ###################################################################################################################################
-    useEffect(() => {
-        fetchMatchesScores();
-        // eslint-disable-next-line
-    }, [socketToggle]);
-
     // CRUD #########################################################################################################################################
     const initMatchRandomByGroupId = async group_id => {
         try {
             const res = await axios.post("match/random/", {group_id});
-            if (res.data.result.cod === 0) return fetchMatchesScores();
+            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -63,7 +51,7 @@ const Match = () => {
     const initMatchOrderByGroupId = async group_id => {
         try {
             const res = await axios.post("match/ordened/", {group_id});
-            if (res.data.result.cod === 0) return fetchMatchesScores();
+            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -77,7 +65,7 @@ const Match = () => {
     const initMatchAgainstByGroupId = async group_id => {
         try {
             const res = await axios.post("match/against/", {group_id});
-            if (res.data.result.cod === 0) return fetchMatchesScores();
+            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -95,7 +83,6 @@ const Match = () => {
     };
 
     const handleInitMatchRandomByGroupId = () => {
-        // e.stopPropagation();
         setDialogOptions({
             family: "question", 
             title: 'Redo randomly', 
@@ -106,7 +93,6 @@ const Match = () => {
     };
 
     const handleInitMatchOrderByGroupId = () => {
-        // e.stopPropagation();
         setDialogOptions({
             family: "question", 
             title: 'Redo in order', 
@@ -137,26 +123,32 @@ const Match = () => {
         );
     };
 
+    const renderTitle = firtMatch => {
+        const titleText = firtMatch.championship_name + " > " + firtMatch.group_name + " > Matches";
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">{titleText}</Title.Basic>;
+    };
+
+    const renderResult = result => {
+        if (!result.matches) return null;
+        if (result.matches.length === 0) return <Message text={MSG_NO_MATCH} />
+        return (
+            <Container.Primary>
+                {renderTitle(result.matches[0])}
+                <Search value={searchTerm} action={setSearchTerm} placeholder="By Player Name or State*"/>
+                <Container.FlexWrap>
+                    {result.matches.map(match => {
+                        const score = result.scores.filter(filterScoresByMatchId(match.match_id));
+                        return <ScoreToShow key={match.match_id} score={score} action={showModalScoreToUpdate} />
+                    })}
+                </Container.FlexWrap>
+            </Container.Primary>
+        );
+    };
+
     // JSX ##########################################################################################################################################
     return (
         <>
-            <Container.Primary>
-                {/* <Title.Basic fontSize="20px">{matches[0]?.championship_name}</Title.Basic>
-                <Title.Basic>{matches[0]?.group_name}</Title.Basic> */}
-                <Title.Basic fontSize="20px">Matches</Title.Basic> 
-                <div className="search-container">
-                    <Input.TextAction name="search" placeholder="Search..." value={searchTerm} action={setSearchTerm} />
-                </div>
-                {loadingMatches || loadingScores
-                    ? <Loading/>
-                    : <Container.FlexWrap>
-                        {matches.map(match => {
-                            const score = scores.filter(filterScoresByMatchId(match.match_id));
-                            return <ScoreToShow key={match.match_id} score={score} action={showModalScoreToUpdate} />
-                        })}
-                    </Container.FlexWrap>
-                }
-            </Container.Primary>
+            {loadingResult ?<Loading/> :renderResult(result)}
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
             <ScoreToUpdate 

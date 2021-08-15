@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {  Button, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat, DropDown } from "../../component.controls";
+import {  Message, Title, Button, TableNew, Container, Loading, Dialog, Avatar, ButtonFloat, DropDown } from "../../component.controls";
 import { PlayersAssigned, Search } from "../../component.pieces";
 import useModal from "../../../hooks/useModal";
 import axios from '../../../config/axios'
@@ -7,6 +7,7 @@ import { filterUserNameByText } from "../../../helpers/filter.helper";
 import  Concre  from "./Concre";
 import  UserCrud  from "./UserCrud";
 import { useUser } from "../../../custom-hooks/useUser";
+import { MSG_NO_MATCH } from "../../../helpers/parameters.helper";
 import { useUserPlayer } from "../../../custom-hooks/useUserPlayer";
 
 const User = () => {
@@ -175,20 +176,33 @@ const User = () => {
         return <Button.Basic family={family} onClick={e => handleModalPlayerAssignedOpen(e, user)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
+    const renderTitle = () => {
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">Users</Title.Basic>;
+    };
+
+    const renderUsers = users => {
+        if (!users) return null;
+        if (users.length === 0) return <Message text={MSG_NO_MATCH} />
+        return (
+            <>
+                <Search value={searchTerm} action={setSearchTerm} placeholder="By Name" />
+                <Container.Table>
+                    <TableNew.Basic>
+                        <thead>{renderTableHead()}</thead>
+                        <tbody>{users.filter(filterUserNameByText(searchTerm)).map(user => renderTableRows(user))}</tbody>
+                    </TableNew.Basic>
+                </Container.Table>
+            </>
+        );
+    };
+
     // JSX ##########################################################################################################################################
     return (
         <>
+
             <Container.Primary>
-                <Search value={searchTerm} action={setSearchTerm} />
-                {loadingUsers 
-                    ? <Loading/>
-                    : <Container.Table>
-                        <TableNew.Basic>
-                            <thead>{renderTableHead()}</thead>
-                            <tbody>{users.filter(filterUserNameByText(searchTerm)).map(user => renderTableRows(user))}</tbody>
-                        </TableNew.Basic>
-                    </Container.Table>
-                }
+                {renderTitle()}
+                {loadingUsers ?<Loading/> :renderUsers(users)}
             </Container.Primary>
 
             {/* CRUD USER ########################################################################################################################### */}

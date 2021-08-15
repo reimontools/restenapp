@@ -1,17 +1,6 @@
 import {Redirect, Route} from "react-router-dom";
 import useAppContext from '../hooks/useAppContext';
-
-import SignIn from '../components/views/SignIn';
-import Player from '../components/views/Player';
-// import Against from '../components/views/Against';
-// import Seed from '../components/views/Seed';
-import Group from '../components/views/Group';
-import Championship from '../components/views/Championship';
-import User from '../components/views/user/User';
-import PlayerResult from '../components/views/PlayerResult';
-import Home from '../components/views/Home';
-import Match from '../components/views/Match';
-import NotFound from '../components/views/NotFound';
+import { LogIn, Player, Group, Championship, User, PlayerResult, Home, Match, NotFound } from "../components/component.views";
 
 export const ROUTES = [
     {
@@ -30,22 +19,6 @@ export const ROUTES = [
         showInBar: true,
         auth: 'auth'
     },
-    // {
-    //     title: 'Against',
-    //     path: '/championship/against/:prm_championship_id',
-    //     component: Against, 
-    //     allowTo: ['Admin', 'Coach'],
-    //     showInBar: false,
-    //     auth: 'auth'
-    // },
-    // {
-    //     title: 'Seed',
-    //     path: '/championship/seed/:prm_championship_id',
-    //     component: Seed, 
-    //     allowTo: ['Admin', 'Coach'],
-    //     showInBar: false,
-    //     auth: 'auth'
-    // },
     {
         title: 'Group',
         path: '/championship/group/:prm_championship_id/:prm_championship_type_id',
@@ -79,9 +52,9 @@ export const ROUTES = [
         auth: 'auth'
     },
     {
-        title: 'Sign In',
-        path: '/sign-in',
-        component: SignIn, 
+        title: 'Log In',
+        path: '/log-in',
+        component: LogIn, 
         allowTo: ['*'],
         showInBar: false,
         auth: 'nonAuth'
@@ -124,7 +97,7 @@ export const ProtectedRoute = ({component: Component, allowTo = ['*'], auth, ...
         return (
             <Route {...options}>
                 {(() => {
-                    if (!isLogged()) return <Redirect to="/sign-in" />
+                    if (!isLogged()) return <Redirect to="/log-in" />
                     if (!allowTo.includes(user.rol) && !allowTo.includes('*')) return <Redirect to="/" />
                     return <Component />
                 })}

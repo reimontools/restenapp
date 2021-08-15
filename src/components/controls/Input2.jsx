@@ -5,13 +5,14 @@ const DivInputStyled = styled.div `
     position: relative;
     padding: 10px 0;
     margin-bottom: 3px;
+    width: 100%;
     input {
         padding: 12px 17px 12px 17px;
         border-radius: 3px;
         width: 100%;
         outline: none;
         border: 2px solid ${PRIMARY_COLOR};
-        font-size: 15px;
+        font-size: 14px;
     };
     .label {
         position: absolute;
@@ -36,15 +37,32 @@ const DivInputStyled = styled.div `
 `;
 
 const Input2 = {
-    Validation: ({register, label, error, ...inputProps}) => {
+    Validation: ({register, label, error, ...props}) => {
         return (
             <DivInputStyled>
-                <input type="text" autoComplete="off" {...inputProps} ref={register} />
+                <input type="text" autoComplete="off" {...props} ref={register} />
                 {label && <span className="label">{label}</span>}
                 {error && <span className="error">{error.message}</span>}
             </DivInputStyled>
         );
-    }
+    },
+    DateValidation: ({register, label, error, ...props}) => {
+        return (
+            <DivInputStyled>
+                <input type="date" {...props} ref={register} />
+                {label && <span className="label">{label}</span>}
+                {error && <span className="error">{error.message}</span>}
+            </DivInputStyled>
+        );
+    },
+    Action: ({label, action, ...props}) => {
+        return (
+            <DivInputStyled>
+                <input type="text" autoComplete="off" {...props} onChange={e => action(e.target.value)} />
+                {label && <span className="label">{label}</span>}
+            </DivInputStyled>
+        );
+    },
 };
 
 export default Input2;

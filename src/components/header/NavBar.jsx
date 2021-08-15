@@ -51,6 +51,12 @@ export const NavStyled = styled.nav `
 
 const NavBar = () => {
     const { barState, setBarState, user, logOut, isLogged } = useAppContext();
+
+    const exit = () => {
+        logOut();
+        setBarState(false);
+    };
+
     return (
         <>
             <NavStyled open={ barState }>
@@ -72,7 +78,7 @@ const NavBar = () => {
                     };
                     return null;
                 })}
-                {isLogged() && <Link className="navlink right" onClick={() => logOut()} to="/" >Exit</Link>}
+                {isLogged() && <Link className="navlink right" onClick={() => exit()} to="/" >Exit</Link>}
             </NavStyled>
         </>
     );

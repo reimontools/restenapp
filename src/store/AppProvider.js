@@ -6,6 +6,7 @@ export const AppContext = createContext();
 const AppProvider = ({children}) => {
     const defaultUser = null;
     const cookieUser = 'USERINFO';
+    const [barState, setBarState] = useState(false);
 
     const getUser = () => {
         var user = cookie.getJSON(cookieUser);
@@ -16,14 +17,17 @@ const AppProvider = ({children}) => {
     };
 
     const [user, setUser] = useState(getUser());
-    const signIn = data => {
-        cookie.set(cookieUser, data);
-        setUser(jwt_decode(data.token));
+
+    const setTokenDataInCookieAndContext = tokenData => {
+        cookie.set(cookieUser, tokenData);
+        setUser(jwt_decode(tokenData.token));
     };
+
     const logOut = () => {
         cookie.remove(cookieUser);
         setUser(defaultUser);
     };
+
     const isLogged = () => {
         if (user) {
             return true;
@@ -32,9 +36,8 @@ const AppProvider = ({children}) => {
         };
     };
 
-    const [barState, setBarState] = useState(false);
+    const contentValue = { user, setTokenDataInCookieAndContext, logOut, isLogged, barState, setBarState };
 
-    const contentValue = { user, signIn, logOut, isLogged, barState, setBarState };
     return (
         <AppContext.Provider value={contentValue}>
             {children}

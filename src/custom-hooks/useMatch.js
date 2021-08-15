@@ -17,6 +17,7 @@ export const useMatch = (type, payload) => {
                 fetchMatchesByPlayerId(payload);
                 break;
             default: 
+                setLoading(false);
                 break;
         };
     }, [type, payload]); 

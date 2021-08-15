@@ -1,5 +1,5 @@
-import { useState,useEffect } from "react";
-import { Container, Select2, Loading, ButtonCircleIcon, Message } from "../component.controls";
+import { useState } from "react";
+import { Container, Title, Select2, Loading, ButtonCircleIcon, Message } from "../component.controls";
 import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
 import useAppContext from '../../hooks/useAppContext';
@@ -8,42 +8,24 @@ import { filterMatchesByChampionshipId, filterScoresByMatchId } from "../../help
 
 // CUSTOM HOOKS #####################################################################################################################################
 import { useUserPlayer } from "../../custom-hooks/useUserPlayer";
-import { useChampionship } from "../../custom-hooks/useChampionship";
-import { useMatch } from "../../custom-hooks/useMatch";
-import { useScore } from "../../custom-hooks/useScore";
 import { useSocket } from "../../custom-hooks/useSocket";
+import { useResultByPlayerId } from "../../custom-hooks/useResultByPlayerId";
 import useModal from "../../hooks/useModal";
 
 const PlayerResult = () => {
-    
     // CONTEXT ######################################################################################################################################
     const { user } = useAppContext();
-
+    
     // CUSTOM HOOKS #################################################################################################################################
     const { userPlayers, loading: loadingUserPlayers } = useUserPlayer("fetchUserPlayersByUserId", user.user_id);
-    const { championships, fetchChampionshipsByPlayerId, loading: loadingChampionships } = useChampionship("fetchChampionshipsByPlayerId", user.player_id);
-    const { matches, fetchMatchesByPlayerId, loading: loadingMatches } = useMatch("fetchMatchesByPlayerId",  user.player_id);
-    const { scores, fetchScoresByPlayerId, loading: loadingScores } = useScore("fetchScoresByPlayerId", user.player_id);
     const { socketToggle, socketEmit } = useSocket('server:score');
+    const [result, fetchResultByPlayerId, loadingResult] = useResultByPlayerId(userPlayers[0]?.player_id, socketToggle);
     const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
-
-    // FETCH ########################################################################################################################################
-    const fetchPlayerResultByPlayerId = async player_id => {
-        await fetchChampionshipsByPlayerId(player_id);
-        await fetchMatchesByPlayerId(player_id);
-        await fetchScoresByPlayerId(player_id);
-    };
-
+    
     // STATE ########################################################################################################################################
     const [showedChampionshipsId, setShowedChampionshipsId] = useState([]);
     const [currentScore, setCurrentScore] = useState([]);
-    const [currentPlayerId, setCurrentPlayerId] = useState(user.player_id);
     const [scoreToUpdateOptions, setScoreToUpdateOptions] = useState({title:"", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false});
-
-    useEffect(() => {
-        fetchScoresByPlayerId(currentPlayerId);
-        // eslint-disable-next-line
-    }, [socketToggle]);
 
     // MODAL ########################################################################################################################################
     const showModalScoreToUpdate = score => {
@@ -60,15 +42,14 @@ const PlayerResult = () => {
         };
         // PENDING
         if (state_id === 3) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
-        // FINISH
-        if (state_id === 2) return setScoreToUpdateOptions({title:"Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false}); // READ-ONLY
+        // FINISH AND REJECT
+        if (state_id === 2 || state_id === 5) return setScoreToUpdateOptions({title:"Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false}); // READ-ONLY
     };
     
     // HANDLE #######################################################################################################################################
     const handleSelectPlayers = async player_id => {
-        setCurrentPlayerId(player_id);
         setShowedChampionshipsId([]);
-        await fetchPlayerResultByPlayerId(player_id);
+        await fetchResultByPlayerId(player_id);
     };
 
     const handleShowedChampionshipsId = championship_id => {
@@ -81,20 +62,18 @@ const PlayerResult = () => {
 
     // RENDERS ######################################################################################################################################
     const renderSelectUserPlayers = userPlayers => {
-        if (!userPlayers || userPlayers.length === 0) return null;
-        return <Select2.OnChange label="My players" content={userPlayers} action={handleSelectPlayers}/>
+        if (!userPlayers) return null;
+        if (userPlayers.length === 0) return <Message text={MSG_NO_PLAYERS} />
+        return <Select2.OnChange label="My players" content={userPlayers} action={handleSelectPlayers} width="90%"/>
     };
 
-    const renderChampionships = championships => {
-        if (!championships) { 
-            return null;
-        } else {
-            if (championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
-        };
+    const renderResult = result => {
+        if (!result.championships) return null;
+        if (result.championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
         return (
             <ContainerChampionships>
-                {championships.map(championship => {
-                    const matchesFilteredByChampionshipId = matches.filter(filterMatchesByChampionshipId(championship.championship_id));
+                {result.championships.map(championship => {
+                    const matchesFilteredByChampionshipId = result.matches.filter(filterMatchesByChampionshipId(championship.championship_id));
                     return (
                         <ContainerChampionship key={championship.championship_id} id={championship.championship_id}>
                             <ContainerChampionshipHeader onClick={() => handleShowedChampionshipsId(championship.championship_id)}>
@@ -114,29 +93,24 @@ const PlayerResult = () => {
         return (
             <ContainerScores className={show}>
                 {matches.map(
-                    match => <ScoreToShow key={match.match_id} score={scores.filter(filterScoresByMatchId(match.match_id))} action={showModalScoreToUpdate}></ScoreToShow>
+                    match => <ScoreToShow key={match.match_id} score={result.scores.filter(filterScoresByMatchId(match.match_id))} action={showModalScoreToUpdate}></ScoreToShow>
                 )}
             </ContainerScores>
         );
     };
 
-    // ]JSX #########################################################################################################################################
-    if (user.player_id === 0) return <Message text={MSG_NO_PLAYERS} />
+    const renderTitle = () => {
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">Player result</Title.Basic>;
+    };
+    
+    // JSX ##########################################################################################################################################
     return (
         <>
-            <Container.Basic>
-                
-                {loadingUserPlayers 
-                    ?<Loading/> 
-                    :renderSelectUserPlayers(userPlayers)
-                }
-
-                {loadingChampionships || loadingMatches || loadingScores 
-                    ?<Loading/> 
-                    :renderChampionships(championships)
-                }
-
-            </Container.Basic>
+            <Container.Primary>
+                {renderTitle()}
+                {loadingUserPlayers ?<Loading/> :renderSelectUserPlayers(userPlayers)}
+                {loadingResult ?<Loading/> :renderResult(result)}
+            </Container.Primary>
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
             <ScoreToUpdate 

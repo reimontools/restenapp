@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Input, Modal, Button, Title, TableNew, Container, Loading, Select, Dialog, ButtonFloat, DropDown, Image } from "../component.controls";
-import useModal from "../../hooks/useModal";
-import * as Yup from "yup";
-import { yupResolver } from '@hookform/resolvers/yup';
-import axios from '../../config/axios'
+import { Button, Title, TableNew, Container, Loading, Dialog, ButtonFloat, DropDown, Image, Message } from "../../component.controls";
+import useModal from "../../../hooks/useModal";
+import axios from '../../../config/axios'
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
-import { filterChampionshipNameStateByText } from "../../helpers/filter.helper";
-import { useChampionship } from "../../custom-hooks/useChampionship";
-import { useChampionshipType } from "../../custom-hooks/useChampionshipType";
-import { Search } from "../component.pieces";
+import { filterChampionshipNameStateByText } from "../../../helpers/filter.helper";
+import { useChampionship } from "../../../custom-hooks/useChampionship";
+import { Search } from "../../component.pieces";
+import { MSG_NO_MATCH } from "../../../helpers/parameters.helper";
+import ChampionshipCrud from "./ChampionshipCrud";
 
 const Championship = () => {
     // HISTORY ######################################################################################################################################
@@ -18,55 +16,17 @@ const Championship = () => {
 
     // CUSTOM HOOKS ###############################################################################################################################
     const {championships, fetchChampionships, loading} = useChampionship("fetchChampionships");
-    const {championshipTypes} = useChampionshipType("fetchChampionshipTypes");
-    
-    const [isOpenModalCrud, openModalCrud, closeModalCrud] = useModal();
+    const [isOpenModalChampionshipCrud, openModalChampionshipCrud, closeModalChampionshipCrud] = useModal();
 
-    // DEFAULT DATA ########################################################################################################################################
+    // DEFAULT DATA #################################################################################################################################
     const defaultChampionshipData = {championship_id: 0, championship_name: '', state: 0, championship_type_id: ""};
     
     // STATE ########################################################################################################################################
-    const [currentChampionshipId, setCurrentChampionshipId] = useState(0);
+    const [currentChampionship, setCurrentChampionship] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [dialogOptions, setDialogOptions] = useState({});
 
-    // CRUD VALIDATIONS ############################################################################################################################# 
-    const schemaCrud = Yup.object().shape({
-        championship_name: Yup.string()
-            .required('Required'),
-        championship_type_id: Yup.string()
-            .required('Required')
-    });
-
-    const { register: registerCrud, handleSubmit: handleSubmitCrud, errors: errorsCrud, reset: resetCrud } = useForm({
-        mode: 'onBlur',
-        resolver: yupResolver(schemaCrud)
-    });
-
     // CRUD #########################################################################################################################################
-    const updateChampionship = async data => {
-        try {
-            const res = await axios.post("championship", {championship_id: currentChampionshipId, ...data});
-            switch(res.data.result.cod) {
-                case 0:
-                    fetchChampionships();
-                    closeModalCrud();
-                    break;
-                case 1:
-                    setDialogOptions({family: "info", title: 'Alert', text : 'Championship already exists!'})
-                    break;
-                case 2:
-                    setDialogOptions({family: "info", title: 'Alert', text : 'Championship already exists! (nonActive)'})
-                    break;
-                default:
-                    setDialogOptions({family: "info", title: 'Error', text : 'Error: ' + res.data.result.msg})
-                    break;
-            };
-        } catch(err) {
-            console.log('Err: ' + err);
-        };
-    };
-    
     const updateChampionshipState = async (id, state_id) => {
         try {
             const res = await axios.post("state/", {state_id, name: "championship", id});
@@ -89,11 +49,11 @@ const Championship = () => {
     };
 
     // HANDLES ######################################################################################################################################
-    const handleExpandir = championship_id => {
-        if (championship_id === currentChampionshipId) {
-            setCurrentChampionshipId(0);
+    const handleExpandir = championship => {
+        if (championship.championship_id === currentChampionship.championship_id) {
+            setCurrentChampionship({});
         } else {
-            setCurrentChampionshipId(championship_id);
+            setCurrentChampionship(championship);
         };
     };
 
@@ -103,11 +63,10 @@ const Championship = () => {
         if (championship.state_id === 2) updateChampionshipState(championship.championship_id, 1);
     };
 
-    const handleUpdate = (e, championship) => {
+    const handleModalChampionshipCrud = (e, championship) => {
         e.stopPropagation();
-        setCurrentChampionshipId(championship.championship_id);
-        resetCrud(championship);
-        openModalCrud();
+        setCurrentChampionship(championship);
+        openModalChampionshipCrud();
     };
 
     const handleGoGroup = (e, championship) => {
@@ -138,7 +97,7 @@ const Championship = () => {
         var classContent = "";
         var classActions = "";
 
-        if (championship.championship_id === currentChampionshipId) {
+        if (championship.championship_id === currentChampionship.championship_id) {
             classContent = "content unhide"
             classActions = "unhide"
         } else {
@@ -147,7 +106,7 @@ const Championship = () => {
         };
 
         return (
-            <tr key={championship.championship_id} onClick={() => handleExpandir(championship.championship_id)}>
+            <tr key={championship.championship_id} onClick={() => handleExpandir(championship)}>
                 <td className="head">
                     {renderAvatar(championship)}
                     <div className="dropdown">
@@ -166,7 +125,7 @@ const Championship = () => {
     const renderDropDown = championship => {
         return (
             <DropDown.Basic family="more">
-                <div className="menu-content" onClick={e => handleUpdate(e, championship)}>Update</div>
+                <div className="menu-content" onClick={e => handleModalChampionshipCrud(e, championship)}>Update</div>
                 <div className="menu-content" onClick={e => handleDelete(e, championship)}>Delete</div>
                 {championship.state_id === 1 &&<div className="menu-content" onClick={e => handleGoGroup(e, championship)}>Groups</div>}
             </DropDown.Basic>
@@ -224,36 +183,44 @@ const Championship = () => {
         return <Button.Basic family={family} onClick={e => handleGoGroup(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 
-    // JSX ##########################################################################################################################################
-    return (
-        <Container.Primary>
-            <Search value={searchTerm} action={setSearchTerm} />
-            {loading 
-                ? <Loading/>
-                : <Container.Table>
+    const renderTitle = () => {
+        return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">Championships</Title.Basic>;
+    };
+
+    const renderChampionships = championships => {
+        if (!championships) return null;
+        if (championships.length === 0) return <Message text={MSG_NO_MATCH} />
+        return (
+            <>
+                <Search value={searchTerm} action={setSearchTerm} placeholder="By Name or State" />
+                <Container.Table>
                     <TableNew.Basic>
                         <thead>{renderTableHead()}</thead>
                         <tbody>{championships.filter(filterChampionshipNameStateByText(searchTerm)).map(championship => renderTableRows(championship))}</tbody>
                     </TableNew.Basic>
                 </Container.Table>
-            }
+            </>
+        );
+    };
 
-            {/* MODAL CRUD ########################################################################################################################## */}
-            <Modal.ForForm isOpen={isOpenModalCrud} closeModal={closeModalCrud}>
-                <Container.Basic>
-                    <Title.Basic>{currentChampionshipId === 0 ? 'New Championship' : 'Update Championship'}</Title.Basic>
-                    <Input.TextValidation name="championship_name" placeholder="Championship name" register={registerCrud} error={errorsCrud.championship_name} />
-                    <Select.Validation disable={currentChampionshipId === 0 ? false : true} name="championship_type_id" text="Championship type" register={registerCrud} error={errorsCrud.championship_type_id} content={championshipTypes} />
-                    <Button.Basic onClick={handleSubmitCrud(updateChampionship)} width="100%">Save</Button.Basic>
-                </Container.Basic>
-            </Modal.ForForm>
-            
+    // JSX ##########################################################################################################################################
+    return (
+        <>
+            <Container.Primary>
+                {renderTitle()}
+                {loading ?<Loading/> :renderChampionships(championships)}
+            </Container.Primary>
+
+            {/* CRUD CHAMPIONSHIP ################################################################################################################### */}
+            <ChampionshipCrud fetch={fetchChampionships} championship={currentChampionship} isOpen={isOpenModalChampionshipCrud} close={closeModalChampionshipCrud} />
+
             {/* DIALOG ############################################################################################################################## */}
             <Dialog.Action options={dialogOptions} close={() => setDialogOptions({})} />
 
             {/* NEW  ################################################################################################################################ */}
-            <ButtonFloat.Icon onClick={e => handleUpdate(e, defaultChampionshipData)} family="newFloat" hover />
-        </Container.Primary>
+            <ButtonFloat.Icon onClick={e => handleModalChampionshipCrud(e, defaultChampionshipData)} family="newFloat" hover />
+            
+        </>
     );
 };
 

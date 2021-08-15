@@ -14,6 +14,7 @@ export const useChampionship = (type, payload) => {
                 fetchChampionshipsByPlayerId(payload);
                 break;
             default: 
+                setLoading(false);
                 break;
         };
     }, [type, payload]); 

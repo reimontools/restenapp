@@ -1,11 +1,11 @@
-import { Input } from "../component.controls";
+import { Input2 } from "../component.controls";
 import { ContainerSearch } from "../styled/Search.styled";
 
-const Search = ({value, action}) => {
+const Search = ({value, action, placeholder=""}) => {
     // JSX ##########################################################################################################################################
     return (
         <ContainerSearch>
-            <Input.TextAction name="search" placeholder="Search..." value={value} action={action} />
+            <Input2.Action name="search" label="Search" value={value} action={action} placeholder={placeholder} />
         </ContainerSearch>
     );
 };

@@ -16,8 +16,9 @@ import championshipSeed from '../assets/images/championshipSeed.png';
 import championshipAgainst from '../assets/images/championshipAgainst.png';
 
 // MESSAGES #########################################################################################################################################
-export const MSG_NO_PLAYERS = "Sorry! you have no players assigned yet, please contact the administrator.";
-export const MSG_NO_CHAMPIONSHIP = "Sorry! this player have no championships assigned yet, please contact the administrator.";
+export const MSG_NO_PLAYERS = "Sorry! you have no players assigned, please contact the administrator.";
+export const MSG_NO_CHAMPIONSHIP = "Sorry! this player have no championships assigned yet.";
+export const MSG_NO_MATCH = "Sorry! there is not matches yet.";
 
 // SCREEN ###########################################################################################################################################
 export const SMALL_SCREEN_SIZE = 500;
@@ -30,26 +31,37 @@ export const COLOR_BY_STATE_ID = {
     2: "#008000",
     3: "#0E70B8",
     4: "#FFD90F",
+    5: "#FF2B0F",
 };
 
 export const SIMBOL_TYPE_BY_STATE_ID = {
     2: "check",
     3: "point",
     4: "right",
+    5: "rejected",
 };
 
 export const SIMBOLS_BY_SIMBOL_TYPE = {
     star: "★",
     point: '●',
-    check: '✔',
-    right: '🡲'
+    check: '✓',
+    right: '🡲',
+    rejected: '✗'
 };
 
 export const COLOR_BY_SIMBOL_TYPE = {
     star: '#FFD90F',
     point: '#0e70b8',
     check: '#008000',
-    right: '#FFD90F'
+    right: '#FFD90F',
+    rejected: '#FF2B0F'
+};
+
+export const getSecundaryColorByPrimaryColor = primaryColor => {
+    if (primaryColor === "#008000") return "#BBE4BB"; // FINISH  
+    if (primaryColor === "#0E70B8") return "#C8E1F3"; // PENDING
+    if (primaryColor === "#FFD90F") return "#FFF7CD"; // WAITING
+    if (primaryColor === "#FF2B0F") return "#F3C8C8"; // REJECTED
 };
 
 // REGEX ############################################################################################################################################
@@ -132,11 +144,9 @@ export const getIconByFamily = family => {
         case "more": return <MdMoreVert />;
         case "options": return <IoIosMore />;
         case "back": return <IoIosArrowRoundBack />;
-
         case "newFloat": return  <IoIosAdd />;
         case "backFloat": return <IoIosArrowRoundBack />;
         case "moreFloat": return <IoIosMore />;
-
         default: return <RiAliensLine />
     };
 };

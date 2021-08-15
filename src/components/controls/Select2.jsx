@@ -5,6 +5,7 @@ const DivSelectStyled = styled.div `
     position: relative;
     padding: 10px 0;
     margin-bottom: 3px;
+    width: ${({ width }) => width ? width : '100%'};
     select {
         -webkit-appearance: none;
         cursor: pointer;
@@ -14,11 +15,13 @@ const DivSelectStyled = styled.div `
         height: 46px;
         outline: none;
         border: 2px solid ${PRIMARY_COLOR};
-        font-size: 15px;
+        font-size: 14px;
         background-color: #fff;
-        /* &:not(:valid) {
-            color: #757575;
-        }; */
+        &.disable {
+            pointer-events: none;
+            /* border: 2px solid #D3D3D3;
+            color: #D3D3D3; */
+        };
     };
     option { 
         color: #222;
@@ -71,13 +74,14 @@ const Select2 = {
             </DivSelectStyled>
         );
     },
-    Validation: ({register, label, error, placeholder, content, ...selectProps}) => {
+    Validation: ({register, label, error, placeholder, content, ...props}) => {
         return (
-            <DivSelectStyled {...selectProps}>
+            <DivSelectStyled {...props}>
                 <select 
                     required
                     ref={register}
-                    name={selectProps.name}>
+                    name={props.name}
+                    className={props.disable ? "disable" : ""}>
                         {placeholder && <option value="" hidden>{placeholder}</option>}
                         {content.map(e => (<option key={e[Object.keys(e)[0]]} value={e[Object.keys(e)[0]]}>{e[Object.keys(e)[1]]}</option>))}
                 </select>
