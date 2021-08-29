@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
 
-const socket = io(process.env.REACT_APP_SOCKET_URL, {path: '/wea/'});
+const socket = io(process.env.REACT_APP_SOCKET_URL, {path: '/socket.io'});
 
 export default socket;
