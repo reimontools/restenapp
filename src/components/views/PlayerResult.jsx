@@ -4,7 +4,6 @@ import { ScoreToShow, ScoreToUpdate } from "../component.pieces";
 import { ContainerChampionships, ContainerChampionship, ContainerChampionshipHeader, ContainerScores } from "../styled/PlayerResult.styled";
 import useAppContext from '../../hooks/useAppContext';
 import { MSG_NO_CHAMPIONSHIP, MSG_NO_PLAYERS } from "../../helpers/parameters.helper";
-import { filterMatchesByChampionshipId, filterScoresByMatchId } from "../../helpers/filter.helper";
 
 // CUSTOM HOOKS #####################################################################################################################################
 import { useUserPlayer } from "../../custom-hooks/useUserPlayer";
@@ -19,7 +18,7 @@ const PlayerResult = () => {
     // CUSTOM HOOKS #################################################################################################################################
     const { userPlayers, loading: loadingUserPlayers } = useUserPlayer("fetchUserPlayersByUserId", user.user_id);
     const { socketToggle, socketEmit } = useSocket('server:score');
-    const [result, fetchResultByPlayerId, loadingResult] = useResultByPlayerId(userPlayers[0]?.player_id, socketToggle);
+    const { result, setPlayerId, loading: loadingResult } = useResultByPlayerId(userPlayers[0]?.player_id, socketToggle);
     const [isOpenModalScoreToUpdate, openModalScoreToUpdate, closeModalScoreToUpdate] = useModal();
     
     // STATE ########################################################################################################################################
@@ -34,22 +33,22 @@ const PlayerResult = () => {
         openModalScoreToUpdate();
     };
 
-    const getScoreToUpdateOptions = (state_id, user_id) => {
+    const getScoreToUpdateOptions = (match_state_id, user_id) => {
         // WAITING
-        if (state_id === 4) { 
+        if (match_state_id === 4) { 
             if (user_id === user.user_id) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
             return setScoreToUpdateOptions({title:"Confirming Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: true}); // SOLO ACEPTABLE
         };
         // PENDING
-        if (state_id === 3) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
+        if (match_state_id === 3) return setScoreToUpdateOptions({title:"Updating Score", isCleanable: true, isEditable: true, isSaveable: true, isAcceptable: false}); //FULL EDITABLE
         // FINISH AND REJECT
-        if (state_id === 2 || state_id === 5) return setScoreToUpdateOptions({title:"Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false}); // READ-ONLY
+        if (match_state_id === 2 || match_state_id === 5) return setScoreToUpdateOptions({title:"Score", isCleanable: false, isEditable: false, isSaveable: false, isAcceptable: false}); // READ-ONLY
     };
     
     // HANDLE #######################################################################################################################################
     const handleSelectPlayers = async player_id => {
         setShowedChampionshipsId([]);
-        await fetchResultByPlayerId(player_id);
+        await setPlayerId(player_id);
     };
 
     const handleShowedChampionshipsId = championship_id => {
@@ -67,20 +66,19 @@ const PlayerResult = () => {
         return <Select2.OnChange label="My players" content={userPlayers} action={handleSelectPlayers} width="90%"/>
     };
 
-    const renderResult = result => {
-        if (!result.championships) return null;
-        if (result.championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
+    const renderResult = championships => {
+        if (!championships) return null;
+        if (championships.length === 0) return <Message text={MSG_NO_CHAMPIONSHIP} />
         return (
             <ContainerChampionships>
-                {result.championships.map(championship => {
-                    const matchesFilteredByChampionshipId = result.matches.filter(filterMatchesByChampionshipId(championship.championship_id));
+                {championships.map(championship => {
                     return (
                         <ContainerChampionship key={championship.championship_id} id={championship.championship_id}>
                             <ContainerChampionshipHeader onClick={() => handleShowedChampionshipsId(championship.championship_id)}>
                                 <ButtonCircleIcon.Basic family={"add"} margin="0 5px 0 0"/>
                                 {championship.championship_name}
                             </ContainerChampionshipHeader>
-                            {renderScoresByMatches(matchesFilteredByChampionshipId)}
+                            {renderScoresByMatches(championship.matches)}
                         </ContainerChampionship>
                     );
                 })}
@@ -89,11 +87,14 @@ const PlayerResult = () => {
     };
 
     const renderScoresByMatches = matches => {
-        const show = showedChampionshipsId.includes(matches[0]?.championship_id) ? "show" : "hide";
+        const show = showedChampionshipsId.includes(matches[0].championship_id) ? "show" : "hide";
         return (
             <ContainerScores className={show}>
                 {matches.map(
-                    match => <ScoreToShow key={match.match_id} score={result.scores.filter(filterScoresByMatchId(match.match_id))} action={showModalScoreToUpdate}></ScoreToShow>
+                    match => <ScoreToShow 
+                        key={match.match_id} 
+                        scores={match.scores} 
+                        action={showModalScoreToUpdate} />
                 )}
             </ContainerScores>
         );
@@ -109,24 +110,14 @@ const PlayerResult = () => {
             <Container.Primary>
                 {renderTitle()}
                 {loadingUserPlayers ?<Loading/> :renderSelectUserPlayers(userPlayers)}
-                {loadingResult ?<Loading/> :renderResult(result)}
+                {loadingResult ?<Loading/> :renderResult(result.championships)}
             </Container.Primary>
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
-            <ScoreToUpdate 
-                score={currentScore} 
-                setScore={setCurrentScore}
-                socketEmit={socketEmit}
-                isOpen={isOpenModalScoreToUpdate} 
-                close={closeModalScoreToUpdate}
-                title={scoreToUpdateOptions.title}
-                isCleanable={scoreToUpdateOptions.isCleanable}
-                isEditable={scoreToUpdateOptions.isEditable}
-                isSaveable={scoreToUpdateOptions.isSaveable}
-                isAcceptable={scoreToUpdateOptions.isAcceptable}
-             />
+            <ScoreToUpdate score={currentScore} setScore={setCurrentScore} socketEmit={socketEmit} isOpen={isOpenModalScoreToUpdate} close={closeModalScoreToUpdate} title={scoreToUpdateOptions.title} isCleanable={scoreToUpdateOptions.isCleanable} isEditable={scoreToUpdateOptions.isEditable} isSaveable={scoreToUpdateOptions.isSaveable} isAcceptable={scoreToUpdateOptions.isAcceptable} />
+        
         </>
-
+        
     );
 };
 

@@ -1,17 +1,8 @@
 import axios from '../config/axios';
 
-export const getResultsByPlayerId = async player_id => {
+export const getResultsByPlayerIdByGroupId = async (playerId = "*", groupId = "*") => {
     try {
-        const result = await axios.get("result/player/" + player_id);
-        return result.data.result;
-    } catch(err) {
-        console.log('Err: ' + err);
-    };
-};
-
-export const getResultsByGroupId = async group_id => {
-    try {
-        const result = await axios.get("result/group/" + group_id);
+        const result = await axios.get("result/" + playerId + "/" + groupId);
         return result.data.result;
     } catch(err) {
         console.log('Err: ' + err);

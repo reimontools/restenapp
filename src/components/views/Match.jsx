@@ -17,7 +17,7 @@ const Match = () => {
 
     // CUSTOM HOOKS #################################################################################################################################
     const {socketToggle, socketEmit} = useSocket('server:score');
-    const [result, fetchResultByGroupId, loadingResult] = useResultByGroupId(prm_group_id, socketToggle);
+    const { result, setGroupId, loading: loadingResult } = useResultByGroupId(prm_group_id, socketToggle);
     
     // USE STATE ####################################################################################################################################
     const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +37,7 @@ const Match = () => {
     const initMatchRandomByGroupId = async group_id => {
         try {
             const res = await axios.post("match/random/", {group_id});
-            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
+            if (res.data.result.cod === 0) return setGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -51,7 +51,7 @@ const Match = () => {
     const initMatchOrderByGroupId = async group_id => {
         try {
             const res = await axios.post("match/ordened/", {group_id});
-            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
+            if (res.data.result.cod === 0) return setGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -65,7 +65,7 @@ const Match = () => {
     const initMatchAgainstByGroupId = async group_id => {
         try {
             const res = await axios.post("match/against/", {group_id});
-            if (res.data.result.cod === 0) return fetchResultByGroupId(group_id);
+            if (res.data.result.cod === 0) return setGroupId(group_id);
             setDialogOptions({
                 family: "info", 
                 title: 'Alert', 
@@ -128,17 +128,18 @@ const Match = () => {
         return <Title.Basic flexJustifyContent="flex-start" margin="13px 0 7px 0" width="90%">{titleText}</Title.Basic>;
     };
 
-    const renderResult = result => {
-        if (!result.matches) return null;
-        if (result.matches.length === 0) return <Message text={MSG_NO_MATCH} />
+    const renderResult = matches => {
+        console.log("matches", matches);
+        if (!matches) return null;
+        if (matches.length === 0) return <Message text={MSG_NO_MATCH} />
         return (
             <Container.Primary>
-                {renderTitle(result.matches[0])}
+                {renderTitle(matches[0])}
                 <Search value={searchTerm} action={setSearchTerm} placeholder="By Player Name or State*"/>
                 <Container.FlexWrap>
-                    {result.matches.map(match => {
-                        const score = result.scores.filter(filterScoresByMatchId(match.match_id));
-                        return <ScoreToShow key={match.match_id} score={score} action={showModalScoreToUpdate} />
+                    {matches.map(match => {
+                        const score = match.scores.filter(filterScoresByMatchId(match.match_id));
+                        return <ScoreToShow key={match.match_id} scores={score} action={showModalScoreToUpdate} />
                     })}
                 </Container.FlexWrap>
             </Container.Primary>
@@ -148,7 +149,7 @@ const Match = () => {
     // JSX ##########################################################################################################################################
     return (
         <>
-            {loadingResult ?<Loading/> :renderResult(result)}
+            {loadingResult ?<Loading/> :renderResult(result.championships[0].matches)}
 
             {/* SCORE TO UPDATE ##################################################################################################################### */}
             <ScoreToUpdate 

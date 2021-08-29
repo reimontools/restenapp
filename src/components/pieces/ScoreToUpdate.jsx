@@ -6,23 +6,27 @@ import useModal from "../../hooks/useModal";
 import axios from '../../config/axios';
 
 const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", isCleanable = false, isEditable = false, isSaveable = false, isAcceptable = false}) => {
-
+    // const originalScore = JSON.parse(JSON.stringify(score));
     // STATE ########################################################################################################################################
     const [currentIndexSetNumber, setCurrentIndexSetNumber] = useState(0);
-    // const [hasChange, setHasChange] = useState(false);
 
     // MODAL ########################################################################################################################################
     const [isOpenModalScoreToSelect, openModalScoreToSelect, closeModalScoreToSelect] = useModal();
     const showModalScoreToSelect = currentIndexSetNumber => {
         if(!isEditable) return null;
-        // setHasChange(true);
         setCurrentIndexSetNumber(currentIndexSetNumber);
         openModalScoreToSelect();
     };
 
+    const isEmptyScore = score => {
+        var sum = 0;
+        score.map(item => sum += item.point);
+        return !sum; 
+    };
+
     // API CALLS ####################################################################################################################################
     const cleanScoreByMatchId = async match_id => {
-        // if (!hasChange) return close();
+        if(isEmptyScore(score)) return close();
         try {
             const res = await axios.put("score/clean/" + match_id);
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
@@ -45,7 +49,6 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
     };
 
     const saveScore = async () => {
-        // if (!hasChange) return close();
         try {
             const res = await axios.post("score", {score});
             if(res.data.result.cod !== 0) return alert('Otro problema!, error: ' + res.data.result.msg);
@@ -59,9 +62,11 @@ const ScoreToUpdate = ({score, setScore, socketEmit, isOpen, close, title="", is
     // HANDLE #######################################################################################################################################
     const reverseScoreByIndex = index => {
         if(!isEditable) return null;
-        // setHasChange(true);
-        let new_score = [...score];
+        // let new_score = [...score];
+        const new_score = JSON.parse(JSON.stringify(score));
+        // const new_score = score.map(item => {return {...item}});
         const point = new_score[index].point;
+
         switch(index) {
             case 0:
                 new_score[0].point = new_score[3].point;

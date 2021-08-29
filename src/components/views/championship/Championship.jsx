@@ -59,8 +59,8 @@ const Championship = () => {
 
     const handleChampionshipState = (e, championship) => {
         e.stopPropagation();
-        if (championship.state_id === 1) updateChampionshipState(championship.championship_id, 2);
-        if (championship.state_id === 2) updateChampionshipState(championship.championship_id, 1);
+        if (championship.championship_state_id === 1) updateChampionshipState(championship.championship_id, 2);
+        if (championship.championship_state_id === 2) updateChampionshipState(championship.championship_id, 1);
     };
 
     const handleModalChampionshipCrud = (e, championship) => {
@@ -127,7 +127,7 @@ const Championship = () => {
             <DropDown.Basic family="more">
                 <div className="menu-content" onClick={e => handleModalChampionshipCrud(e, championship)}>Update</div>
                 <div className="menu-content" onClick={e => handleDelete(e, championship)}>Delete</div>
-                {championship.state_id === 1 &&<div className="menu-content" onClick={e => handleGoGroup(e, championship)}>Groups</div>}
+                {championship.championship_state_id === 1 &&<div className="menu-content" onClick={e => handleGoGroup(e, championship)}>Groups</div>}
             </DropDown.Basic>
         );
     };
@@ -164,7 +164,7 @@ const Championship = () => {
 
     const renderButtonState = championship => {
         var text = championship.state_name, family = "";
-        championship.state_id === 1 ? family = "addPerson" : family = "check";
+        championship.championship_state_id === 1 ? family = "addPerson" : family = "check";
         return <Button.Basic family={family} onClick={e => handleChampionshipState(e, championship)} fit height="auto" size="12px" weight="400" hover>{text}</Button.Basic>;
     };
 

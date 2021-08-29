@@ -279,8 +279,8 @@ const Group = () => {
             <DropDown.Basic family="more">
                 <div className="menu-content" onClick={e => handleUpdate(e, group)}>Update</div>
                 <div className="menu-content" onClick={e => handleDelete(e, group)}>Delete</div>
-                {group.count_players >= 2 && group.state_id === 3 && <div className="menu-content" onClick={e => handleResetRandomMatches(e, group)}>Start round</div>}
-                {group.state_id === 1 && <div className="menu-content" onClick={e => handleGoMatch(e, group)}>Matches</div>}
+                {group.count_players >= 2 && group.group_state_id === 3 && <div className="menu-content" onClick={e => handleResetRandomMatches(e, group)}>Start round</div>}
+                {group.group_state_id === 1 && <div className="menu-content" onClick={e => handleGoMatch(e, group)}>Matches</div>}
             </DropDown.Basic>
         );
     };
